@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ComponentSidenavComponent } from '../../core/component-sidenav/component-sidenav.component';
 import { BlogListComponent } from './blog-list/blog-list.component';
 import { BlogCreateComponent } from './blog-create/blog-create.component';
+import { BlogLayoutComponent } from '../../core/blog-layout/blog-layout.component';
 
 const routes: Routes = [
   { 
@@ -10,6 +11,12 @@ const routes: Routes = [
       { path: 'list', component: BlogListComponent },
       { path: 'create', component: BlogCreateComponent },
       { path: '', redirectTo: 'list', pathMatch: 'full' },
+    ]
+  },
+  { 
+    path: 'v1', component: BlogLayoutComponent, children: [
+      { path: 'list', component: BlogListComponent },
+      { path: 'create', component: BlogCreateComponent },
     ]
   }
 ];
