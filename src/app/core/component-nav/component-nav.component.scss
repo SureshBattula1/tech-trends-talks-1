@@ -1,0 +1,17 @@
+.component-viewer-nav {
+    position: sticky;
+    top: 0;
+}
+
+.component-viewer-nav .component-viewer-nav-content {    
+    padding: 16px 8px;
+    height: calc(100vh - 75px);
+    overflow: auto;
+    box-sizing: border-box;
+}
+
+.navbar-header-item-selected{
+    background-color: #f0f0f0; 
+    color: #000; 
+    font-weight: bold; 
+}
