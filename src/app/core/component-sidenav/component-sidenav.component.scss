@@ -17,13 +17,15 @@
 
 .component-sidenav-body-content {
     display: flex;
-    flex: 1 1 auto;
+    flex: 1 0 100%;
+    width: 100%;
+    min-height: 95vh;
 }
 
 app-component-viewer {
     font-weight: 400;
-    width: calc(100% - 341px);
-    padding: 20px 50px;
+    // width: calc(100% - 341px);
+    padding: 0px;
 }
 
 app-footer{
@@ -36,6 +38,5 @@ app-footer{
     flex-direction: column;
     overflow: auto;
     flex: 1;
-    height: 100vh;
     margin-top: 56px;
 }

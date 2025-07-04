@@ -1,1 +1,42 @@
-<p>blog-create works!</p>
+<div>
+    <form  [formGroup]="form">
+        <mat-form-field appearance="outline">
+            <mat-label>Title</mat-label>
+            <input type="text" matInput formControlName="title" placeholder="Ex. Blog Title" />
+            @if (form.get('title')?.hasError('required')) {
+            <mat-error>Title is <strong>required</strong></mat-error>
+            }
+        </mat-form-field><br />
+
+         <mat-form-field appearance="outline">
+            <mat-label>subTitle</mat-label>
+            <input type="text" matInput formControlName="subTitle" placeholder="Ex. Blog subTitle" />
+            @if (form.get('subTitle')?.hasError('required')) {
+            <mat-error>subTitle is <strong>required</strong></mat-error>
+            }
+        </mat-form-field><br />
+
+         <div style="margin-bottom: 2rem;">
+            <mat-label>Content</mat-label>
+            <div class="editor-container">
+
+                <ngx-editor-menu [editor]="editor" [toolbar]="toolbar">
+                    </ngx-editor-menu>
+                    <ngx-editor [editor]="editor" >
+                    </ngx-editor>
+            </div>
+        </div>
+
+         <mat-form-field appearance="outline">
+            <mat-label>decription</mat-label>
+            <input type="text" matInput formControlName="decription" placeholder="Ex. Blog decription" />
+            @if (form.get('decription')?.hasError('required')) {
+            <mat-error>decription is <strong>required</strong></mat-error>
+            }
+        </mat-form-field><br />
+
+       
+
+        
+    </form>
+</div>

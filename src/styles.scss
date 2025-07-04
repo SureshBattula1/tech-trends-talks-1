@@ -1,8 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100vh; }
+html, body { height: 100%;}
 body { 
-    font-family: Roboto, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;
+    // font-family: Roboto, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;
+    font-family: 'Fira Sans', Roboto, sans-serif;
     margin: 0;
 }
 
@@ -15,8 +16,7 @@ body {
     flex-wrap: wrap;
     align-items: center;
     padding: 8px 16px;
-    width: 1128px;
-    margin: auto;
+    justify-content: space-between;
 }
 
 .component-viewer-sidenav-container {
@@ -34,4 +34,56 @@ app-component-sidenav {
     margin-top: 56px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+}
+
+
+
+/* Small tablets (600px to 767px) */
+@media (min-width: 600px) and (max-width: 767px) {
+  /* Styles for small tablets */
+   .navbar-header,
+   .component-sidenav-content {
+        width: 100%;
+        margin: auto;
+   }
+}
+
+/* Large tablets (768px to 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* Styles for large tablets */
+   .navbar-header,
+   .component-sidenav-content {
+        width: 100%;
+        margin: auto;
+   }
+}
+
+
+/* Small desktops (1025px to 1279px) */
+@media (min-width: 1025px) and (max-width: 1279px) {
+  /* Styles for small desktops */
+  
+   .navbar-header,
+   .component-sidenav-content {
+    width: 1124px;
+    margin: auto;
+  }
+
+  .app-blog-item-container{
+    width: 1057px;
+  }
+}
+
+/* Medium to large desktops (1280px and up) */
+@media (min-width: 1280px) {
+  /* Styles for large desktops */
+  .navbar-header,
+  .component-sidenav-content {
+    width: 1124px;
+    margin: auto;
+  }
+
+   .app-blog-item-container{
+    width: 1057px;
+  }
 }

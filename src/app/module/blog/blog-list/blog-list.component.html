@@ -1,1 +1,5 @@
-<p>blog-list works!</p>
+<div>
+    @for (blog of blogList(); track blog) {
+        <app-blog-list-item [blogListItem]="blog"></app-blog-list-item>
+    }
+</div>

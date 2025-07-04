@@ -1,0 +1,36 @@
+<div class="app-blog-item-container ">
+    <div>
+        <div class="app-blog-list">
+           <div class="app-blog-list-log">
+               <img [src]="blog()?.image" alt="Blog Image" class="img-fluid">
+           </div>
+           <div class="app-blog-list-content">
+                <div class="app-blog-list-title" routerLink="/blogs/view" >
+                    <strong>{{ blog()?.title }}</strong>
+                </div>
+                <div class="app-blog-list-subtitle">
+                    <span>{{ blog()?.subtitle }}</span>
+                </div>
+                <div class="app-blog-list-description">
+                    <p>{{ blog()?.description }}</p>
+                </div>
+                <div class="app-blog-list-footer">
+                    <div>
+                        <span class="app-blog-list-date">Posted on: {{ blog()?.date }}</span>
+                    </div>
+                    <div>
+                        <div class="example-button-row">
+                            <!-- <mat-icon>menu</mat-icon>
+                            <mat-icon>home</mat-icon>
+                            <mat-icon>open_in_new</mat-icon> -->
+                        </div>
+                    </div>
+                </div>
+           </div>
+        </div>
+    </div>
+    <div class="app-blog-actions">
+        <mat-icon>more_vert</mat-icon>
+        
+    </div>
+</div>

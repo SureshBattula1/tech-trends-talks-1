@@ -1,4 +1,11 @@
 <nav aria-label="Top Toolbar" class="navbar-header">
-    <a (click)="toggle()" mat-button> Tech Trends Talks </a>
-    <a routerLink="/blogs" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> Blogs</a>
+    <button type="button" (click)="toggle()"  mat-icon-button  fxShow="true" fxHide.gt-sm>
+        <mat-icon>menu</mat-icon>
+    </button>
+    <a class="app-logo"> Tech Trends Talks </a>
+    <div fxShow="true" fxHide.lt-md>
+        <a routerLink="/blogs" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> Blogs</a>
+       
+        <a routerLink="/profile" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> Profile</a>
+    </div>
 </nav>

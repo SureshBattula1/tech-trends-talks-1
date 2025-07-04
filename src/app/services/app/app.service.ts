@@ -5,7 +5,7 @@ import { Injectable, signal } from '@angular/core';
 })
 export class AppService {
  
-  private _isSidebarVisible = signal(true);
+  private _isSidebarVisible = signal(false);
 
   isSidebarVisible = this._isSidebarVisible;
 
