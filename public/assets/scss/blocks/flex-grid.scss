@@ -62,6 +62,11 @@
     justify-content: center;
 }
 
+.flex-justify-content-spacebetween {
+    justify-content: space-between;
+}
+
+
 .flex-self-start {
     align-self: flex-start;
 }
@@ -220,3 +225,9 @@
 .flex-item-fill {
     flex-grow: 1
 }
+
+.d-flex{
+    display: flex;
+}
+
+  

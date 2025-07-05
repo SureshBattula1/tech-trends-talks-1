@@ -21,6 +21,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import {MatChipsModule} from '@angular/material/chips';
+import { MatSliderModule } from '@angular/material/slider';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {MatDividerModule} from '@angular/material/divider';
+
 
 const materialModules: any[] = [
   FlexLayoutModule,
@@ -44,7 +49,10 @@ const materialModules: any[] = [
   MatChipsModule,
   MatProgressSpinnerModule,
   MatAutocompleteModule,
- 
+  MatProgressBarModule,
+  MatSliderModule,
+  MatExpansionModule,
+  MatDividerModule
 ]
 
 

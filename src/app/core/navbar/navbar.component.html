@@ -4,8 +4,8 @@
     </button>
     <a class="app-logo"> Tech Trends Talks </a>
     <div fxShow="true" fxHide.lt-md>
-        <a routerLink="/blogs" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> Blogs</a>
+        <a style="display: none;" routerLink="/blogs" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> Blogs</a>
        
-        <a routerLink="/profile" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> Profile</a>
+        <a routerLink="/" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> Home</a>
     </div>
 </nav>

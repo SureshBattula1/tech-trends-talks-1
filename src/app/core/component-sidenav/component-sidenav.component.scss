@@ -16,7 +16,7 @@
 } 
 
 .component-sidenav-body-content {
-    display: flex;
+    // display: flex;
     flex: 1 0 100%;
     width: 100%;
     min-height: 95vh;
@@ -39,4 +39,5 @@ app-footer{
     overflow: auto;
     flex: 1;
     margin-top: 56px;
+    background-color: #FFF;
 }

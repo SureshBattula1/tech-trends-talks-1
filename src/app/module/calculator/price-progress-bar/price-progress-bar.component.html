@@ -1,0 +1,15 @@
+<div>
+    <div class="flex-row">
+        <div class="flex-item-24">
+            <mat-slider [min]="minPrice" [step]="step" [discrete]="discrete" [max]="maxPrice" #slider  >
+                <input matSliderThumb [formControl]="priceControl">
+            </mat-slider>
+        </div>
+    </div>
+     <div class="flex-row ">
+        <div class="flex-item-24 d-flex flex-justify-content-spacebetween">
+            <span> {{ modeType == 'K' ? '₹' : '' }} {{ minPrice }} {{modeType}}</span>
+            <span> {{ modeType == 'K' ? '₹' : '' }}  {{ maxPrice }} {{modeType}}</span>
+        </div>
+     </div>
+</div>

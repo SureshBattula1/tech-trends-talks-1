@@ -1,98 +1,213 @@
 <!-- loan-calculator.component.html -->
 <div class="app-calculator-container">
-  <section>
+  <div class="flex-row">
+    <div class="flex-item-24">
     <form  (ngSubmit)="calculateEMI()">
-      <mat-card>
-        <mat-card-content>
-          <div fxLayout="row" fxLayoutGap="16px" fxFlexFill fxLayout.lt-sm="column">
-            <mat-form-field fxFlex appearance="outline">
-              <mat-label>Loan Amount</mat-label>
-              <input matInput type="number" [(ngModel)]="amount" name="amount" required />
-            </mat-form-field>
 
-            <mat-form-field fxFlex appearance="outline">
-              <mat-label>Interest Rate (%)</mat-label>
-              <input matInput type="number" [(ngModel)]="interestRate" name="interestRate" required />
-            </mat-form-field>
-
-            <mat-form-field fxFlex appearance="outline">
-              <mat-label>Loan Term (Years)</mat-label>
-              <input matInput type="number" [(ngModel)]="years" name="years" required />
-            </mat-form-field>
-          </div>
-          <div class="action-buttons">
-            <button mat-raised-button color="primary" type="submit">Calculate</button>
-          </div>
-        </mat-card-content>
-      </mat-card>
-    </form>
-  </section>
-
-  <section>
-    <mat-card *ngIf="emi !== null" class="app-calculator-result-card">
-      <mat-card-header>
-        <!-- <mat-card-title>Results</mat-card-title> -->
-      </mat-card-header>
-      <mat-card-content>
-        <div class="app-calculator-result-content"> 
-          <div class="flex-row">
-            <div class="flex-item-12">
-              <div class="flex-row">
-                <div>Monthly EMI:</div> 
-                  <div>₹{{ emi | number: '1.2-2' }} </div> 
-              </div>
-              <div class="flex-row">
-                <div>Total Interest:</div>
-                  <div> ₹{{ totalInterest | number: '1.2-2' }} </div>
+      <div class="flex-row">
+        <div class="flex-item-auto">
+          <mat-card>
+            <mat-card-content>
+              <div class="flex-col">
+                <div class="flex-item-24">
+                  <mat-form-field  appearance="outline">
+                    <mat-label>Loan Amount</mat-label>
+                    <mat-icon matPrefix> ₹</mat-icon>
+                    <input matInput type="number"  (blur)="validateAmount()" [formControl]="amountForm" name="amount" required />
+                  </mat-form-field>
                 </div>
-              <div class="flex-row">
-                <div>Total Payment:</div>
-                 <div>₹{{ totalPayment | number: '1.2-2' }} </div>
+                <div class="flex-item-24"> 
+                  <app-price-progress-bar [mode]="'PRICE'"  [minPrice]="10000" [maxPrice]="100000000" [step]="1" [currentPrice]="amount" (priceChanged)="priceProgressChange($event,'PRICE')"></app-price-progress-bar>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+        <div class="flex-item-auto">
+          <mat-card>
+            <mat-card-content>
+              <div class="flex-col">
+                <div class="flex-item-24">
+                  <mat-form-field  appearance="outline">
+                    <mat-label>Loan Term (Years)</mat-label>
+                    <input matInput type="number"  (blur)="validateTenure()"  [formControl]="yearsForm" name="years" required />
+                    <mat-icon matSuffix> Yr </mat-icon>
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="flex-item-24">
+                <app-price-progress-bar [mode]="'TENURE'"  [minPrice]="1" [maxPrice]="50" [step]="1" [discrete]="true" [currentPrice]="years" (priceChanged)="priceProgressChange($event,'TENURE')"></app-price-progress-bar>
+              </div>
+            </mat-card-content>
+          </mat-card>
+    
+        </div>
+        <div class="flex-item-auto">
+          <mat-card>
+            <mat-card-content>
+              <div class="flex-col">
+                <div class="flex-item-24">
+                  <mat-form-field  appearance="outline">
+                    <mat-label>Interest Rate (%)</mat-label>
+                    <input matInput type="number" (blur)="validateInterestRate()"  [formControl]="interestForm" name="interestRate" required />
+                    <mat-icon matSuffix> % </mat-icon>
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="flex-item-24">
+                <app-price-progress-bar [mode]="'PERCENTAGE'" [minPrice]="1" [maxPrice]="30" [step]="1" [discrete]="true"  [currentPrice]="interestRate" (priceChanged)="priceProgressChange($event,'PERCENTAGE')"></app-price-progress-bar>
+              </div>
+            </mat-card-content>
+          </mat-card> 
+        </div>
+      </div>
+      
+    </form>
+  </div>
+  </div>
+
+  <div class="flex-row">
+    <div class="flex-item-24">
+    <mat-card *ngIf="emi !== null" class="app-calculator-result-card">
+   
+        <mat-card-content>
+          <div class="app-cal culator-result-content"> 
+            <div class="flex-row">
+              <div class="flex-item-auto table-result">
+                <table class="table-emi">
+                  <tr>
+                    <td class="table-emi-title">Monthly EMI:</td>
+                    <td class="table-emi-price"> ₹{{ emi | number: '1.2-2' }}</td>
+                  </tr>
+                  <tr>
+                    <td>Total Interest:</td>
+                    <td>₹{{ totalInterest | number: '1.2-2' }}</td>
+                  </tr>
+                  <tr>
+                    <td>Principal Amount:</td>
+                    <td>₹{{ pricipalAmount | number: '1.2-2' }}</td>
+                  </tr>
+                  <tr>
+                    <td>Total Payment:</td>
+                    <td>₹{{ totalPayment | number: '1.2-2' }}</td>
+                  </tr>
+                </table>
+                
+              </div>
+              <div class="flex-item-auto">
+                <div class="app-chart">
+                  <canvas baseChart
+                          [data]="chartData"
+                          [type]="chartType"
+                          [options]="chartOptions">
+                  </canvas>
+                </div>
               </div>
             </div>
-            <div class="flex-item-12"></div>
+          
           </div>
-         
-        </div>
-      </mat-card-content>
+        </mat-card-content>
     </mat-card>
-  </section>
+  </div>
+  </div>
 
-  <section>
-    <div *ngIf="schedule.length > 0" class="schedule-table">
-      <table mat-table [dataSource]="schedule" class="mat-elevation-z2">
-
-        <ng-container matColumnDef="month">
-          <th mat-header-cell *matHeaderCellDef>Month</th>
-          <td mat-cell *matCellDef="let row">{{ row.month }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="principal">
-          <th mat-header-cell *matHeaderCellDef>Principal</th>
-          <td mat-cell *matCellDef="let row">{{ row.principal }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="interest">
-          <th mat-header-cell *matHeaderCellDef>Interest</th>
-          <td mat-cell *matCellDef="let row">{{ row.interest }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="balance">
-          <th mat-header-cell *matHeaderCellDef>Balance</th>
-          <td mat-cell *matCellDef="let row">{{ row.balance }}</td>
-        </ng-container>
-
+  <!-- <div class="flex-row">
+    <div class="flex-item-24">
+    <div *ngIf="scheduleYears.length > 0" class="schedule-table">
+      <mat-accordion>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header togglePosition="before">
+            <mat-panel-title>Year </mat-panel-title>
+            <mat-panel-description> 
+              <table class="expansion-table">
+                <tr>
+                  <td>EMI</td>
+                  <td>Principal Amount</td>
+                  <td>Interest</td>
+                  <td>Balance</td>
+                </tr>
+              </table>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+        </mat-expansion-panel>
+        <mat-expansion-panel *ngFor="let row of scheduleYears">
+          <mat-expansion-panel-header togglePosition="before">
+            <mat-panel-title>
+              {{ row.year }} 
+            </mat-panel-title>
+            <mat-panel-description>
+              <table class="expansion-table">
+                <tr>
+                  <td>  ₹{{ row.emi }}</td>
+                  <td> ₹{{ row.principal }}</td>
+                  <td> ₹{{ row.interest }}</td>
+                  <td> ₹{{ row.balance }}</td>
+                </tr>
+              </table>
+            
+            </mat-panel-description>
+          </mat-expansion-panel-header>
       
-        <tr mat-header-row *matHeaderRowDef="['month', 'principal', 'interest', 'balance']"></tr>
-        <tr mat-row *matRowDef="let row; columns: ['month', 'principal', 'interest', 'balance'];"></tr> 
-      </table>
+          <p><strong>Principal:</strong> ₹{{ row.principal }}</p>
+          <p><strong>Interest:</strong> ₹{{ row.interest }}</p>
+          <p><strong>Balance:</strong> ₹{{ row.balance }}</p>
+        </mat-expansion-panel>
+      </mat-accordion>
+      
+      
     </div>
-  </section>
+  </div>
+  </div> -->
 
-  <section>
+  <div class="flex-row">
     <div class="export-buttons">
       <button mat-button (click)="exportToPDF()">📄 Export PDF</button>
       <button mat-button (click)="exportToExcel()">📊 Export Excel</button>
     </div>
-  </section>
+  </div>
+
+  <div class="flex-row">
+    <div class="flex-item-24">
+    <div *ngIf="schedule.length > 0" class="schedule-table">
+      <table mat-table [dataSource]="schedule" class="mat-elevation-z2" id="loan-content">
+
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>S NO</th>
+          <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="month">
+          <th mat-header-cell *matHeaderCellDef>Month</th>
+          <td mat-cell *matCellDef="let row">{{ row.monthLabel }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="principal">
+          <th mat-header-cell *matHeaderCellDef>Principal</th>
+          <td mat-cell *matCellDef="let row"> ₹ {{ row.principal }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="interest">
+          <th mat-header-cell *matHeaderCellDef>Interest</th>
+          <td mat-cell *matCellDef="let row"> ₹ {{ row.interest }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="emi">
+          <th mat-header-cell *matHeaderCellDef>EMI</th>
+          <td mat-cell *matCellDef="let row"> ₹ {{ row.emi }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="balance">
+          <th mat-header-cell *matHeaderCellDef>Balance</th>
+          <td mat-cell *matCellDef="let row"> ₹ {{ row.balance }}</td>
+        </ng-container>
+
+      
+        <tr mat-header-row *matHeaderRowDef="['id','month', 'principal', 'interest', 'emi', 'balance']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['id','month', 'principal', 'interest', 'emi', 'balance'];"></tr> 
+      </table>
+    </div>
+  </div>
+  </div>
+
+  
 </div>
