@@ -1,0 +1,222 @@
+/** FLEX GRID **/
+.flex-row {
+    display: flex;
+    flex-flow: row nowrap;
+    margin-left: -10px;
+    margin-right: -10px;
+    flex: 1;
+}
+.flex-row:blank {
+    display: none;
+}
+.flex-row>[class^='flex-item'] {
+    padding: 0 10px;
+}
+.flex-row.flex-items-no-padding>[class^='flex-item'],
+.flex-row>.flex-self-no-padding {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.flex-col {
+    display: flex;
+    flex-flow: column nowrap;
+    height: 100%;
+}
+.flex-col>[class^='flex-item'] {
+    padding: 10px 0;
+}
+.flex-col.flex-items-no-padding>[class^='flex-item'],
+.flex-col>.flex-self-no-padding {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.flex-scroll-y {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.flex-scroll-x {
+    overflow-y: hidden;
+    overflow-x: auto;
+}
+
+.flex-items-start {
+    align-items: flex-start;
+}
+.flex-items-center {
+    align-items: center;
+}
+.flex-items-end {
+    align-items: flex-end;
+}
+.flex-justify-content-start {
+    justify-content: flex-start;
+}
+
+.flex-justify-content-end {
+    justify-content: flex-end;
+}
+
+.flex-justify-content-center {
+    justify-content: center;
+}
+
+.flex-self-start {
+    align-self: flex-start;
+}
+.flex-self-center {
+    align-self: center;
+}
+.flex-self-end {
+    align-self: flex-end;
+}
+
+.flex-item-none {
+    flex: 0 0 0;
+}
+.flex-item {
+    flex-basis: 0;
+    flex-grow: 1;
+    max-width: 100%;
+}
+.flex-item-1 {
+    flex: 0 1 calc(1/24) * 100%;
+    max-width: calc(1/24) * 100%;
+    min-width: 0;
+}
+.flex-item-2 {
+    flex: 0 1 calc(2/24) * 100%;
+    max-width: calc(2/24) * 100%;
+    min-width: 0;
+}
+.flex-item-3 {
+    flex: 0 1 calc(3/24) * 100%;
+    max-width: calc(3/24) * 100%;
+    min-width: 0;
+}
+.flex-item-4 {
+    flex: 0 1 calc(4/24) * 100%;
+    max-width: calc(4/24) * 100%;
+    min-width: 0;
+}
+.flex-item-5 {
+    flex: 0 1 calc(5/24) * 100%;
+    max-width: calc(5/24) * 100%;
+    min-width: 0;
+}
+.flex-item-6 {
+    flex: 0 1 calc(6/24) * 100%;
+    max-width: calc(6/24) * 100%;
+    min-width: 0;
+}
+.flex-item-7 {
+    flex: 0 1 calc(7/24) * 100%;
+    max-width: calc(7/24) * 100%;
+    min-width: 0;
+}
+.flex-item-8 {
+    flex: 0 1 calc(8/24) * 100%;
+    max-width: calc(8/24) * 100%;
+    min-width: 0;
+}
+.flex-item-9 {
+    flex: 0 1 calc(9/24) * 100%;
+    max-width: calc(9/24) * 100%;
+    min-width: 0;
+}
+.flex-item-10 {
+    flex: 0 1 calc(10/24) * 100%;
+    max-width: calc(10/24) * 100%;
+    min-width: 0;
+}
+.flex-item-11 {
+    flex: 0 1 calc(11/24) * 100%;
+    max-width: calc(11/24) * 100%;
+    min-width: 0;
+}
+.flex-item-12 {
+    flex: 0 1 calc(12/24) * 100%;
+    max-width: calc(12/24) * 100%;
+    min-width: 0;
+}
+.flex-item-13 {
+    flex: 0 1 calc(13/24) * 100%;
+    max-width: calc(13/24) * 100%;
+    min-width: 0;
+}
+.flex-item-14 {
+    flex: 0 1 calc(14/24) * 100%;
+    max-width: calc(14/24) * 100%;
+    min-width: 0;
+}
+.flex-item-15 {
+    flex: 0 1 calc(15/24) * 100%;
+    max-width: calc(15/24) * 100%;
+    min-width: 0;
+}
+.flex-item-16 {
+    flex: 0 1 calc(16/24) * 100%;
+    max-width: calc(16/24) * 100%;
+    min-width: 0;
+}
+.flex-item-17 {
+    flex: 0 1 calc(17/24) * 100%;
+    max-width: calc(17/24) * 100%;
+    min-width: 0;
+}
+.flex-item-18 {
+    flex: 0 1 calc(18/24) * 100%;
+    max-width: calc(18/24) * 100%;
+    min-width: 0;
+}
+.flex-item-19 {
+    flex: 0 1 calc(19/24) * 100%;
+    max-width: calc(19/24) * 100%;
+    min-width: 0;
+}
+.flex-item-20 {
+    flex: 0 1 calc(20/24) * 100%;
+    max-width: calc(20/24) * 100%;
+    min-width: 0;
+}
+.flex-item-21 {
+    flex: 0 1 calc(21/24) * 100%;
+    max-width: calc(21/24) * 100%;
+    min-width: 0;
+}
+.flex-item-22 {
+    flex: 0 1 calc(22/24) * 100%;
+    max-width: calc(22/24) * 100%;
+    min-width: 0;
+}
+.flex-item-23 {
+    flex: 0 1 calc(23/24) * 100%;
+    max-width: calc(23/24) * 100%;
+    min-width: 0;
+}
+.flex-item-24 {
+    flex: 0 1 calc(24/24) * 100%;
+    max-width: calc(24/24) * 100%;
+    min-width: 0;
+}
+
+.flex-item-auto {
+  flex: 0 0 auto;
+  width: auto;
+  max-width: none;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.flex-last-item-end {
+  display: flex;
+  margin-left: auto;
+  padding: 0 10px;
+}
+
+.flex-item-fill {
+    flex-grow: 1
+}
