@@ -1,4 +1,4 @@
-<div>
+<div class="app-blog-container">
     <form  [formGroup]="form">
         <mat-form-field appearance="outline">
             <mat-label>Title</mat-label>
@@ -16,17 +16,50 @@
             }
         </mat-form-field><br />
 
+
+        <div>
+            <mat-form-field class="example-chip-list">
+                <mat-label>Favorite tags</mat-label>
+                <mat-chip-grid #chipGrid aria-label="tags selection">
+                  @for (tags of tags(); track $index) {
+                    <mat-chip-row (removed)="remove(tags)">
+                      {{tags}}
+                      <button matChipRemove [attr.aria-label]="'remove ' + tags">
+                        <mat-icon>cancel</mat-icon>
+                      </button>
+                    </mat-chip-row>
+                  }
+                </mat-chip-grid>
+                <input
+                  name="currenttags"
+                  placeholder="New tags..."
+                  #tagsInput
+                  [(ngModel)]="currenttag"
+                  [matChipInputFor]="chipGrid"
+                  [matAutocomplete]="auto"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  (matChipInputTokenEnd)="add($event)"
+                />
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event); tagsInput.value = ''">
+                  @for (tags of filteredtags(); track tags) {
+                    <mat-option [value]="tags">{{tags}}</mat-option>
+                  }
+                </mat-autocomplete>
+              </mat-form-field>
+        </div> <br/>
+       
+
          <div style="margin-bottom: 2rem;">
             <mat-label>Content</mat-label>
             <div class="editor-container">
 
-                <ngx-editor-menu [editor]="editor" [toolbar]="toolbar">
+                <ngx-editor-menu [editor]="editor" [toolbar]="toolbar" formControlName="content">
                     </ngx-editor-menu>
                     <ngx-editor [editor]="editor" >
                     </ngx-editor>
             </div>
         </div>
-
+        
          <mat-form-field appearance="outline">
             <mat-label>decription</mat-label>
             <input type="text" matInput formControlName="decription" placeholder="Ex. Blog decription" />
@@ -35,7 +68,9 @@
             }
         </mat-form-field><br />
 
-       
+       <div>
+            <button mat-button (click)="save()">Save Post</button>
+       </div>
 
         
     </form>

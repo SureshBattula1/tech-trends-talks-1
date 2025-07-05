@@ -16,9 +16,11 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatTableModule} from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import {MatChipsModule} from '@angular/material/chips';
+
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import {MatChipsModule} from '@angular/material/chips';
 
 const materialModules: any[] = [
   FlexLayoutModule,
@@ -40,7 +42,9 @@ const materialModules: any[] = [
   MatTableModule,
   MatPaginatorModule,
   MatChipsModule,
-  MatProgressSpinnerModule
+  MatProgressSpinnerModule,
+  MatAutocompleteModule,
+ 
 ]
 
 

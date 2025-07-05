@@ -1,0 +1,15 @@
+.app-calculator-container{
+  display: flex;
+  flex-direction: column;
+  margin: 1rem;
+
+  section {
+    margin: 0.5rem;
+  }
+
+  .flex-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
