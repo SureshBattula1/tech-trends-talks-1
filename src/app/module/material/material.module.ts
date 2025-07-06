@@ -27,6 +27,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {MatDividerModule} from '@angular/material/divider';
 
 
+
 const materialModules: any[] = [
   FlexLayoutModule,
   MatSidenavModule,
@@ -53,6 +54,7 @@ const materialModules: any[] = [
   MatSliderModule,
   MatExpansionModule,
   MatDividerModule
+  
 ]
 
 

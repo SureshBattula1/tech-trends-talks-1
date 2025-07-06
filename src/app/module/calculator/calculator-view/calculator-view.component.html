@@ -3,7 +3,16 @@
   <div class="flex-row">
     <div class="flex-item-24">
     <form  (ngSubmit)="calculateEMI()">
-
+      <div class="align-end">
+        <mat-form-field appearance="outline" class="app-loan-type">
+          <mat-label> Loan Type</mat-label>
+          <mat-select [formControl]="loanTypeForm" >
+            <mat-option *ngFor="let loanType of loanTypes" [value]="loanType">
+              {{ loanType.viewValue }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>        
+      </div>
       <div class="flex-row">
         <div class="flex-item-auto">
           <mat-card>
@@ -161,7 +170,7 @@
 
   <div class="flex-row">
     <div class="export-buttons">
-      <button mat-button (click)="exportToPDF()">📄 Export PDF</button>
+      <button mat-button (click)="exportToPDF()">📄 Download PDF</button>
       <button mat-button (click)="exportToExcel()">📊 Export Excel</button>
     </div>
   </div>

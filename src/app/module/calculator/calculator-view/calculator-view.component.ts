@@ -33,6 +33,24 @@ export class CalculatorViewComponent implements OnInit{
   pricipalAmount = 0;
   schedule: any[] = [];
   scheduleYears:any[] = [];
+  selectedOption: any;
+
+  loanTypes = [
+    { value: 'home', viewValue: 'Home Loan', interest: 8.5 },
+    { value: 'car', viewValue: 'Car Loan', interest: 9.2 },
+    { value: 'personal', viewValue: 'Personal Loan', interest: 11.75 },
+    { value: 'education', viewValue: 'Education Loan', interest: 7.8 },
+    { value: 'gold', viewValue: 'Gold Loan', interest: 10.5 },
+    { value: 'business', viewValue: 'Mortgage Loan', interest: 9.8 },
+    { value: 'business', viewValue: 'Two-Wheeler Loan', interest: 10.2 },
+    { value: 'business', viewValue: 'Agriculture Loan', interest: 6.5 },
+    { value: 'business', viewValue: 'Credit Card Loan', interest: 15.5},
+    { value: 'business', viewValue: 'Overdraft Loan', interest: 13.0 },
+    { value: 'business', viewValue: 'Consumer Durable Loan', interest: 9.9 },
+    { value: 'business', viewValue: 'Travel Loan', interest: 12.75 },
+    { value: 'business', viewValue: 'Loan Against Property', interest: 9.5 },
+    { name: 'Business Loan', interest: 12.0 },
+  ];
 
   // Chart properties
   chartType: ChartType = 'doughnut';
@@ -53,6 +71,8 @@ export class CalculatorViewComponent implements OnInit{
     }
   };
 
+  loanTypeForm = new FormControl('');
+
   amountForm = new FormControl(this.amount);
   interestForm = new FormControl(this.interestRate);
   yearsForm = new FormControl(this.years);
@@ -65,6 +85,16 @@ export class CalculatorViewComponent implements OnInit{
   }
 
   initForm(){
+
+    this.loanTypeForm.valueChanges.subscribe(
+      (value: any) =>{
+        this.interestRate = value.interest;
+        this.cd.markForCheck();
+        this.calculateEMI();
+        console.log(`interest reate`, this.interestRate);
+      }
+    )
+
     this.amountForm.valueChanges.subscribe(
       (value: any) =>  {
         this.amount = value;
@@ -250,23 +280,102 @@ export class CalculatorViewComponent implements OnInit{
   }
   
 
+
+
   exportToExcel() {
-    const worksheet = XLSX.utils.json_to_sheet(this.schedule);
+    // Step 1: Filter columns you want to export
+    const filteredSchedule = this.schedule.map(({ month, principal, interest,emi, balance, monthLabel }) => ({
+      Month: month,
+      MonthLabel: monthLabel,
+      Principal: principal,
+      EMI: emi,
+      Interest: interest,
+      Balance: balance
+    }));
+  
+    // Step 2: Add a title row
+    const title = [['Loan Repayment Schedule']]; // Title as first row
+    const headers = [['S NO','Month', 'Principal', 'Interest', 'EMI','Balance']]; // Header row
+    const dataRows = filteredSchedule.map(row => [row.Month, row.MonthLabel, row.Principal, row.Interest, row.EMI, row.Balance]);
+  
+    const sheetData = [...title, ...headers, ...dataRows];
+  
+    // Step 3: Convert to worksheet
+    const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+  
+    // Step 4: Merge cells for title row (optional)
+    worksheet['!merges'] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 5 } } // Merge A1:D1
+    ];
+  
+    // Step 5: Set column widths
+    worksheet['!cols'] = [
+      { wch: 10 }, // Month
+      { wch: 25 }, // Month Label
+      { wch: 25 }, // Principal
+      { wch: 25 }, // Interest
+      { wch: 25 }, // EMI
+      { wch: 25 }  // Balance
+    ];
+
+    worksheet['!rows'] = [
+      { hpt: 23 }, // Row 1: title
+      { hpt: 20 }  // Row 2: header
+      // More rows can be added if needed
+    ];
+
+    worksheet['A1'].s = {
+      alignment: { horizontal: 'center', vertical: 'center' },
+      font: { bold: true, sz: 14, color: { rgb: '000000' } },
+      fill: { fgColor: { rgb: 'DDEBF7' } }
+    };
+  
+    // Step 6: Create workbook and export
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Schedule');
     XLSX.writeFile(workbook, 'LoanSchedule.xlsx');
   }
+  
 
   exportToPDF() {
     const data = document.getElementById('loan-content');
     if (!data) return;
+  
     html2canvas(data).then(canvas => {
       const img = canvas.toDataURL('image/png');
-      const pdf = new jsPDF();
-      pdf.addImage(img, 'PNG', 10, 10, 190, 0);
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const COMPANY_NAME = ' Tech Trends Talks';
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      pdf.setFontSize(16);
+      pdf.setTextColor(40);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Loan Repayment Schedule', pageWidth / 2, 6, { align: 'center' });
+
+      
+      pdf.addImage(img, 'PNG', 10, 10, pageWidth - 20, 0);
+  
+      pdf.setTextColor(220); 
+      pdf.setFontSize(40);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(COMPANY_NAME, pageWidth / 2, pageHeight / 2, { align: 'center', angle: 45 });
+  
+      pdf.setFontSize(10);
+      pdf.setTextColor(100);
+      const copyrightText = '© ' + new Date().getFullYear()+ COMPANY_NAME + '. All rights reserved.';
+      pdf.text(copyrightText, pageWidth / 2, pageHeight - 10, { align: 'center' });
+  
       pdf.save('LoanSchedule.pdf');
     });
   }
+  
 
 
 }

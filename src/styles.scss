@@ -40,6 +40,12 @@ app-component-sidenav {
   margin-bottom: 0.5rem;
 }
 
+.align-end {
+    display: flex;
+    justify-content: flex-end; 
+    align-items: center;
+}
+
 @media screen and (max-width: 600px) {
   .flex-row { 
     flex-flow: column!important;
