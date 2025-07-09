@@ -1,0 +1,113 @@
+<div class="app-calculator-container">
+    <div class="flex-row">
+      <div class="flex-item-24">
+      <form  (ngSubmit)="calculateSIP()">
+     
+        <div class="flex-row">
+          <div class="flex-item-auto">
+            <mat-card>
+              <mat-card-content>
+                <div class="flex-col">
+                  <div class="flex-item-24">
+                    <mat-form-field  appearance="outline">
+                      <mat-label>Monthly Investment</mat-label>
+                      <mat-icon matPrefix> ₹</mat-icon>
+                      <input matInput type="number"  (blur)="validateMonthlyInvestment()" [formControl]="monthlyInvestmentForm" name="monthlyInvestment" required />
+                    </mat-form-field>
+                  </div>
+                  <div class="flex-item-24"> 
+                    <app-price-progress-bar [mode]="'PRICE'"  [minPrice]="10000" [maxPrice]="100000000" [step]="1" [currentPrice]="monthlyInvestment" (priceChanged)="priceProgressChange($event,'PRICE')"></app-price-progress-bar>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <div class="flex-item-auto">
+            <mat-card>
+              <mat-card-content>
+                <div class="flex-col">
+                  <div class="flex-item-24">
+                    <mat-form-field  appearance="outline">
+                      <mat-label>Expected Return Rate (p.a)</mat-label>
+                      <input matInput type="number" (blur)="validateAnnualInterestRate()"  [formControl]="annualInterestRateForm" name="annualInterestRate" required />
+                      <mat-icon matSuffix> % </mat-icon>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="flex-item-24">
+                  <app-price-progress-bar [mode]="'PERCENTAGE'" [minPrice]="1" [maxPrice]="30" [step]="1" [discrete]="true"  [currentPrice]="annualInterestRate" (priceChanged)="priceProgressChange($event,'PERCENTAGE')"></app-price-progress-bar>
+                </div>
+              </mat-card-content>
+            </mat-card> 
+          </div>
+
+          <div class="flex-item-auto">
+            <mat-card>
+              <mat-card-content>
+                <div class="flex-col">
+                  <div class="flex-item-24">
+                    <mat-form-field  appearance="outline">
+                      <mat-label>Time Period (Years)</mat-label>
+                      <input matInput type="number"  (blur)="validateInvestmentPeriod()"  [formControl]="investmentPeriodForm" name="investmentPeriod" required />
+                      <mat-icon matSuffix> Yr </mat-icon>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="flex-item-24">
+                  <app-price-progress-bar [mode]="'TENURE'"  [minPrice]="1" [maxPrice]="50" [step]="1" [discrete]="true" [currentPrice]="investmentPeriod" (priceChanged)="priceProgressChange($event,'TENURE')"></app-price-progress-bar>
+                </div>
+              </mat-card-content>
+            </mat-card>
+      
+          </div>
+         
+        </div>
+        
+      </form>
+    </div>
+    </div>
+  
+    <div class="flex-row">
+      <div class="flex-item-24">
+      <mat-card *ngIf="TOTAL_VALUE !== null" class="app-calculator-result-card">
+     
+          <mat-card-content>
+            <div class="app-cal culator-result-content"> 
+              <div class="flex-row">
+                <div class="flex-item-auto table-result">
+                  <table class="table-emi">
+                    <tr>
+                      <td class="table-emi-title">Est. Returns:</td>
+                      <td class="table-emi-price"> {{ EST_RETURNS | currency:'INR':'symbol':'1.2-2' }}</td>
+                    </tr>
+                    <tr>
+                      <td>Invested Amount:</td>
+                      <td>{{ INVESTED_AMOUNT | currency:'INR':'symbol':'1.2-2'  }}</td>
+                    </tr>
+                    <tr>
+                      <td>Total Payment:</td>
+                      <td>{{ TOTAL_VALUE | currency:'INR':'symbol':'1.2-2'  }}</td>
+                    </tr>
+                  </table>
+                  
+                </div>
+                <div class="flex-item-auto">
+                  <div class="app-chart">
+                    <canvas baseChart
+                            [data]="chartData"
+                            [type]="chartType"
+                            [options]="chartOptions">
+                    </canvas>
+                  </div>
+                </div>
+              </div>
+            
+            </div>
+          </mat-card-content>
+      </mat-card>
+    </div>
+    </div>
+  
+  </div>
+  

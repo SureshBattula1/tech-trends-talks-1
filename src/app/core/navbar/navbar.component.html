@@ -2,10 +2,11 @@
     <button type="button" (click)="toggle()"  mat-icon-button  fxShow="true" fxHide.gt-sm>
         <mat-icon>menu</mat-icon>
     </button>
-    <a class="app-logo"> Tech Trends Talks </a>
+    <h1 class="app-logo">Tech Trends Talks  </h1>
     <div fxShow="true" fxHide.lt-md>
         <a style="display: none;" routerLink="/blogs" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> Blogs</a>
        
-        <a routerLink="/" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> Home</a>
+        <a routerLink="/calculator/emi-calculator" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> EMI Calculator</a>
+        <a routerLink="/calculator/sip-calculator" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> SIP Calculator</a>
     </div>
 </nav>

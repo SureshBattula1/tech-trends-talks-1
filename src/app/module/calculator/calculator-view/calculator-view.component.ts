@@ -28,9 +28,11 @@ export class CalculatorViewComponent implements OnInit{
   interestRate = 8;
   years = 2;
   emi = 0;
+
   totalInterest = 0;
   totalPayment = 0;
   pricipalAmount = 0;
+  
   schedule: any[] = [];
   scheduleYears:any[] = [];
   selectedOption: any;
