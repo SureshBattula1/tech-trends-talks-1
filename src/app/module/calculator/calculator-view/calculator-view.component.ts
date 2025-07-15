@@ -37,6 +37,18 @@ export class CalculatorViewComponent implements OnInit{
   scheduleYears:any[] = [];
   selectedOption: any;
 
+  showAllRows = false;
+
+  displayedColumns = ['id', 'month', 'principal', 'interest', 'emi', 'balance'];
+
+  get filteredSchedule() {
+    return this.showAllRows ? this.schedule : this.schedule.slice(0, 1);
+  }
+
+  toggleRows() {
+    this.showAllRows = !this.showAllRows;
+  }
+
   loanTypes = [
     { value: 'home', viewValue: 'Home Loan', interest: 8.5 },
     { value: 'car', viewValue: 'Car Loan', interest: 9.2 },

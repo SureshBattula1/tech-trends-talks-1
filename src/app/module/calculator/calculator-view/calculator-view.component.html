@@ -1,3 +1,36 @@
+<!-- <div class="flex-row">
+  <div class="flex-item-auto">
+    <div class="emi-banner">
+      <div class="flex-col flex-items-center">
+        <div class="flex-item flex-justify-content-center">
+          <p class="breadcrumb">FINANCIAL CALCULATOR &gt; PERSONAL LOAN EMI CALCULATOR</p>
+        </div>
+        <div class="flex-item flex-justify-content-center">
+          <h1>Personal Loan EMI Calculator</h1>
+        </div>
+        <div class="flex-item flex-justify-content-center">
+          <p class="subheading">Simple, accurate and hassle-free personal loan EMI calculator</p>
+        </div>
+      </div>
+
+      <div class="flex-row flex-justify-content-spacebetween flex-wrap" style="margin-top: 2rem;">
+        <div class="flex-item-8 feature-card">
+          <h3>📊 Plan with Ease</h3>
+          <p>Use the EMI calculator to plan your finances without hassle.</p>
+        </div>
+        <div class="flex-item-8 feature-card">
+          <h3>⚡ Instant Results</h3>
+          <p>Quickly estimate your monthly EMI based on inputs.</p>
+        </div>
+        <div class="flex-item-8 feature-card">
+          <h3>💡 Smart Budgets</h3>
+          <p>Determine the perfect loan to match your budget goals.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div> -->
 <!-- loan-calculator.component.html -->
 <div class="app-calculator-container">
   <div class="flex-row">
@@ -73,7 +106,7 @@
       
     </form>
   </div>
-  </div>
+</div>
 
   <div class="flex-row">
     <div class="flex-item-24">
@@ -177,46 +210,97 @@
 
   <div class="flex-row">
     <div class="flex-item-24">
-    <div *ngIf="schedule.length > 0" class="schedule-table">
-      <table mat-table [dataSource]="schedule" class="mat-elevation-z2" id="loan-content">
-
-        <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef>S NO</th>
-          <td mat-cell *matCellDef="let row">{{ row.id }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="month">
-          <th mat-header-cell *matHeaderCellDef>Month</th>
-          <td mat-cell *matCellDef="let row">{{ row.monthLabel }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="principal">
-          <th mat-header-cell *matHeaderCellDef>Principal</th>
-          <td mat-cell *matCellDef="let row">  {{ row.principal | currency:'INR':'symbol':'1.2-2' }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="interest">
-          <th mat-header-cell *matHeaderCellDef>Interest</th>
-          <td mat-cell *matCellDef="let row">  {{ row.interest | currency:'INR':'symbol':'1.2-2' }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="emi">
-          <th mat-header-cell *matHeaderCellDef>EMI</th>
-          <td mat-cell *matCellDef="let row">  {{ row.emi | currency:'INR':'symbol':'1.2-2' }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="balance">
-          <th mat-header-cell *matHeaderCellDef>Balance</th>
-          <td mat-cell *matCellDef="let row">  {{ row.balance | currency:'INR':'symbol':'1.2-2' }}</td>
-        </ng-container>
-
-      
-        <tr mat-header-row *matHeaderRowDef="['id','month', 'principal', 'interest', 'emi', 'balance']"></tr>
-        <tr mat-row *matRowDef="let row; columns: ['id','month', 'principal', 'interest', 'emi', 'balance'];"></tr> 
-      </table>
+      <div *ngIf="schedule.length > 0" class="schedule-table">
+        <table mat-table [dataSource]="filteredSchedule" class="mat-elevation-z2" id="loan-content">
+          
+          <!-- Column Definitions -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>S NO</th>
+            <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+          </ng-container>
+  
+          <ng-container matColumnDef="month">
+            <th mat-header-cell *matHeaderCellDef>Month</th>
+            <td mat-cell *matCellDef="let row">{{ row.monthLabel }}</td>
+          </ng-container>
+  
+          <ng-container matColumnDef="principal">
+            <th mat-header-cell *matHeaderCellDef>Principal</th>
+            <td mat-cell *matCellDef="let row">{{ row.principal | currency:'INR':'symbol':'1.2-2' }}</td>
+          </ng-container>
+  
+          <ng-container matColumnDef="interest">
+            <th mat-header-cell *matHeaderCellDef>Interest</th>
+            <td mat-cell *matCellDef="let row">{{ row.interest | currency:'INR':'symbol':'1.2-2' }}</td>
+          </ng-container>
+  
+          <ng-container matColumnDef="emi">
+            <th mat-header-cell *matHeaderCellDef>EMI</th>
+            <td mat-cell *matCellDef="let row">{{ row.emi | currency:'INR':'symbol':'1.2-2' }}</td>
+          </ng-container>
+  
+          <ng-container matColumnDef="balance">
+            <th mat-header-cell *matHeaderCellDef>Balance</th>
+            <td mat-cell *matCellDef="let row">{{ row.balance | currency:'INR':'symbol':'1.2-2' }}</td>
+          </ng-container>
+  
+          <!-- Header Row -->
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <!-- Data Rows -->
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+  
+        <!-- Toggle Button -->
+        <div class="text-center mt-2">
+          <button mat-button (click)="toggleRows()" style="color: blue;">
+            {{ showAllRows ? '▲ Hide schedule' : '▼ Show full schedule' }}
+          </button>
+        </div>
+      </div>
     </div>
   </div>
-  </div>
+  
 
+
+  <!-- About Block -->
+
+  <section class="loan-emi-info">
+
+    <h2>📌 Key Factors Affecting Your Personal Loan EMI</h2>
+    <p>Understanding what influences your Equated Monthly Instalment (EMI) can help you select smarter loan options:</p>
+    <ul>
+      <li><strong>Principal Amount:</strong> The total amount borrowed. Higher principal equals higher EMIs.</li>
+      <li><strong>Interest Rate:</strong> The lender’s rate directly affects EMI. Higher rates increase monthly obligations.</li>
+      <li><strong>Loan Tenure:</strong> Longer tenures lower EMIs but raise total interest paid. Shorter tenures do the opposite.</li>
+      <li><strong>Processing Fees & Charges:</strong> Not part of EMI itself, but these add to the overall loan cost.</li>
+      <li><strong>Credit Score & Profile:</strong> A healthy score may unlock lower interest rates, reducing EMI burden.</li>
+    </ul>
+  
+    <h2>🛠️ How to Use the TECH TRNDS TALKS EMI Calculator</h2>
+    <ol>
+      <li><strong>Enter Loan Amount:</strong> Input your desired amount or use the slider.</li>
+      <li><strong>Choose Interest Rate:</strong> Adjust the rate manually or via the slider.</li>
+      <li><strong>Select Tenure:</strong> Define your repayment duration in months.</li>
+      <li><strong>View EMI Instantly:</strong> See your estimated monthly instalment at a glance.</li>
+      <li><strong>Review Amortisation Table:</strong> Check the detailed breakdown including total interest and repayment.</li>
+      <li><strong>Adjust & Compare:</strong> Modify values to compare plans and find what suits your budget best.</li>
+    </ol>
+  
+    <h2>📐 EMI Calculation Formula</h2>
+    <p>The EMI is calculated using the standard formula:</p>
+    <pre>
+  EMI = [P × R × (1+R)^N] / [(1+R)^N – 1]
+    </pre>
+    <p>
+      Where:<br>
+      <strong>P</strong> = Loan Amount (Principal)<br>
+      <strong>R</strong> = Monthly Interest Rate (Annual Rate ÷ 12 ÷ 100)<br>
+      <strong>N</strong> = Loan Tenure in Months
+    </p>
+    <p><em>Example:</em> A ₹5,00,000 loan at 10.70% annual interest for 5 years yields an EMI of approximately ₹10,829.</p>
+  
+    <p><strong>💡 Tip:</strong> Manual calculations may lead to errors. Using the EMI calculator ensures precise and hassle-free results.</p>
+  
+  </section>
   
 </div>
