@@ -26,6 +26,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatDividerModule} from '@angular/material/divider';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatTabsModule } from '@angular/material/tabs';
 
 
 
@@ -56,7 +57,8 @@ const materialModules: any[] = [
   MatSliderModule,
   MatExpansionModule,
   MatDividerModule,
-  MatGridListModule
+  MatGridListModule,
+  MatTabsModule
   
 ]
 

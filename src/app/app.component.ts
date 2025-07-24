@@ -26,7 +26,7 @@ export class AppComponent implements OnInit{
 
 
     this.meta.addTags([
-      { name: 'description', content: 'EMI calculators - Calculate Equated Monthly Installment (EMI) for your loan with Flexible EMI Calculator Online. Loan EMI Calculator helps you to calculate Accurate yearly & monthly installment amount of your loan' },
+      { name: 'description', content: 'EMI calculators - home, car, personal, gold, mortgage, overdraft, travel, consumer durable & credit card loans with fast approvals & flexible repayment options.' },
       { name: 'keywords', content: 'EMI, loan calculator, finance, interest rate, mortgage, home loan, personal loan, car loan' },
       { name: 'author', content: 'Tech Trends Talks' },
       { name: 'robots', content: 'index, follow' },

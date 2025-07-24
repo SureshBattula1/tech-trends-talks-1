@@ -8,14 +8,28 @@ import { FormControl, FormsModule } from '@angular/forms';
 import { PriceProgressBarComponent } from '../price-progress-bar/price-progress-bar.component';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
-
+import {
+  trigger, transition, query, style, stagger, animate
+} from '@angular/animations';
 @Component({
   selector: 'app-calculator-view',
   standalone: true,
   imports: [ SharedModule, PriceProgressBarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './calculator-view.component.html',
-  styleUrl: './calculator-view.component.scss'
+  styleUrl: './calculator-view.component.scss',
+  animations: [
+    trigger('tabStagger', [
+      transition('* => *', [
+        query('.mat-mdc-tab', [
+          style({ transform: 'translateX(-50px)', opacity: 0 }),
+          stagger(100, [
+            animate('400ms ease-out', style({ transform: 'translateX(0)', opacity: 1 }))
+          ])
+        ], { optional: true })
+      ])
+    ])
+  ]
 })
 export class CalculatorViewComponent implements OnInit{
 
@@ -37,7 +51,9 @@ export class CalculatorViewComponent implements OnInit{
   scheduleYears:any[] = [];
   selectedOption: any;
 
+
   showAllRows = false;
+  selectedLoanTypeIndex = 0;
 
   displayedColumns = ['id', 'month', 'principal', 'interest', 'emi', 'balance'];
 
@@ -48,23 +64,34 @@ export class CalculatorViewComponent implements OnInit{
   toggleRows() {
     this.showAllRows = !this.showAllRows;
   }
-
+  onLoanTypeChange(index: number) {
+    this.selectedLoanTypeIndex = index;
+    const selected = this.loanTypes[index];
+    if (selected?.interest) {
+      this.interestRate = selected.interest;
+      this.interestForm.setValue(this.interestRate, { emitEvent: false });  // updates the input field
+      this.calculateEMI();
+      this.cd.markForCheck();
+    }
+  }
+  
   loanTypes = [
-    { value: 'home', viewValue: 'Home Loan', interest: 8.5 },
-    { value: 'car', viewValue: 'Car Loan', interest: 9.2 },
-    { value: 'personal', viewValue: 'Personal Loan', interest: 11.75 },
-    { value: 'education', viewValue: 'Education Loan', interest: 7.8 },
-    { value: 'gold', viewValue: 'Gold Loan', interest: 10.5 },
-    { value: 'business', viewValue: 'Mortgage Loan', interest: 9.8 },
-    { value: 'business', viewValue: 'Two-Wheeler Loan', interest: 10.2 },
-    { value: 'business', viewValue: 'Agriculture Loan', interest: 6.5 },
-    { value: 'business', viewValue: 'Credit Card Loan', interest: 15.5},
-    { value: 'business', viewValue: 'Overdraft Loan', interest: 13.0 },
-    { value: 'business', viewValue: 'Consumer Durable Loan', interest: 9.9 },
-    { value: 'business', viewValue: 'Travel Loan', interest: 12.75 },
-    { value: 'business', viewValue: 'Loan Against Property', interest: 9.5 },
-    { name: 'Business Loan', interest: 12.0 },
+    { value: 'home', viewValue: 'Home Loan', interest: 8.5, icon: 'home' },
+    { value: 'car', viewValue: 'Car Loan', interest: 9.2, icon: 'directions_car' },
+    { value: 'personal', viewValue: 'Personal Loan', interest: 11.75, icon: 'person' },
+    { value: 'education', viewValue: 'Education Loan', interest: 7.8, icon: 'school' },
+    { value: 'gold', viewValue: 'Gold Loan', interest: 10.5, icon: 'emoji_events' },
+    { value: 'mortgage', viewValue: 'Mortgage Loan', interest: 9.8, icon: 'apartment' },
+    { value: 'twoWheeler', viewValue: 'Two-Wheeler Loan', interest: 10.2, icon: 'two_wheeler' },
+    { value: 'agriculture', viewValue: 'Agriculture Loan', interest: 6.5, icon: 'agriculture' },
+    { value: 'creditCard', viewValue: 'Credit Card Loan', interest: 15.5, icon: 'credit_card' },
+    { value: 'overdraft', viewValue: 'Overdraft Loan', interest: 13.0, icon: 'swap_horiz' },
+    { value: 'consumerDurable', viewValue: 'Consumer Durable Loan', interest: 9.9, icon: 'devices' },
+    { value: 'travel', viewValue: 'Travel Loan', interest: 12.75, icon: 'flight_takeoff' },
+    { value: 'lap', viewValue: 'Loan Against Property', interest: 9.5, icon: 'location_city' },
+    { value: 'business', viewValue: 'Business Loan', interest: 12.0, icon: 'business_center' }
   ];
+
 
   // Chart properties
   chartType: ChartType = 'doughnut';

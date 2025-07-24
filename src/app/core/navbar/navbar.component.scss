@@ -1,34 +1,26 @@
-.navbar-header-item-selected {
-    background-color: #005cbb1a;
-}
-
-svg{
-    margin-right: 8px;
-    width: 24px;
-    height: 24px;
-}
-
 .app-logo {
-    font-size: 24px;
-    margin: 0px;
-    padding: 0px;
+  font-size: 24px;
+  margin: 0px;
+  padding: 0px;
+  color: #b6e5ff;
+  display: flex;
+  gap: 10px;
+}
+
+.app-logo img{
+  width: 40px;
+  height: 40px;
+}
+
+.app-menu {
+  color: #b6e5ff!important;
+  margin-right: 4px;
 }
 
 .navbar-header-item-selected {
-    background-color: #dae2f900;
-    color: white !important;    /* override Material default */
-    font-weight: 700;
-    border: 2px solid #fff;
-  }
-  
-  /* Optional: override default mat-button spacing or hover */
-  a.mat-button {
-    text-transform: none;      /* prevent uppercase */
-    font-size: 16px;
-    padding: 8px 16px;
-  }
-  
-  /* Optional: hover effect */
-  a.mat-button:hover {
-    background-color: #e3f2fd;
-  }
+  font-weight: 800;
+  border: 2px solid #1ebed9;
+  color: #fff!important;
+  background-color: #394972;
+}
+

@@ -1,50 +1,31 @@
-<!-- <div class="flex-row">
-  <div class="flex-item-auto">
-    <div class="emi-banner">
-      <div class="flex-col flex-items-center">
-        <div class="flex-item flex-justify-content-center">
-          <p class="breadcrumb">FINANCIAL CALCULATOR &gt; PERSONAL LOAN EMI CALCULATOR</p>
-        </div>
-        <div class="flex-item flex-justify-content-center">
-          <h1>Personal Loan EMI Calculator</h1>
-        </div>
-        <div class="flex-item flex-justify-content-center">
-          <p class="subheading">Simple, accurate and hassle-free personal loan EMI calculator</p>
-        </div>
-      </div>
 
-      <div class="flex-row flex-justify-content-spacebetween flex-wrap" style="margin-top: 2rem;">
-        <div class="flex-item-8 feature-card">
-          <h3>📊 Plan with Ease</h3>
-          <p>Use the EMI calculator to plan your finances without hassle.</p>
-        </div>
-        <div class="flex-item-8 feature-card">
-          <h3>⚡ Instant Results</h3>
-          <p>Quickly estimate your monthly EMI based on inputs.</p>
-        </div>
-        <div class="flex-item-8 feature-card">
-          <h3>💡 Smart Budgets</h3>
-          <p>Determine the perfect loan to match your budget goals.</p>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</div> -->
-<!-- loan-calculator.component.html -->
 <div class="app-calculator-container">
   <div class="flex-row">
     <div class="flex-item-24">
     <form  (ngSubmit)="calculateEMI()">
-      <div class="align-end">
-        <mat-form-field appearance="outline" class="app-loan-type">
-          <mat-label> Loan Type</mat-label>
-          <mat-select [formControl]="loanTypeForm" >
-            <mat-option *ngFor="let loanType of loanTypes" [value]="loanType">
-              {{ loanType.viewValue }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>        
+      <div class="align-end menu-bar">
+        <mat-tab-group
+          [(selectedIndex)]="selectedLoanTypeIndex"
+          (selectedIndexChange)="onLoanTypeChange($event)"
+          animationDuration="400ms"
+          class="loan-tab-group"
+          @tabStagger
+        >
+        <mat-tab *ngFor="let loanType of loanTypes; let i = index"
+         [ngClass]="{
+           'active-tab': selectedLoanTypeIndex === i,
+           'floating-tab': selectedLoanTypeIndex !== i
+         }">
+            <ng-template mat-tab-label>
+              <div class="tab-icon-container">
+                <mat-icon [ngClass]="'icon-' + loanType.value">{{ loanType.icon }}</mat-icon>
+                <span>{{ loanType.viewValue }}</span>
+              </div>
+            </ng-template>
+          </mat-tab>
+
+        
+        </mat-tab-group>
       </div>
       <div class="flex-row">
         <div class="flex-item-auto">

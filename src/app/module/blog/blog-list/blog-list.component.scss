@@ -1,0 +1,42 @@
+.blog-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 1rem 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: transform 0.3s;
+    background: #fff;
+  
+    &:hover {
+      transform: translateY(-4px);
+    }
+  
+    img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+  
+    .blog-content {
+      padding: 1rem;
+  
+      h2 {
+        font-size: 1.25rem;
+        margin: 0 0 0.5rem;
+      }
+  
+      p {
+        color: #555;
+        font-size: 0.95rem;
+      }
+  
+      span {
+        display: block;
+        margin-top: 0.75rem;
+        font-size: 0.8rem;
+        color: #999;
+      }
+    }
+  }
+  

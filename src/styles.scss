@@ -3,7 +3,7 @@
 html, body { height: 100%;}
 body { 
     // font-family: Roboto, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;
-    font-family: 'Fira Sans', Roboto, sans-serif;
+    // font-family: sans-serif,'Fira Sans', Roboto, sans-serif;
     margin: 0;
 }
 
@@ -34,6 +34,10 @@ app-component-sidenav {
     margin-top: 56px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+}
+
+mat-card.mat-mdc-card.mdc-card{
+    background: #fff;
 }
 
 .flex-row {

@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, Input, signal } from '@angular/core';
 import { BlogListItemComponent } from '../blog-list-item/blog-list-item.component';
 
 @Component({
@@ -9,7 +9,7 @@ import { BlogListItemComponent } from '../blog-list-item/blog-list-item.componen
   styleUrl: './blog-list.component.scss'
 })
 export class BlogListComponent {
-
+  @Input() blogListItem: any;
   blogList =  signal([
     {
       id: 1,

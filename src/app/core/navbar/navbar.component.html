@@ -1,12 +1,17 @@
 <nav aria-label="Top Toolbar" class="navbar-header">
-    <button type="button" (click)="toggle()"  mat-icon-button  fxShow="true" fxHide.gt-sm>
+    <button class="app-menu" type="button" (click)="toggle()"  mat-icon-button  fxShow="true" fxHide.gt-sm>
         <mat-icon>menu</mat-icon>
     </button>
-    <h1 class="app-logo">Tech Trends Talks  </h1>
+    <h3 class="app-logo">
+        <img src="assets/images/image.png" alt="My Logo" class="logo logo-img" />
+        Tech Trends Talks  
+    </h3>
     <div fxShow="true" fxHide.lt-md>
-        <a style="display: none;" routerLink="/blogs" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> Blogs</a>
-       
-        <a routerLink="/calculator/emi-calculator" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> EMI Calculator</a>
-        <a routerLink="/calculator/sip-calculator" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> SIP Calculator</a>
+        <!-- <a class="app-menu"  routerLink="/about-us" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> About Us</a>
+        <a class="app-menu"  routerLink="/calculator" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> Services</a>
+        <a class="app-menu"  routerLink="/blogs" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> Blogs</a>
+        -->
+        <a class="app-menu" routerLink="/calculator/emi-calculator" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> EMI Calculator</a>
+        <a class="app-menu" routerLink="/calculator/sip-calculator" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> SIP Calculator</a>
     </div>
 </nav>
