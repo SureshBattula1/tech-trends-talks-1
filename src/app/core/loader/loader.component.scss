@@ -1,0 +1,31 @@
+.app-loader-bar{
+    margin-top: 0.5rem;
+}
+
+/* Loader overlay */
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7); /* optional dimming */
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Loader image */
+.loader-overlay img {
+  width: 80px; /* customize size */
+  height: 80px;
+  animation: pulse 1.5s infinite;
+}
+
+/* Optional animation */
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
+}

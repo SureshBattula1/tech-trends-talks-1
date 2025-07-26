@@ -1,10 +1,12 @@
-import { Component, Inject, OnInit, Renderer2 } from '@angular/core';
+import { Component, inject, Inject, OnInit, Renderer2 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './core/navbar/navbar.component';
 import { ComponentSidenavComponent } from './core/component-sidenav/component-sidenav.component';
 import { Meta, Title } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
 import { PageComingSoonComponent } from './core/page-coming-soon/page-coming-soon.component';
+import { LoaderService } from './services/loading-bar/loader.service';
+import { LoaderComponent } from './core/loader/loader.component';
 
 @Component({
   selector: 'app-root',
@@ -15,9 +17,12 @@ import { PageComingSoonComponent } from './core/page-coming-soon/page-coming-soo
 })
 export class AppComponent implements OnInit{
 
+  public loader = inject(LoaderService);
+
   constructor(private title: Title, private meta: Meta, private renderer: Renderer2, @Inject(DOCUMENT) private document: Document) {}
 
   ngOnInit(): void {
+  
     this.title.setTitle('Tech Trends Talks');
 
     const link: HTMLLinkElement = this.renderer.createElement('link');
