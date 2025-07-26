@@ -4,11 +4,12 @@ import { NavbarComponent } from './core/navbar/navbar.component';
 import { ComponentSidenavComponent } from './core/component-sidenav/component-sidenav.component';
 import { Meta, Title } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
+import { PageComingSoonComponent } from './core/page-coming-soon/page-coming-soon.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
- imports: [RouterOutlet, NavbarComponent, ComponentSidenavComponent],
+ imports: [RouterOutlet, NavbarComponent, ComponentSidenavComponent, PageComingSoonComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -17,7 +18,7 @@ export class AppComponent implements OnInit{
   constructor(private title: Title, private meta: Meta, private renderer: Renderer2, @Inject(DOCUMENT) private document: Document) {}
 
   ngOnInit(): void {
-    this.title.setTitle('Tech Trends Talks - Your Loan Guide');
+    this.title.setTitle('Tech Trends Talks');
 
     const link: HTMLLinkElement = this.renderer.createElement('link');
     link.setAttribute('rel', 'canonical');

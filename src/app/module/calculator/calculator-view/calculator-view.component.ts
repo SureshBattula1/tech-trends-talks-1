@@ -12,14 +12,14 @@ import {
   trigger, transition, query, style, stagger, animate
 } from '@angular/animations';
 
-interface CustomHtml2CanvasOptions extends Html2Canvas.Html2CanvasOptions {
-  scale?: number;
-}
+// interface CustomHtml2CanvasOptions extends Html2Canvas.Html2CanvasOptions {
+//   scale?: number;
+// }
 
-const options: CustomHtml2CanvasOptions = {
-  scale: 2,
-  useCORS: true
-};
+// const options: CustomHtml2CanvasOptions = {
+//   scale: 2,
+//   useCORS: true
+// };
 
 
 @Component({
@@ -394,7 +394,7 @@ exportToPDF() {
 
   const COMPANY_NAME = 'Tech Trends Talks';
 
-  html2canvas(data, options).then(canvas => {
+  html2canvas(data).then(canvas => {
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
