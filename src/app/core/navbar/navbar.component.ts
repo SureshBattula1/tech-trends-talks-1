@@ -16,7 +16,6 @@ export class NavbarComponent {
 
  toggle() {
     this.appService.toggleSidenav();
-    console.log('Navbar toggle clicked', this.appService.isSidebarVisible());
  }
 
 }

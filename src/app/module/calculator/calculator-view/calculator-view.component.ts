@@ -11,6 +11,17 @@ import { BaseChartDirective } from 'ng2-charts';
 import {
   trigger, transition, query, style, stagger, animate
 } from '@angular/animations';
+
+interface CustomHtml2CanvasOptions extends Html2Canvas.Html2CanvasOptions {
+  scale?: number;
+}
+
+const options: CustomHtml2CanvasOptions = {
+  scale: 2,
+  useCORS: true
+};
+
+
 @Component({
   selector: 'app-calculator-view',
   standalone: true,
@@ -319,7 +330,7 @@ export class CalculatorViewComponent implements OnInit{
       });
     }
   }
-  
+
 
 
 
@@ -376,47 +387,80 @@ export class CalculatorViewComponent implements OnInit{
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Schedule');
     XLSX.writeFile(workbook, 'LoanSchedule.xlsx');
   }
-  
+ 
+exportToPDF() {
+  const data = document.getElementById('loan-content');
+  if (!data) return;
 
-  exportToPDF() {
-    const data = document.getElementById('loan-content');
-    if (!data) return;
-  
-    html2canvas(data).then(canvas => {
-      const img = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
+  const COMPANY_NAME = 'Tech Trends Talks';
 
-      const COMPANY_NAME = ' Tech Trends Talks';
+  html2canvas(data, options).then(canvas => {
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
 
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
 
+    const margin = 10;
+    const headerHeight = 20;
+    const footerHeight = 20;
+
+    const usablePageHeight = pageHeight - margin * 2 - headerHeight - footerHeight;
+
+    const pxPerMm = 96 / 25.4;
+    const imgHeightMm = canvas.height / pxPerMm;
+    const imgWidthMm = canvas.width / pxPerMm;
+
+    let position = 0;
+
+    while (position < imgHeightMm) {
+      if (position !== 0) pdf.addPage();
+
+      // 📌 Header
       pdf.setFontSize(16);
       pdf.setTextColor(40);
       pdf.setFont('helvetica', 'bold');
-      pdf.text('Loan Repayment Schedule', pageWidth / 2, 6, { align: 'center' });
+      pdf.text('Loan Repayment Schedule', pageWidth / 2, margin, { align: 'center' });
 
-      
-      pdf.addImage(img, 'PNG', 10, 10, pageWidth - 20, 0);
-  
-      pdf.setTextColor(220); 
+      // 🖼 Slice canvas section
+      const sourceY = position * pxPerMm;
+      const pageCanvas = document.createElement("canvas");
+      pageCanvas.width = canvas.width;
+      pageCanvas.height = usablePageHeight * pxPerMm;
+
+      const ctx = pageCanvas.getContext("2d");
+      ctx?.drawImage(canvas, 0, sourceY, canvas.width, pageCanvas.height, 0, 0, canvas.width, pageCanvas.height);
+
+      const pageImageData = pageCanvas.toDataURL("image/png");
+
+      const scaleFactor = 0.95;
+      const scaledWidth = (pageWidth - 2 * margin) * scaleFactor;
+      const scaledHeight = usablePageHeight * scaleFactor;
+
+      pdf.addImage(pageImageData, 'PNG', 10, 10, scaledWidth, 0);
+
+      // 💧 Watermark
+      pdf.setTextColor(220);
       pdf.setFontSize(40);
       pdf.setFont('helvetica', 'normal');
       pdf.text(COMPANY_NAME, pageWidth / 2, pageHeight / 2, { align: 'center', angle: 45 });
-  
+
+      // 📍 Footer
       pdf.setFontSize(10);
       pdf.setTextColor(100);
-      const copyrightText = '© ' + new Date().getFullYear()+ COMPANY_NAME + '. All rights reserved.';
-      pdf.text(copyrightText, pageWidth / 2, pageHeight - 10, { align: 'center' });
-  
-      pdf.save('LoanSchedule.pdf');
-    });
-  }
-  
+      const copyrightText = `© ${new Date().getFullYear()} ${COMPANY_NAME}. All rights reserved.`;
+      pdf.text(copyrightText, pageWidth / 2, pageHeight - margin, { align: 'center' });
+
+      position += usablePageHeight;
+    }
+
+    pdf.save('LoanSchedule.pdf');
+  });
+}
+
 
 
 }
