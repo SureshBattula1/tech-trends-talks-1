@@ -65,6 +65,7 @@ export class CalculatorViewComponent implements OnInit{
   scheduleYears:any[] = [];
   selectedOption: any;
 
+  suggestedLoanAmounts = [1000000, 2000000, 2500000, 3000000, 4000000, 5000000, 7500000, 10000000, 20000000, 50000000];
 
   showAllRows = false;
   selectedLoanTypeIndex = 0;
@@ -90,7 +91,7 @@ export class CalculatorViewComponent implements OnInit{
     }
   }
   
-  loanTypes = [
+  loanTypes = [ 
     { value: 'home', viewValue: 'Home Loan', interest: 8.5, icon: 'home' },
     { value: 'car', viewValue: 'Car Loan', interest: 9.2, icon: 'directions_car' },
     { value: 'personal', viewValue: 'Personal Loan', interest: 11.75, icon: 'person' },
@@ -127,6 +128,7 @@ export class CalculatorViewComponent implements OnInit{
     }
   };
 
+  
   loanTypeForm = new FormControl('');
 
   amountForm = new FormControl(this.amount);
@@ -173,17 +175,42 @@ export class CalculatorViewComponent implements OnInit{
     );
   }
 
-  validateAmount() {
-    const min = 10000;
-    const max = 1000000000;
-    if (!this.amount || this.amount < min || this.amount > max) {
-      this.amountForm.setValue(min, { emitEvent: false });
-      this.amountForm.updateValueAndValidity();
-      this.amount = min;
-      this.cd.markForCheck();
-    }
-    this.calculateEMI();
+  // validateAmount() {
+  //   const min = 10000;
+  //   const max = 1000000000;
+  //   if (!this.amount || this.amount < min || this.amount > max) {
+  //     this.amountForm.setValue(min, { emitEvent: false });
+  //     this.amountForm.updateValueAndValidity();
+  //     this.amount = min;
+  //     this.cd.markForCheck();
+  //   }
+  //   this.calculateEMI();
+  // }/
+
+  
+validateAmount() {
+  const min = 10000;
+  const max = 1000000000;
+
+  if (!this.amount || this.amount < min || this.amount > max) {
+    this.amount = min;
+  } else {
+    this.amount = this.getClosestSuggestedAmount(this.amount);
   }
+
+  this.amountForm.setValue(this.amount, { emitEvent: false });
+  this.amountForm.updateValueAndValidity();
+  this.cd.markForCheck();
+  this.calculateEMI();
+}
+
+getClosestSuggestedAmount(value: number): number {
+  if (this.suggestedLoanAmounts.length === 0) return value;
+
+  return this.suggestedLoanAmounts.reduce((prev, curr) =>
+    Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev
+  );
+}
 
   validateTenure() {
     const min = 1;
