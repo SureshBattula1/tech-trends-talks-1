@@ -10,6 +10,13 @@
 .app-logo img{
   width: 40px;
   height: 40px;
+  border-radius: 50%;
+  border: 2px solid orange
+}
+
+.app-menu-list {
+  display: flex;
+  margin-right: 1.3rem;
 }
 
 .app-menu {

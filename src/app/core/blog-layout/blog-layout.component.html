@@ -1,4 +1,16 @@
-<main class="component-main-viewer">
-    <app-component-viewer></app-component-viewer>
-</main>
-<app-footer></app-footer>
+<mat-sidenav-container class="component-viewer-sidenav-container">
+    <mat-sidenav class="component-sidenav" [opened]="isVisible()" [mode]="'side'">
+        <app-component-nav></app-component-nav>
+    </mat-sidenav>
+    <mat-sidenav-content>
+        <app-loader *ngIf="loader.loading$ | async"></app-loader>
+        <div class="component-sidenav-content">
+            <div class="component-sidenav-inner-content">
+                <main class="component-sidenav-body-content">
+                    <app-component-viewer></app-component-viewer>
+                </main>
+                <app-footer></app-footer>
+            </div>
+        </div>
+    </mat-sidenav-content>
+</mat-sidenav-container>

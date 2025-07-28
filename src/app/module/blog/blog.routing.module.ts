@@ -7,18 +7,19 @@ import { BlogLayoutComponent } from '../../core/blog-layout/blog-layout.componen
 import { BlogViewComponent } from './blog-view/blog-view.component';
 
 const routes: Routes = [
+  // { 
+  //   path: '', component: ComponentSidenavComponent, children: [
+  //     { path: 'list', component: BlogListComponent },
+  //     { path: 'create', component: BlogCreateComponent },
+  //     { path: 'view', component: BlogViewComponent },
+  //     { path: '', redirectTo: 'list', pathMatch: 'full' },
+  //   ]
+  // },
   { 
-    path: '', component: ComponentSidenavComponent, children: [
+    path: '', component: BlogLayoutComponent, children: [
       { path: 'list', component: BlogListComponent },
       { path: 'create', component: BlogCreateComponent },
       { path: 'view', component: BlogViewComponent },
-      { path: '', redirectTo: 'list', pathMatch: 'full' },
-    ]
-  },
-  { 
-    path: 'v2', component: BlogLayoutComponent, children: [
-      { path: 'list', component: BlogListComponent },
-      { path: 'create', component: BlogCreateComponent },
       { path: '', redirectTo: 'list', pathMatch: 'full' },
     ]
   }

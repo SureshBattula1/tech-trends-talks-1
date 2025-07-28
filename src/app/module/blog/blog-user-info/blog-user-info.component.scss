@@ -1,0 +1,42 @@
+.app-blog-user-info{
+    width: 100%;
+}
+
+.user-profile{
+    display: flex;
+    align-items: center;
+}
+.user-profile-img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid orange;
+}
+
+.profile{
+    margin-left: 1rem;
+}
+
+p{
+    margin-bottom: 0px;
+}
+
+.profile-name{
+    font-weight: 800;
+}
+
+.blog-created{
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+}
+
+@media screen and (max-width: 600px) {
+    .flex-row {
+         flex-flow: row !important;
+    }
+
+    .app-blog-list-content {
+        font-size: 8px;
+    }
+}

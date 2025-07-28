@@ -1,5 +1,10 @@
-<div>
-    @for (blog of blogList(); track blog) {
-        <app-blog-list-item [blogListItem]="blog"></app-blog-list-item>
-    }
-</div> 
+<div class="app-blog-container">
+    <div class="flex-row">
+        <div class="flex-item-auto">
+            @for (blog of blogList(); track blog) {
+                <app-blog-list-item [blogListItem]="blog"></app-blog-list-item>
+            }
+        </div>
+    </div> 
+</div>
+
