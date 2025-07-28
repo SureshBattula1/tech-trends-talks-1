@@ -12,15 +12,7 @@ import {
   trigger, transition, query, style, stagger, animate
 } from '@angular/animations';
 import { LoaderService } from '../../../services/loading-bar/loader.service';
-
-// interface CustomHtml2CanvasOptions extends Html2Canvas.Html2CanvasOptions {
-//   scale?: number;
-// }
-
-// const options: CustomHtml2CanvasOptions = {
-//   scale: 2,
-//   useCORS: true
-// };
+import autoTable from 'jspdf-autotable';
 
 
 @Component({
@@ -70,7 +62,7 @@ export class CalculatorViewComponent implements OnInit{
   showAllRows = false;
   selectedLoanTypeIndex = 0;
 
-  displayedColumns = ['id', 'month', 'principal', 'interest', 'emi', 'balance'];
+  displayedColumns: string[] = ['id', 'month', 'principal', 'interest', 'emi', 'balance'];
 
   get filteredSchedule() {
     return this.showAllRows ? this.schedule : this.schedule.slice(0, 1);
@@ -81,6 +73,7 @@ export class CalculatorViewComponent implements OnInit{
   }
   
   onLoanTypeChange(index: number) {
+    this.loader.show();
     this.selectedLoanTypeIndex = index;
     const selected = this.loanTypes[index];
     if (selected?.interest) {
@@ -88,6 +81,9 @@ export class CalculatorViewComponent implements OnInit{
       this.interestForm.setValue(this.interestRate, { emitEvent: false });  // updates the input field
       this.calculateEMI();
       this.cd.markForCheck();
+      setTimeout(() => {
+        this.loader.hide();
+        }, 100);
     }
   }
   
@@ -174,18 +170,6 @@ export class CalculatorViewComponent implements OnInit{
       }
     );
   }
-
-  // validateAmount() {
-  //   const min = 10000;
-  //   const max = 1000000000;
-  //   if (!this.amount || this.amount < min || this.amount > max) {
-  //     this.amountForm.setValue(min, { emitEvent: false });
-  //     this.amountForm.updateValueAndValidity();
-  //     this.amount = min;
-  //     this.cd.markForCheck();
-  //   }
-  //   this.calculateEMI();
-  // }/
 
   
 validateAmount() {
@@ -424,81 +408,143 @@ getClosestSuggestedAmount(value: number): number {
 
   }
 
-  exportToPDF() {
+
+  exportToEMIPdf(): void {
     this.loader.show();
-    const data = document.getElementById('loan-content');
-    if (!data) return;
+    if(this.showAllRows === false){
+      this.toggleRows();
+    }
+    const doc = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+  
+    // Header
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.setTextColor(40, 40, 40);
+    doc.text('Tech Trends Talks', pageWidth / 2, 20, { align: 'center' });
+  
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text('Grow with us: Empowering Your Financial Journey', pageWidth / 2, 26, { align: 'center' });
+  
+    // Loan Summary Box
+    doc.setDrawColor(41, 128, 185);
+    doc.setLineWidth(0.5);
+    doc.roundedRect(12, 32, pageWidth - 24, 28, 2, 2 , 'S');
+  
+    doc.setFontSize(11);
+    doc.setTextColor(0);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${this.loanTypes[this.selectedLoanTypeIndex].viewValue} Amount: ${this.currencyFormat(this.amount)}`, 16, 40);
+    doc.text(`Interest Rate (%): ${this.interestRate.toFixed(2)}`, 16, 46);
+    doc.text(`Loan Tenure (years): ${this.years}`, 16, 52);
+  
+    // Payment Summary
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(41, 128, 185);
+    doc.text("Payment Summary", 14, 70);
+  
+    doc.setFillColor(245, 245, 245);
+    doc.roundedRect(12, 74, pageWidth - 24, 24, 2, 2, 'F');
+  
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+    doc.setTextColor(0);
+    doc.text("Loan EMI:", 16, 82);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${this.currencyFormat(this.emi)}`, 60, 82);
+  
+    doc.setFont('helvetica', 'normal');
+    doc.text("Total Interest Payable:", 16, 88);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${this.currencyFormat(this.totalInterest)}`, 60, 88);
+  
+    doc.setFont('helvetica', 'normal');
+    doc.text("Total Payment (Principal + Interest):", 16, 94);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${this.currencyFormat(this.totalPayment)}`, 85, 94);
+  
+    // Load and wait for watermark image
+    const img = new Image();
+    img.src = 'assets/images/company_name.png';
+    img.onload = () => {
+     
 
-    const COMPANY_NAME = 'Tech Trends Talks';
-
-    html2canvas(data).then(canvas => {
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
+    // const imgData = canvas.toDataURL('image/png');
+      const tableBody = this.filteredSchedule.map((row, index) => ([
+        (index + 1).toString(),
+        row.monthLabel,
+        this.currencyFormat(row.principal),
+        this.currencyFormat(row.interest),
+        this.currencyFormat(row.emi),
+        this.currencyFormat(row.balance)
+      ]));
+  
+      // Render table after summary — startY must be below summary box
+      autoTable(doc, {
+        head: [['S.NO', 'Month', 'Principal', 'Interest', 'EMI', 'Balance']],
+        body: tableBody,
+        startY: 110,
+        theme: 'grid',
+        styles: {
+          fontSize: 8,
+          font: 'helvetica',
+          cellPadding: { top: 3, right: 2, bottom: 3, left: 2 },
+          valign: 'middle',
+          halign: 'right',
+          overflow: 'linebreak',
+        },
+        headStyles: {
+          fillColor: [41, 128, 185],
+          textColor: 255,
+          fontStyle: 'bold',
+          halign: 'center',
+        },
+        columnStyles: {
+          0: { cellWidth: 15, halign: 'center' },
+          1: { cellWidth: 25, halign: 'left' },
+          2: { cellWidth: 30, halign: 'right' },
+          3: { cellWidth: 30, halign: 'right' },
+          4: { cellWidth: 30, halign: 'right' },
+          5: { cellWidth: 45, halign: 'right' },
+        },
+        willDrawCell: (data) => {
+          const text = Array.isArray(data.cell.text) ? data.cell.text.join('') : data.cell.text;
+          if (text.length > 15) {
+            data.cell.styles.fontSize = 6.5;
+          }
+        },
+        didDrawPage: () => {
+          doc.setFontSize(8);
+          doc.setTextColor(100);
+          // doc.addImage(img, 'PNG',
+          //   (pageWidth / 2) - 40, // x
+          //   120,                  // y (should be table Y position)
+          //   100,                  // width
+          //   100,                  // height
+          //   undefined,
+          //   'FAST'
+          // );
+          doc.text(`© ${new Date().getFullYear()} Tech Trends Talks. All rights reserved.`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+        }
       });
-
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-
-      const margin = 10;
-      const headerHeight = 20;
-      const footerHeight = 20;
-
-      const usablePageHeight = pageHeight - margin * 2 - headerHeight - footerHeight;
-
-      const pxPerMm = 96 / 25.4;
-      const imgHeightMm = canvas.height / pxPerMm;
-      const imgWidthMm = canvas.width / pxPerMm;
-
-      let position = 0;
-
-      while (position < imgHeightMm) {
-        if (position !== 0) pdf.addPage();
-
-        // 📌 Header
-        pdf.setFontSize(16);
-        pdf.setTextColor(40);
-        pdf.setFont('helvetica', 'bold');
-        pdf.text('Loan Repayment Schedule', pageWidth / 2, margin, { align: 'center' });
-
-        // 🖼 Slice canvas section
-        const sourceY = position * pxPerMm;
-        const pageCanvas = document.createElement("canvas");
-        pageCanvas.width = canvas.width;
-        pageCanvas.height = usablePageHeight * pxPerMm;
-
-        const ctx = pageCanvas.getContext("2d");
-        ctx?.drawImage(canvas, 0, sourceY, canvas.width, pageCanvas.height, 0, 0, canvas.width, pageCanvas.height);
-
-        const pageImageData = pageCanvas.toDataURL("image/png");
-
-        const scaleFactor = 0.95;
-        const scaledWidth = (pageWidth - 2 * margin) * scaleFactor;
-        const scaledHeight = usablePageHeight * scaleFactor;
-
-        pdf.addImage(pageImageData, 'PNG', 10, 10, scaledWidth, 0);
-
-        // 💧 Watermark
-        pdf.setTextColor(220);
-        pdf.setFontSize(40);
-        pdf.setFont('helvetica', 'normal');
-        pdf.text(COMPANY_NAME, pageWidth / 2, pageHeight / 2, { align: 'center', angle: 45 });
-
-        // 📍 Footer
-        pdf.setFontSize(10);
-        pdf.setTextColor(100);
-        const copyrightText = `© ${new Date().getFullYear()} ${COMPANY_NAME}. All rights reserved.`;
-        pdf.text(copyrightText, pageWidth / 2, pageHeight - margin, { align: 'center' });
-
-        position += usablePageHeight;
-      }
-
-      pdf.save('LoanSchedule.pdf');
-      this.loader.hide();
-    });
+  
+      doc.save('Loan-Schedule.pdf');
+      setTimeout(() => {
+        this.loader.hide();
+        }, 50);
+    };
   }
+  
 
-
-
+  currencyFormat(amount: number): string {
+    return new Intl.NumberFormat('en-IN', {
+      minimumFractionDigits: 2,
+       maximumFractionDigits: 2 
+    }).format(amount);
+  }
+  
 }

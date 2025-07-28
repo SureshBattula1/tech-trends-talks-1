@@ -93,10 +93,47 @@
     <div class="flex-item-24">
     <mat-card *ngIf="emi !== null" class="app-calculator-result-card">
    
-        <mat-card-content>
+        <!-- <mat-card-content>
           <div class="app-cal culator-result-content"> 
             <div class="flex-row">
               <div class="flex-item-auto table-result">
+                <table class="table-emi">
+                  <tr>
+                    <td class="table-emi-title">Monthly EMI:</td>
+                    <td class="table-emi-price"> {{ emi | currency:'INR':'symbol':'1.2-2' }}</td>
+                  </tr>
+                  <tr>
+                    <td>Total Interest:</td>
+                    <td>{{ totalInterest | currency:'INR':'symbol':'1.2-2' }}</td>
+                  </tr>
+                  <tr>
+                    <td>Principal Amount:</td>
+                    <td>{{ pricipalAmount | currency:'INR':'symbol':'1.2-2' }}</td>
+                  </tr>
+                  <tr>
+                    <td>Total Payment:</td>
+                    <td>{{ totalPayment | currency:'INR':'symbol':'1.2-2' }}</td>
+                  </tr>
+                </table>
+                
+              </div>
+              <div class="flex-item-auto">
+                <div class="app-chart">
+                  <canvas baseChart
+                          [data]="chartData"
+                          [type]="chartType"
+                          [options]="chartOptions">
+                  </canvas>
+                </div>
+              </div>
+            </div>
+          
+          </div>
+        </mat-card-content> -->
+        <mat-card-content>
+          <div class="app-cal culator-result-content"> 
+            <div class="flex-row">
+              <div class="flex-item-auto table-result" #emiTable>
                 <table class="table-emi">
                   <tr>
                     <td class="table-emi-title">Monthly EMI:</td>
@@ -185,7 +222,7 @@
   <div class="flex-row">
     <div class="flex-item-24">
       <div class="export-buttons">
-        <button mat-button (click)="exportToPDF()">📄 Download PDF</button>
+        <button mat-button (click)="exportToEMIPdf()">📄 Download PDF</button>
         <button mat-button (click)="exportToExcel()">📊 Export Excel</button>
       </div>
     </div>
