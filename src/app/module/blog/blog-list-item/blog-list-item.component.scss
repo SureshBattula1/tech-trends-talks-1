@@ -10,7 +10,7 @@
 
     .app-blog-list {
         display: flex;
-        // flex-grow: 1;
+        width: 100%;
 
         .app-blog-list-log img{
             font-size: 16px;
@@ -28,10 +28,11 @@
             flex-direction: column;
             font-size: 14px;
             line-height: 1.42857;
-            padding: 2rem;
+            padding: 1rem;
+            width: 100%;
 
             .app-blog-list-title {
-                font-size: 24px;
+                font-size: 16px;
                 font-weight: 700;
                 line-height: 30px;
                 text-overflow: ellipsis;
@@ -42,12 +43,17 @@
                 color: #6B6B6B;
                 font-weight: 400;
                 line-height: 20px;
-                font-size: 16px;
+                font-size: 14px;
             }
 
             .app-blog-list-footer {
                 display: flex;
                 justify-content: space-between;
+
+                app-blog-user-info {
+                  width: 100%;
+                  margin-top: 2rem;
+                }
             }
         }
     }
@@ -55,8 +61,8 @@
 
 @media (max-width: 768px) {
   .app-blog-item-container {
-    flex-direction: column;
-    margin: 0.5rem;
+      flex-direction: column;
+      margin: 0.5rem;
   }
 
   .app-blog-list {
@@ -66,60 +72,7 @@
       width: 100%!important;
       height: auto;
       border-radius: 6px 6px 0 0;
-
     }
-
-    .app-blog-list-content {
-      padding: 1rem;
-
-      .app-blog-list-title {
-        font-size: 20px;
-        line-height: 26px;
-      }
-
-      .app-blog-list-subtitle {
-        font-size: 14px;
-        line-height: 18px;
-      }
-
-      .app-blog-list-footer {
-        flex-direction: column;
-        gap: 0.5rem;
-        align-items: flex-start;
-      }
-    }
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-  .app-blog-item-container {
-    flex-direction: row;
-    margin: 1rem;
-  }
-
-  .app-blog-list {
-    flex-direction: row;
-
-    .app-blog-list-log img {
-      width: 240px;
-      height: 160px;
-    }
-
-    .app-blog-list-content {
-      padding: 1.5rem;
-
-      .app-blog-list-title {
-        font-size: 22px;
-        line-height: 28px;
-      }
-
-      .app-blog-list-subtitle {
-        font-size: 15px;
-      }
-
-      .app-blog-list-footer {
-        justify-content: space-between;
-      }
-    }
+   
   }
 }

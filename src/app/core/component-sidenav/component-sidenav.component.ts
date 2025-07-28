@@ -22,7 +22,4 @@ export class ComponentSidenavComponent {
   
   isVisible = computed(() => this.appService.isSidebarVisible());
   
-  
-
-
 }

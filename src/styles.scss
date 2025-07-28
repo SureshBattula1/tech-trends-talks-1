@@ -7,6 +7,10 @@ body {
     margin: 0;
 }
 
+*{
+   box-sizing: border-box;
+}
+
 .app-background {
     background: #faf9fd;
 }

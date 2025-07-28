@@ -1,20 +1,39 @@
+.app-blog-info {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.app-blog-user{
+    margin-bottom: 2rem;
+}
+
 .app-blog-title {
     color: #242424;
     margin: 0;
-    font-weight: 700;
-    line-height: 52px;
-    font-size: 42px;
     font-family: sohne, "Helvetica Neue", Helvetica, Arial, sans-serif;
     overflow-wrap: break-word;
-    word-break: break-word;    
+    word-break: break-word; 
+    h2{
+        font-weight: 800;
+        line-height: 1.5rem;
+        font-size: 22px;
+    }
+      
 }
 
 .app-blog-subtitle {
-    line-height: 28px;
+    line-height: 1.3rem;
     margin-top: 0.92em;
-    font-size: 22px;
-    margin-bottom: 24px;
+    font-size: 16px;
+    margin-bottom: 44px;
     letter-spacing: 0;
     color: #6B6B6B;
     font-weight: 400;
+}
+
+.app-blog-content {
+    font-weight: 400;
+     font-size: 16px;
+     line-height: 1.3rem;
 }
