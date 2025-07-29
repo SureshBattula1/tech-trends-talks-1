@@ -1,100 +1,101 @@
-
 <div class="app-calculator-container">
   <div class="flex-row">
     <div class="flex-item-24">
-    <form  (ngSubmit)="calculateEMI()">
-      <div class="align-end menu-bar">
-        <mat-tab-group
-          [(selectedIndex)]="selectedLoanTypeIndex"
-          (selectedIndexChange)="onLoanTypeChange($event)"
-          animationDuration="400ms"
-          class="loan-tab-group"
-          @tabStagger
-        >
-        <mat-tab *ngFor="let loanType of loanTypes; let i = index"
-         [ngClass]="{
+      <form (ngSubmit)="calculateEMI()">
+        <div class="align-end menu-bar">
+          <mat-tab-group [(selectedIndex)]="selectedLoanTypeIndex" (selectedIndexChange)="onLoanTypeChange($event)"
+            animationDuration="400ms" class="loan-tab-group" @tabStagger>
+            <mat-tab *ngFor="let loanType of loanTypes; let i = index"  [ngClass]="{
            'active-tab': selectedLoanTypeIndex === i,
            'floating-tab': selectedLoanTypeIndex !== i
-         }">
-            <ng-template mat-tab-label>
-              <div class="tab-icon-container">
-                <mat-icon [ngClass]="'icon-' + loanType.value">{{ loanType.icon }}</mat-icon>
-                <span>{{ loanType.viewValue }}</span>
-              </div>
-            </ng-template>
-          </mat-tab>
+            }" #tabRef>
+              <ng-template mat-tab-label>
+                <div class="tab-icon-container">
+                  <mat-icon [ngClass]="'icon-' + loanType.value">{{ loanType.icon }}</mat-icon>
+                  <span>{{ loanType.viewValue }}</span>
+                </div>
+              </ng-template>
+            </mat-tab>
+          </mat-tab-group>
+        </div>
+        <div class="flex-row">
+          <div class="flex-item-auto">
+            <mat-card>
+              <mat-card-content>
+                <div class="flex-col">
+                  <div class="flex-item-24">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Loan Amount</mat-label>
+                      <mat-icon matPrefix> ₹</mat-icon>
+                      <input matInput type="number" (blur)="validateAmount()" [formControl]="amountForm" name="amount"
+                        required />
+                    </mat-form-field>
+                  </div>
+                  <div class="flex-item-24">
+                    <app-price-progress-bar [mode]="'PRICE'" [minPrice]="10000" [maxPrice]="100000000" [step]="1"
+                      [currentPrice]="amount"
+                      (priceChanged)="priceProgressChange($event,'PRICE')"></app-price-progress-bar>
+                  </div>
+                </div>
+              </mat-card-content>
 
-        
-        </mat-tab-group>
-      </div>
-      <div class="flex-row">
-        <div class="flex-item-auto">
-          <mat-card>
-            <mat-card-content>
-              <div class="flex-col">
+            </mat-card>
+          </div>
+          <div class="flex-item-auto">
+            <mat-card>
+              <mat-card-content>
+                <div class="flex-col">
+                  <div class="flex-item-24">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Loan Term (Years)</mat-label>
+                      <input matInput type="number" (blur)="validateTenure()" [formControl]="yearsForm" name="years"
+                        required />
+                      <mat-icon matSuffix> Yr </mat-icon>
+                    </mat-form-field>
+                  </div>
+                </div>
                 <div class="flex-item-24">
-                  <mat-form-field  appearance="outline">
-                    <mat-label>Loan Amount</mat-label>
-                    <mat-icon matPrefix> ₹</mat-icon>
-                    <input matInput type="number"  (blur)="validateAmount()" [formControl]="amountForm" name="amount" required />
-                  </mat-form-field>
+                  <app-price-progress-bar [mode]="'TENURE'" [minPrice]="1" [maxPrice]="50" [step]="1" [discrete]="true"
+                    [currentPrice]="years"
+                    (priceChanged)="priceProgressChange($event,'TENURE')"></app-price-progress-bar>
                 </div>
-                <div class="flex-item-24"> 
-                  <app-price-progress-bar [mode]="'PRICE'"  [minPrice]="10000" [maxPrice]="100000000" [step]="1" [currentPrice]="amount" (priceChanged)="priceProgressChange($event,'PRICE')"></app-price-progress-bar>
+              </mat-card-content>
+            </mat-card>
+
+          </div>
+          <div class="flex-item-auto">
+            <mat-card>
+              <mat-card-content>
+                <div class="flex-col">
+                  <div class="flex-item-24">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Interest Rate (%)</mat-label>
+                      <input matInput type="number" (blur)="validateInterestRate()" [formControl]="interestForm"
+                        name="interestRate" required />
+                      <mat-icon matSuffix> % </mat-icon>
+                    </mat-form-field>
+                  </div>
                 </div>
-              </div>
-            </mat-card-content>
-          </mat-card>
-        </div>
-        <div class="flex-item-auto">
-          <mat-card>
-            <mat-card-content>
-              <div class="flex-col">
                 <div class="flex-item-24">
-                  <mat-form-field  appearance="outline">
-                    <mat-label>Loan Term (Years)</mat-label>
-                    <input matInput type="number"  (blur)="validateTenure()"  [formControl]="yearsForm" name="years" required />
-                    <mat-icon matSuffix> Yr </mat-icon>
-                  </mat-form-field>
+                  <app-price-progress-bar [mode]="'PERCENTAGE'" [minPrice]="1" [maxPrice]="30" [step]="1"
+                    [discrete]="true" [currentPrice]="interestRate"
+                    (priceChanged)="priceProgressChange($event,'PERCENTAGE')"></app-price-progress-bar>
                 </div>
-              </div>
-              <div class="flex-item-24">
-                <app-price-progress-bar [mode]="'TENURE'"  [minPrice]="1" [maxPrice]="50" [step]="1" [discrete]="true" [currentPrice]="years" (priceChanged)="priceProgressChange($event,'TENURE')"></app-price-progress-bar>
-              </div>
-            </mat-card-content>
-          </mat-card>
-    
+              </mat-card-content>
+            </mat-card>
+          </div>
         </div>
-        <div class="flex-item-auto">
-          <mat-card>
-            <mat-card-content>
-              <div class="flex-col">
-                <div class="flex-item-24">
-                  <mat-form-field  appearance="outline">
-                    <mat-label>Interest Rate (%)</mat-label>
-                    <input matInput type="number" (blur)="validateInterestRate()"  [formControl]="interestForm" name="interestRate" required />
-                    <mat-icon matSuffix> % </mat-icon>
-                  </mat-form-field>
-                </div>
-              </div>
-              <div class="flex-item-24">
-                <app-price-progress-bar [mode]="'PERCENTAGE'" [minPrice]="1" [maxPrice]="30" [step]="1" [discrete]="true"  [currentPrice]="interestRate" (priceChanged)="priceProgressChange($event,'PERCENTAGE')"></app-price-progress-bar>
-              </div>
-            </mat-card-content>
-          </mat-card> 
-        </div>
-      </div>
-      
-    </form>
+
+      </form>
+    </div>
   </div>
-</div>
 
   <div class="flex-row">
     <div class="flex-item-24">
-    <mat-card *ngIf="emi !== null" class="app-calculator-result-card">
-   
-        <!-- <mat-card-content>
-          <div class="app-cal culator-result-content"> 
+      <mat-card *ngIf="emi !== null" class="app-calculator-result-card">
+
+        <mat-card-content>
+          <div class="app-cal culator-result-content">
             <div class="flex-row">
               <div class="flex-item-auto table-result">
                 <table class="table-emi">
@@ -115,60 +116,20 @@
                     <td>{{ totalPayment | currency:'INR':'symbol':'1.2-2' }}</td>
                   </tr>
                 </table>
-                
+
               </div>
               <div class="flex-item-auto">
                 <div class="app-chart">
-                  <canvas baseChart
-                          [data]="chartData"
-                          [type]="chartType"
-                          [options]="chartOptions">
+                  <canvas baseChart [data]="chartData" [type]="chartType" [options]="chartOptions">
                   </canvas>
                 </div>
               </div>
             </div>
-          
-          </div>
-        </mat-card-content> -->
-        <mat-card-content>
-          <div class="app-cal culator-result-content"> 
-            <div class="flex-row">
-              <div class="flex-item-auto table-result" #emiTable>
-                <table class="table-emi">
-                  <tr>
-                    <td class="table-emi-title">Monthly EMI:</td>
-                    <td class="table-emi-price"> {{ emi | currency:'INR':'symbol':'1.2-2' }}</td>
-                  </tr>
-                  <tr>
-                    <td>Total Interest:</td>
-                    <td>{{ totalInterest | currency:'INR':'symbol':'1.2-2' }}</td>
-                  </tr>
-                  <tr>
-                    <td>Principal Amount:</td>
-                    <td>{{ pricipalAmount | currency:'INR':'symbol':'1.2-2' }}</td>
-                  </tr>
-                  <tr>
-                    <td>Total Payment:</td>
-                    <td>{{ totalPayment | currency:'INR':'symbol':'1.2-2' }}</td>
-                  </tr>
-                </table>
-                
-              </div>
-              <div class="flex-item-auto">
-                <div class="app-chart">
-                  <canvas baseChart
-                          [data]="chartData"
-                          [type]="chartType"
-                          [options]="chartOptions">
-                  </canvas>
-                </div>
-              </div>
-            </div>
-          
+
           </div>
         </mat-card-content>
-    </mat-card>
-  </div>
+      </mat-card>
+    </div>
   </div>
 
   <!-- <div class="flex-row">
@@ -234,37 +195,37 @@
         <div class="flex-row">
           <div class="flex-item-24">
             <table mat-table [dataSource]="filteredSchedule" class="mat-elevation-z2" id="loan-content">
-              
+
               <ng-container matColumnDef="id">
                 <th mat-header-cell *matHeaderCellDef>S NO</th>
                 <td mat-cell *matCellDef="let row">{{ row.id }}</td>
               </ng-container>
-      
+
               <ng-container matColumnDef="month">
                 <th mat-header-cell *matHeaderCellDef>Month</th>
                 <td mat-cell *matCellDef="let row">{{ row.monthLabel }}</td>
               </ng-container>
-      
+
               <ng-container matColumnDef="principal">
                 <th mat-header-cell *matHeaderCellDef>Principal</th>
                 <td mat-cell *matCellDef="let row">{{ row.principal | currency:'INR':'symbol':'1.2-2' }}</td>
               </ng-container>
-      
+
               <ng-container matColumnDef="interest">
                 <th mat-header-cell *matHeaderCellDef>Interest</th>
                 <td mat-cell *matCellDef="let row">{{ row.interest | currency:'INR':'symbol':'1.2-2' }}</td>
               </ng-container>
-      
+
               <ng-container matColumnDef="emi">
                 <th mat-header-cell *matHeaderCellDef>EMI</th>
                 <td mat-cell *matCellDef="let row">{{ row.emi | currency:'INR':'symbol':'1.2-2' }}</td>
               </ng-container>
-      
+
               <ng-container matColumnDef="balance">
                 <th mat-header-cell *matHeaderCellDef>Balance</th>
                 <td mat-cell *matCellDef="let row">{{ row.balance | currency:'INR':'symbol':'1.2-2' }}</td>
               </ng-container>
-      
+
               <!-- Header Row -->
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <!-- Data Rows -->
@@ -284,7 +245,7 @@
       </div>
     </div>
   </div>
-  
+
 
 
   <!-- About Block -->
@@ -295,22 +256,27 @@
     <p>Understanding what influences your Equated Monthly Instalment (EMI) can help you select smarter loan options:</p>
     <ul>
       <li><strong>Principal Amount:</strong> The total amount borrowed. Higher principal equals higher EMIs.</li>
-      <li><strong>Interest Rate:</strong> The lender’s rate directly affects EMI. Higher rates increase monthly obligations.</li>
-      <li><strong>Loan Tenure:</strong> Longer tenures lower EMIs but raise total interest paid. Shorter tenures do the opposite.</li>
-      <li><strong>Processing Fees & Charges:</strong> Not part of EMI itself, but these add to the overall loan cost.</li>
-      <li><strong>Credit Score & Profile:</strong> A healthy score may unlock lower interest rates, reducing EMI burden.</li>
+      <li><strong>Interest Rate:</strong> The lender’s rate directly affects EMI. Higher rates increase monthly
+        obligations.</li>
+      <li><strong>Loan Tenure:</strong> Longer tenures lower EMIs but raise total interest paid. Shorter tenures do the
+        opposite.</li>
+      <li><strong>Processing Fees & Charges:</strong> Not part of EMI itself, but these add to the overall loan cost.
+      </li>
+      <li><strong>Credit Score & Profile:</strong> A healthy score may unlock lower interest rates, reducing EMI burden.
+      </li>
     </ul>
-  
+
     <h2>🛠️ How to Use the TECH TRNDS TALKS EMI Calculator</h2>
     <ul>
       <li><strong>Enter Loan Amount:</strong> Input your desired amount or use the slider.</li>
       <li><strong>Choose Interest Rate:</strong> Adjust the rate manually or via the slider.</li>
       <li><strong>Select Tenure:</strong> Define your repayment duration in months.</li>
       <li><strong>View EMI Instantly:</strong> See your estimated monthly instalment at a glance.</li>
-      <li><strong>Review Amortisation Table:</strong> Check the detailed breakdown including total interest and repayment.</li>
+      <li><strong>Review Amortisation Table:</strong> Check the detailed breakdown including total interest and
+        repayment.</li>
       <li><strong>Adjust & Compare:</strong> Modify values to compare plans and find what suits your budget best.</li>
     </ul>
-  
+
     <h2>📐 EMI Calculation Formula</h2>
     <p>The EMI is calculated using the standard formula:</p>
     <pre>
@@ -322,10 +288,12 @@
       <strong>R</strong> = Monthly Interest Rate (Annual Rate ÷ 12 ÷ 100)<br>
       <strong>N</strong> = Loan Tenure in Months
     </p>
-    <p><em>Example:</em> A ₹5,00,000 loan at 10.70% annual interest for 5 years yields an EMI of approximately ₹10,829.</p>
-  
-    <p><strong>💡 Tip:</strong> Manual calculations may lead to errors. Using the EMI calculator ensures precise and hassle-free results.</p>
-  
+    <p><em>Example:</em> A ₹5,00,000 loan at 10.70% annual interest for 5 years yields an EMI of approximately ₹10,829.
+    </p>
+
+    <p><strong>💡 Tip:</strong> Manual calculations may lead to errors. Using the EMI calculator ensures precise and
+      hassle-free results.</p>
+
   </section>
-  
+
 </div>

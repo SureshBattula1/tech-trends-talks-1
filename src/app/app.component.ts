@@ -23,7 +23,7 @@ export class AppComponent implements OnInit{
 
   ngOnInit(): void {
   
-    this.title.setTitle('Tech Trends Talks');
+    this.title.setTitle('Tech Trends Talks - EMI Calculators & Smart Loan Insights');
 
     const link: HTMLLinkElement = this.renderer.createElement('link');
     link.setAttribute('rel', 'canonical');
@@ -32,14 +32,16 @@ export class AppComponent implements OnInit{
 
 
     this.meta.addTags([
-      { name: 'description', content: 'EMI calculators - home, car, personal, gold, mortgage, overdraft, travel, consumer durable & credit card loans with fast approvals & flexible repayment options.' },
-      { name: 'keywords', content: 'EMI, loan calculator, finance, interest rate, mortgage, home loan, personal loan, car loan' },
+      { name: 'description', content: 'EMI calculators for home, car, personal, gold, and more loans. Fast approvals, flexible repayment, and PDF download of EMI breakdowns.' },
+      { name: 'keywords', content: 'emi calculator, sip calculator, loan calculator, mutual fund calculator, sip return calculator, समान मासिक किस्त, personal loan, home loan, car loan , emi download' },
       { name: 'author', content: 'Tech Trends Talks' },
       { name: 'robots', content: 'index, follow' },
       { property: 'og:title', content: 'Tech Trends Talks - Smart Loan Insights' },
       { property: 'og:description', content: 'Get loan EMI breakdowns, tips and more.' },
       { property: 'og:url', content: 'https://techtrendstalks.com/' },
       { property: 'og:type', content: 'website' },
+      { property: 'og:image',  content: 'https://techtrendstalks.com/assets/images/social-preview.jpg' 
+      }
     ]);
 
     

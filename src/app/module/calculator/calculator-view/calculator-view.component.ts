@@ -178,22 +178,12 @@ validateAmount() {
 
   if (!this.amount || this.amount < min || this.amount > max) {
     this.amount = min;
-  } else {
-    this.amount = this.getClosestSuggestedAmount(this.amount);
-  }
-
+  } 
+  
   this.amountForm.setValue(this.amount, { emitEvent: false });
   this.amountForm.updateValueAndValidity();
   this.cd.markForCheck();
   this.calculateEMI();
-}
-
-getClosestSuggestedAmount(value: number): number {
-  if (this.suggestedLoanAmounts.length === 0) return value;
-
-  return this.suggestedLoanAmounts.reduce((prev, curr) =>
-    Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev
-  );
 }
 
   validateTenure() {

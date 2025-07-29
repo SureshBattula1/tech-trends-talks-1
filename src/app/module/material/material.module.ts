@@ -35,7 +35,6 @@ const materialModules: any[] = [
   FlexLayoutModule,
   MatSidenavModule,
   MatToolbarModule,
-  MatIconModule,
   MatListModule,
   MatButtonModule,
   MatCardModule,
