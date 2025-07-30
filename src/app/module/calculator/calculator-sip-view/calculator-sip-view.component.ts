@@ -78,7 +78,7 @@ export class CalculatorSipViewComponent implements OnInit{
   }
 
   validateMonthlyInvestment() {
-    const min = 10000;
+    const min = 100;
     const max = 1000000000;
     if (!this.monthlyInvestment || this.monthlyInvestment < min || this.monthlyInvestment > max) {
       this.monthlyInvestmentForm.setValue(min, { emitEvent: false });
@@ -90,7 +90,7 @@ export class CalculatorSipViewComponent implements OnInit{
   }
 
   validateInvestmentPeriod() {
-    const min = 10;
+    const min = 1;
     const max = 50;
     if (!this.investmentPeriod || this.investmentPeriod < min || this.investmentPeriod > max) {
       this.investmentPeriodForm.setValue(min, { emitEvent: false });

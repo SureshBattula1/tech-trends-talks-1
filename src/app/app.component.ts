@@ -27,7 +27,7 @@ export class AppComponent implements OnInit{
 
     const link: HTMLLinkElement = this.renderer.createElement('link');
     link.setAttribute('rel', 'canonical');
-    link.setAttribute('href', 'https://techtrendstalks.com/calculator/loan-emi-calculator');
+    link.setAttribute('href', 'https://techtrendstalks.com/calculator/emi-calculator');
     this.renderer.appendChild(this.document.head, link);
 
 

@@ -1,0 +1,30 @@
+<div class="eligibility-checker-container" [@fadeInAnimation]>
+  <h1>Eligibility Checker</h1>
+  <p>Check your loan eligibility quickly and easily.</p>
+
+<form class="eligibility-form" (ngSubmit)="onSubmit(eligibilityForm)" #eligibilityForm="ngForm">
+    <div class="form-group">
+      <label for="income">Monthly Income</label>
+      <input type="number" id="income" name="income" ngModel required min="0" />
+    </div>
+
+    <div class="form-group">
+      <label for="loanAmount">Desired Loan Amount</label>
+      <input type="number" id="loanAmount" name="loanAmount" ngModel required min="0" />
+    </div>
+
+    <div class="form-group">
+      <label for="tenure">Loan Tenure (months)</label>
+      <input type="number" id="tenure" name="tenure" ngModel required min="1" />
+    </div>
+
+    <button type="submit" [disabled]="!eligibilityForm.form.valid">Check Eligibility</button>
+  </form>
+
+  <div class="result" *ngIf="result !== null">
+    <h2>Result</h2>
+    <p *ngIf="result.eligible">You are eligible for the loan!</p>
+    <p *ngIf="!result.eligible">Sorry, you are not eligible for the loan.</p>
+    <p>Maximum Loan Amount: {{ result.maxLoanAmount | currency }}</p>
+  </div>
+</div>

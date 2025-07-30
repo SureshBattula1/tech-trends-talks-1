@@ -4,6 +4,7 @@ import { PageNotFoundComponent } from './core/page-not-found/page-not-found.comp
 export const routes: Routes = [
     { path: 'blogs', loadChildren: ()=> import('./module/blog/blog.module').then(m => m.BlogModule) },
     { path: 'calculator', loadChildren: ()=> import('./module/calculator/calculator.module').then(m => m.CalculatorModule) },
+    { path: 'eligibility-checker', loadChildren: () => import('./module/eligibility-checker/eligibility-checker.module').then(m => m.EligibilityCheckerModule) },
     { path: '', redirectTo:'calculator', pathMatch: 'full' },
     { path: '**', component: PageNotFoundComponent}
 ];
