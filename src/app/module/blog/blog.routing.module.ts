@@ -17,11 +17,12 @@ const routes: Routes = [
   // },
   { 
     path: '', component: BlogLayoutComponent, children: [
-      { path: 'list', component: BlogListComponent },
-      { path: 'create', component: BlogCreateComponent },
-      { path: 'view', component: BlogViewComponent },
+      { path: 'list', component: BlogListComponent, data: { breadcrumb: 'List' } },
+      { path: 'create', component: BlogCreateComponent, data: { breadcrumb: 'Create' } },
+      { path: 'view', component: BlogViewComponent,data: { breadcrumb: 'View' } },
       { path: '', redirectTo: 'list', pathMatch: 'full' },
-    ]
+    ], data: { breadcrumb: 'Blogs' },
+
   }
 ];
 

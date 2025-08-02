@@ -7,10 +7,10 @@ import { CalculatorSipViewComponent } from './calculator-sip-view/calculator-sip
 const routes: Routes = [
   { 
     path: '', component: ComponentSidenavComponent, children: [
-      { path: 'emi-calculator', component: CalculatorViewComponent },
-      { path: 'sip-calculator', component: CalculatorSipViewComponent },
-      { path: '', redirectTo: 'emi-calculator', pathMatch: 'full' },
-    ]
+      { path: 'emi-calculator', component: CalculatorViewComponent, data: { breadcrumb: 'EMI  Calculator' } },
+      { path: 'sip-calculator', component: CalculatorSipViewComponent, data: { breadcrumb: 'SIP Calculator' } },
+      { path: '', redirectTo: 'emi-calculator', pathMatch: 'full', data: { breadcrumb: 'EMI  Calculator' } },
+    ], data: { breadcrumb: 'Calculator' }
   },
  
 ];

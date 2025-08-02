@@ -1,0 +1,31 @@
+.mat-toolbar-row, .mat-toolbar-single-row{
+    height: 45px!important      ;
+}
+
+.app-breadcrumb{
+    display: flex; 
+    align-items: center;
+
+    a.crumb {
+        color: #2b3862;
+        text-decoration: none;
+        padding: 4px;
+        font-weight: 500;
+        font-size: 14px;
+        transition: color 0.3s ease;
+    }
+
+    a.crumb:hover {
+        color: #2b84d6; 
+        text-decoration: underline;
+    }
+
+    mat-icon {
+        display: flex;
+        color: #2b3862;
+        font-size: 18px;
+        margin: 0 4px;
+        align-items: center;
+    }   
+}
+
