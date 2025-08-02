@@ -1,5 +1,6 @@
-import { Component, Input, signal } from '@angular/core';
+import { Component, inject, Input, OnInit, signal } from '@angular/core';
 import { BlogListItemComponent } from '../blog-list-item/blog-list-item.component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-blog-list',
@@ -8,94 +9,69 @@ import { BlogListItemComponent } from '../blog-list-item/blog-list-item.componen
   templateUrl: './blog-list.component.html',
   styleUrl: './blog-list.component.scss'
 })
-export class BlogListComponent {
+export class BlogListComponent implements OnInit {
+
   @Input() blogListItem: any;
-  blogList =  signal([
-    {
-      id: 1,
-      title: 'Exploring Angular 17 Features',
-      subtitle: 'A comprehensive overview of the new features introduced in Angular 17.',
-      description: 'A comprehensive overview of the new features introduced in Angular 17.',
-      image: 'https://miro.medium.com/v2/resize:fill:200:134/1*zi5kKBES0aB0PwCjU7JQcw.jpeg',
-      date: '2023-10-01',
-      user: {
-            userName: "Suresh Dev",
-            userHandle: "@admin_dev",
-            profileImage: "assets/images/image.png",
-            blogDate: "Jul 22, 2025",
-            readDuration: "2 min read ",
-      }  
-    },
-    {
-      id: 2,
-      title: 'Building Scalable Applications with Angular',
-      subtitle: 'A comprehensive overview of the new features introduced in Angular 17.',
-      description: 'Best practices for building scalable applications using Angular.',
-      image: 'https://media.licdn.com/dms/image/v2/D560BAQHuQqdWGsFM9Q/company-logo_100_100/B56ZaB.PV5HgAQ-/0/1745937299380/pwc_acs_in_india_logo?e=1756944000&v=beta&t=nWrjCULyqhD4GW0JxUgqtH6YrG4iAOMednGb1wDHidM',
-      date: '2023-10-01' ,
-       user: {
-            userName: "Naresh Dev",
-            userHandle: "@admin_dev",
-            profileImage: "assets/images/image.png",
-            blogDate: "Jul 22, 2025",
-            readDuration: "2 min read ",
-      }  
-    },
-    {     
-      id: 3,
-      title: 'Understanding Angular Signals',
-      subtitle: 'A comprehensive overview of the new features introduced in Angular 17.',
-      description: 'A deep dive into Angular Signals and their benefits over traditional state management.',
-      image: 'https://media.licdn.com/dms/image/v2/D560BAQHuQqdWGsFM9Q/company-logo_100_100/B56ZaB.PV5HgAQ-/0/1745937299380/pwc_acs_in_india_logo?e=1756944000&v=beta&t=nWrjCULyqhD4GW0JxUgqtH6YrG4iAOMednGb1wDHidM',
-      date: '2023-10-01',
-       user: {
-            userName: "Murali Dev",
-            userHandle: "@murali_dev",
-            profileImage: "assets/images/image.png",
-            blogDate: "Jul 22, 2025",
-            readDuration: "2 min read ",
-      }  
-    },
+
+  public categoryName = '';
+
+  public route = inject(ActivatedRoute);
+
+
+    blogList =  signal([
       {
-      id: 1,
-      title: 'Exploring Angular 17 Features',
-      description: 'A comprehensive overview of the new features introduced in Angular 17.',
-      subtitle: 'A comprehensive overview of the new features introduced in Angular 17.',
-      image: 'https://miro.medium.com/v2/resize:fill:100:66/1*AdBCKbDbACORa66Fhq7a5g.png',
-      date: '2023-10-01'  
-    },
-    {
-      id: 1,
-      title: 'Exploring Angular 17 Features',
-      subtitle: 'A comprehensive overview of the new features introduced in Angular 17.',
-      description: 'A comprehensive overview of the new features introduced in Angular 17.',
-      image: 'https://miro.medium.com/v2/resize:fill:200:134/1*zi5kKBES0aB0PwCjU7JQcw.jpeg',
-      date: '2023-10-01'  
-    },
-    {
-      id: 2,
-      title: 'Building Scalable Applications with Angular',
-      subtitle: 'A comprehensive overview of the new features introduced in Angular 17.',
-      description: 'Best practices for building scalable applications using Angular.',
-      image: 'https://media.licdn.com/dms/image/v2/D560BAQHuQqdWGsFM9Q/company-logo_100_100/B56ZaB.PV5HgAQ-/0/1745937299380/pwc_acs_in_india_logo?e=1756944000&v=beta&t=nWrjCULyqhD4GW0JxUgqtH6YrG4iAOMednGb1wDHidM',
-      date: '2023-10-01'  
-    },
-    {     
-      id: 3,
-      title: 'Understanding Angular Signals',
-      subtitle: 'A comprehensive overview of the new features introduced in Angular 17.',
-      description: 'A deep dive into Angular Signals and their benefits over traditional state management.',
-      image: 'https://media.licdn.com/dms/image/v2/D560BAQHuQqdWGsFM9Q/company-logo_100_100/B56ZaB.PV5HgAQ-/0/1745937299380/pwc_acs_in_india_logo?e=1756944000&v=beta&t=nWrjCULyqhD4GW0JxUgqtH6YrG4iAOMednGb1wDHidM',
-      date: '2023-10-01'  
-    },
-      {
-      id: 1,
-      title: 'Exploring Angular 17 Features',
-      description: 'A comprehensive overview of the new features introduced in Angular 17.',
-      subtitle: 'A comprehensive overview of the new features introduced in Angular 17.',
-      image: 'https://miro.medium.com/v2/resize:fill:100:66/1*AdBCKbDbACORa66Fhq7a5g.png',
-      date: '2023-10-01'  
-    },
-   
-  ])
+        id: 1,
+        title: 'Exploring Angular 17 Features',
+        subtitle: 'A comprehensive overview of the new features introduced in Angular 17.',
+        description: 'A comprehensive overview of the new features introduced in Angular 17.',
+        image: 'https://miro.medium.com/v2/resize:fill:200:134/1*zi5kKBES0aB0PwCjU7JQcw.jpeg',
+        date: '2023-10-01',
+        user: {
+              userName: "Suresh Dev",
+              userHandle: "@admin_dev",
+              profileImage: "assets/images/image.png",
+              blogDate: "Jul 22, 2025",
+              readDuration: "2 min read ",
+        },
+        category : this.categoryName
+      },
+      
+    ]);
+
+    ngOnInit() {
+
+      this.categoryName = this.fromKebabToTitle(this.route.snapshot.paramMap.get('categoryName') || '');
+        
+      const tempList = [];
+
+      for (let i = 1; i <= 15; i++) {
+        tempList.push({
+          id: i,
+          title: `Blog Post ${i}`,
+          subtitle: `Subtitle for Blog ${i}`,
+          description: `Description for Blog ${i}`,
+          image: 'https://placehold.co/600x400',
+          date: '2023-10-01',
+          category: this.categoryName,
+          user: {
+            userName: `User ${i}`,
+            userHandle: `@user${i}`,
+            profileImage: 'assets/images/image.png',
+            blogDate: 'Jul 22, 2025',
+            readDuration: '2 min read',
+          }
+        });
+      }
+
+      this.blogList.set(tempList);
+
+    }
+
+    fromKebabToTitle(name: string): string {
+      return name
+        .split('-') 
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1)) 
+        .join(' '); 
+    }
+
 }

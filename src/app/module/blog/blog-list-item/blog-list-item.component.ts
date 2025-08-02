@@ -9,6 +9,7 @@ interface BlogListItem {
   description: string;
   image: string;
   date: string;
+  category: string; 
   user?: UserInfo
 }
 

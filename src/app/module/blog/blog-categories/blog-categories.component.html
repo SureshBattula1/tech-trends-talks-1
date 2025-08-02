@@ -1,0 +1,20 @@
+<div class="app-blog-container">
+    <div class="flex-row">
+        <div class="flex-item-auto">
+            <h4>Our Blog Categories</h4>
+            <p>Read our recent articles on various categories</p>
+        </div>
+    </div>
+
+    <div class="flex-row">
+        <div class="flex-item-auto">
+            <mat-chip-set  cdkDropList cdkDropListOrientation="horizontal">
+                @for (blogcategory of blogCategories(); track blogcategory) {
+                    <mat-chip  routerLink="/blogs/category/{{ toKebabCase(blogcategory?.name ?? '') }}">
+                      {{blogcategory?.name}}
+                    </mat-chip>
+                }
+            </mat-chip-set>
+        </div>
+    </div> 
+</div>

@@ -13,6 +13,9 @@
             <div class="app-blog-list-description">
                 <p>{{ blog()?.description }}</p>
             </div>
+            <div class="app-blog-list-subtitle">
+                <span><strong>{{ blog()?.category }}</strong></span>
+            </div>
             <div class="app-blog-list-footer">
                 <app-blog-user-info [userInfo]="blog()?.user"></app-blog-user-info>
             </div>

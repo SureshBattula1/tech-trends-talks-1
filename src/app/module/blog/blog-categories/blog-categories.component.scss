@@ -1,0 +1,13 @@
+.app-blog-container
+ {
+    display: flex;
+    flex-direction: column;
+    margin: 1rem;
+
+    mat-chip{
+        display: flex;
+        padding: 2rem;
+        margin: 1rem;
+        min-width: 165px;
+    }
+}
