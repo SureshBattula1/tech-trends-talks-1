@@ -72,17 +72,85 @@
       />
     </div>
 
-    <button type="submit" [disabled]="!eligibilityForm.form.valid" class="submit-button">
-      Check Eligibility
-    </button>
+    <div class="checker-btn">
+      <button type="submit" [disabled]="!eligibilityForm.form.valid" class="submit-button">
+        Check Eligibility
+      </button>
+    </div>
   </form>
 
   <div class="result" *ngIf="result !== null" [@fadeInAnimation]>
-    <h2>Result</h2>
-    <p class="explanation" [ngClass]="{'eligible': result.eligible, 'not-eligible': !result.eligible}">
-      {{ result.eligible ? '✅' : '❌' }} {{ explanation }}
-    </p>
-    <p>EMI: ₹{{ result.emi | number:'1.2-2' }}</p>
-    <p>EMI to Income Ratio: {{ result.ratio | number:'1.2-2' }}%</p>
+      <h3>Result</h3>
+      <div class="result-card">
+        <div>
+          <p class="explanation" [ngClass]="{'eligible': result.eligible, 'not-eligible': !result.eligible}">
+            {{ result.eligible ? '✅' : '❌' }} {{ explanation }}
+          </p>
+          <p>EMI: ₹{{ result.emi | number:'1.2-2' }}</p>
+          <p>EMI to Income Ratio: {{ result.ratio | number:'1.2-2' }}%</p>
+        </div>
+        <div class="app-chart">
+          <canvas baseChart [data]="chartData" [type]="chartType" [options]="chartOptions">
+          </canvas>
+        </div>
+      </div>
   </div>
+
+  <div class="explanation-container">
+    <section class="card-info">
+      <h3>🧮 Key Loan Repayment Metrics</h3>
+      <p>We use the formula:</p>
+      <div class="formula">
+        EMI = [ P × r × (1 + r)<sup>n</sup> ] / [ (1 + r)<sup>n</sup> − 1 ]
+      </div>
+      <ul class="variables">
+        <li><strong>P</strong> = Loan Amount</li>
+        <li><strong>r</strong> = Monthly Interest Rate (Annual Rate ÷ 12 ÷ 100)</li>
+        <li><strong>n</strong> = Tenure in Months</li>
+      </ul>
+
+      <div class="example">
+        <h4>🔹 Example:</h4>
+        <p>Loan Amount: ₹5,00,000<br>
+          Interest Rate: 10% annual<br>
+          Tenure: 5 years = 60 months<br>
+          Monthly Rate = 10 ÷ 12 ÷ 100 = <strong>0.00833</strong>
+        </p>
+      </div>
+    </section>
+
+    <section class="card-info">
+      <h3>💰 Income Capacity Insights</h3>
+      <p>We deduct monthly expenses from your salary to find your net available income:</p>
+      <div class="formula">
+        Adjusted Income = Monthly Salary − Expenses
+      </div>
+      <div class="example">
+        <h4>🔸 Example:</h4>
+        <p>Monthly Salary: ₹60,000<br>
+          Expenses: ₹15,000<br>
+          Adjusted Income = ₹60,000 − ₹15,000 = <strong>₹45,000</strong>
+        </p>
+      </div>
+    </section>
+
+    <section class="card-info">
+      <h3>📌 Affordability Threshold Check</h3>
+      <p>We check if EMI is less than or equal to 50% of your adjusted income:</p>
+      <div class="formula">
+        Ratio = ( EMI / Adjusted Income ) × 100
+      </div>
+      <p>If <strong>Ratio ≤ 50%</strong>, you're eligible.</p>
+
+      <div class="example">
+        <h4>🔹 Example:</h4>
+        <p>EMI: ₹20,000<br>
+          Adjusted Income: ₹45,000<br>
+          Ratio = ( ₹20,000 / ₹45,000 ) × 100 = <strong>44.4%</strong><br>
+          ➤ You are eligible 🎉
+        </p>
+      </div>
+    </section>
+  </div>
+
 </div>

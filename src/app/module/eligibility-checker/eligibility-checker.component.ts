@@ -1,7 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal, ViewChild } from '@angular/core';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { FormControl } from '@angular/forms';
 import { Observable, startWith, map } from 'rxjs';
+import { ChartConfiguration, ChartType } from 'chart.js';
+import { BaseChartDirective } from 'ng2-charts';
+import { LoaderService } from '../../services/loading-bar/loader.service';
 
 @Component({
   selector: 'app-eligibility-checker',
@@ -34,6 +37,10 @@ export class EligibilityCheckerComponent {
     { value: 'business', viewValue: 'Business Loan', interest: 12.0 }
   ];
 
+  @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
+  public loader = inject(LoaderService);
+  readonly panelOpenState = signal(false);
+  
   loanTypeControl = new FormControl('');
   filteredLoanTypes: Observable<any[]>;
 
@@ -45,6 +52,26 @@ export class EligibilityCheckerComponent {
 
   result: { eligible: boolean; emi: number; ratio: number } | null = null;
   explanation: string = '';
+
+
+  chartType: ChartType = 'doughnut';
+    chartData: ChartConfiguration['data'] = {
+      labels: ['EMI', 'Remaining Salary'],
+      datasets: [{
+        label: 'Monthly Allocation',
+        data: [0, 0],
+        backgroundColor: ['#FF6384', '#36A2EB'],
+      }]
+    };
+
+    chartOptions: ChartConfiguration['options'] = {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top'
+        }
+      }
+    };
 
   constructor() {
     this.filteredLoanTypes = this.loanTypeControl.valueChanges.pipe(
@@ -74,6 +101,8 @@ export class EligibilityCheckerComponent {
   }
 
   onSubmit(form: any) {
+    this.loader.show();
+
     if (!this.monthlySalary || !this.loanAmount || !this.tenureMonths || !this.selectedLoanType) {
       this.result = null;
       return;
@@ -95,6 +124,17 @@ export class EligibilityCheckerComponent {
     const eligible = ratio <= 50; // Assuming max 50% of salary can be EMI
 
     this.result = { eligible, emi, ratio };
+
+    const remainingSalary = adjustedSalary - emi;
+
+    // ✅ Update the chart data dynamically
+    this.chartData.datasets[0].data = [parseFloat(emi.toFixed(2)), parseFloat(remainingSalary.toFixed(2))];
+
+    // ✅ Trigger chart update
+    setTimeout(() => {
+      this.chart?.update();
+      this.loader.hide();
+    }, 0);
 
     if (eligible) {
       this.explanation = `Based on your monthly salary and the selected loan type (${this.selectedLoanType.viewValue}), your EMI of ₹${emi.toFixed(2)} is within the acceptable limit. You are eligible for this loan.`;
