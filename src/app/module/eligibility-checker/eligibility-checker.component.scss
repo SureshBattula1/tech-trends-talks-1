@@ -1,28 +1,29 @@
 .eligibility-checker-container {
-  max-width: 600px;
+  max-width: 1000px;
   margin: 2rem auto;
   padding: 2rem;
-  background: linear-gradient(135deg, #6b73ff 0%, #000dff 100%);
+  background: #edeff7;
   border-radius: 12px;
-  color: white;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  color: #2b3862;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  animation: slideIn 0.5s ease forwards;
+  animation: slideIn 0.6s ease forwards;
 }
 
 h1 {
   text-align: center;
   margin-bottom: 1rem;
   font-weight: 700;
-  font-size: 2.5rem;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  font-size: 2.8rem;
+  color: #2b3862;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 
 p {
   text-align: center;
   margin-bottom: 2rem;
   font-size: 1.2rem;
-  color: #d0d0ff;
+  color: #006ccf;
+  font-weight: 600;
 }
 
 .eligibility-form {
@@ -40,42 +41,42 @@ p {
       font-size: 1rem;
     }
 
-    input {
+    .input-field {
       padding: 0.75rem 1rem;
-      border-radius: 8px;
+      border-radius: 25px;
       border: none;
       font-size: 1rem;
       outline: none;
       transition: box-shadow 0.3s ease;
-      box-shadow: inset 0 0 5px rgba(255,255,255,0.2);
-      background-color: rgba(255, 255, 255, 0.1);
-      color: white;
+      box-shadow: inset 0 0 8px rgba(255,255,255,0.2);
+      background-color: rgba(151, 201, 228, 1);
+      color: #000000;
 
       &:focus {
-        box-shadow: 0 0 8px 2px #a0a0ff;
-        background-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 12px 3px #a5d6a7;
+        background-color: rgba(255, 255, 255, 0.25);
       }
     }
   }
 
-  button {
+  .submit-button {
     padding: 1rem;
-    border-radius: 10px;
+    border-radius: 12px;
     border: none;
-    background: #ff6b6b;
+    background: #2e7d32;
     color: white;
     font-weight: 700;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     cursor: pointer;
     transition: background 0.3s ease, transform 0.2s ease;
 
     &:hover:not(:disabled) {
-      background: #ff4b4b;
+      background: #1b5e20;
       transform: scale(1.05);
     }
 
     &:disabled {
-      background: #999;
+      background: #2b3862;
       cursor: not-allowed;
     }
   }
@@ -84,22 +85,34 @@ p {
 .result {
   margin-top: 2rem;
   padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
   text-align: center;
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   font-weight: 600;
-  animation: fadeInResult 0.5s ease forwards;
+  animation: fadeInResult 0.6s ease forwards;
 
   p {
     margin: 0.5rem 0;
+  }
+
+  .eligible {
+    color: #000000;
+    font-weight: 100;
+    animation: pulseGreen 1.5s infinite;
+  }
+
+  .not-eligible {
+    color: #c62828;
+    font-weight: 100;
+    animation: pulseRed 2.5s infinite;
   }
 }
 
 @keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -115,3 +128,24 @@ p {
     opacity: 1;
   }
 }
+
+@keyframes pulseGreen {
+  0%, 100% {
+    text-shadow: 0 0 5px #4caf50, 0 0 10px #4caf50;
+  }
+  50% {
+    text-shadow: 0 0 20px #81c784, 0 0 30px #81c784;
+  }
+}
+
+@keyframes pulseRed {
+  0%, 100% {
+    text-shadow: 0 0 5px #c62828, 0 0 10px #c62828;
+  }
+  50% {
+    text-shadow: 0 0 20px #ef5350, 0 0 30px #ef5350;
+  }
+}
+
+
+

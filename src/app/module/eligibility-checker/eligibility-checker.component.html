@@ -2,29 +2,87 @@
   <h1>Eligibility Checker</h1>
   <p>Check your loan eligibility quickly and easily.</p>
 
-<form class="eligibility-form" (ngSubmit)="onSubmit(eligibilityForm)" #eligibilityForm="ngForm">
+  <form class="eligibility-form" (ngSubmit)="onSubmit(eligibilityForm)" #eligibilityForm="ngForm">
     <div class="form-group">
-      <label for="income">Monthly Income</label>
-      <input type="number" id="income" name="income" ngModel required min="0" />
+      <label for="loanType">Loan Type</label>
+      <input
+        type="text"
+        id="loanType"
+        [formControl]="loanTypeControl"
+        [matAutocomplete]="auto"
+        placeholder="Select or type loan type"
+        required
+        class="input-field fadeSlideRight_TechTrends"
+      />
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onLoanTypeSelected($event)">
+        <mat-option *ngFor="let option of filteredLoanTypes | async" [value]="option.viewValue">
+          {{ option.viewValue }}
+        </mat-option>
+      </mat-autocomplete>
     </div>
 
     <div class="form-group">
-      <label for="loanAmount">Desired Loan Amount</label>
-      <input type="number" id="loanAmount" name="loanAmount" ngModel required min="0" />
+      <label for="monthlySalary">Monthly Salary (₹)</label>
+      <input
+        type="number"
+        id="monthlySalary"
+        name="monthlySalary"
+        [(ngModel)]="monthlySalary"
+        required
+        min="0"
+        class="input-field"
+      />
     </div>
 
     <div class="form-group">
-      <label for="tenure">Loan Tenure (months)</label>
-      <input type="number" id="tenure" name="tenure" ngModel required min="1" />
+      <label for="loanAmount">Loan Amount (₹)</label>
+      <input
+        type="number"
+        id="loanAmount"
+        name="loanAmount"
+        [(ngModel)]="loanAmount"
+        required
+        min="0"
+        class="input-field"
+      />
     </div>
 
-    <button type="submit" [disabled]="!eligibilityForm.form.valid">Check Eligibility</button>
+    <div class="form-group">
+      <label for="tenureMonths">Loan Tenure (months)</label>
+      <input
+        type="number"
+        id="tenureMonths"
+        name="tenureMonths"
+        [(ngModel)]="tenureMonths"
+        required
+        min="1"
+        class="input-field"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="expenses">Monthly Expenses (₹)</label>
+      <input
+        type="number"
+        id="expenses"
+        name="expenses"
+        [(ngModel)]="expenses"
+        min="0"
+        class="input-field"
+      />
+    </div>
+
+    <button type="submit" [disabled]="!eligibilityForm.form.valid" class="submit-button">
+      Check Eligibility
+    </button>
   </form>
 
-  <div class="result" *ngIf="result !== null">
+  <div class="result" *ngIf="result !== null" [@fadeInAnimation]>
     <h2>Result</h2>
-    <p *ngIf="result.eligible">You are eligible for the loan!</p>
-    <p *ngIf="!result.eligible">Sorry, you are not eligible for the loan.</p>
-    <p>Maximum Loan Amount: {{ result.maxLoanAmount | currency }}</p>
+    <p class="explanation" [ngClass]="{'eligible': result.eligible, 'not-eligible': !result.eligible}">
+      {{ result.eligible ? '✅' : '❌' }} {{ explanation }}
+    </p>
+    <p>EMI: ₹{{ result.emi | number:'1.2-2' }}</p>
+    <p>EMI to Income Ratio: {{ result.ratio | number:'1.2-2' }}%</p>
   </div>
 </div>
