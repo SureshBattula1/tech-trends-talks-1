@@ -1,23 +1,23 @@
 <div class="app-blog-item-container ">
     <div class="app-blog-list">
         <div class="app-blog-list-log">
-            <img [src]="blog()?.image" alt="Blog Image" class="img-fluid">
+            <img [src]="blog().image" alt="Blog Image" class="img-fluid">
         </div>
         <div class="app-blog-list-content">
             <div class="app-blog-list-title" routerLink="/blogs/view" >
-                <strong>{{ blog()?.title }}</strong>
+                <strong>{{ blog().title }}</strong>
             </div>
             <div class="app-blog-list-subtitle">
-                <span>{{ blog()?.subtitle }}</span>
+                <span>{{ blog().subtitle }}</span>
             </div>
             <div class="app-blog-list-description">
-                <p>{{ blog()?.description }}</p>
+                <p>{{ blog().description }}</p>
             </div>
             <div class="app-blog-list-subtitle">
-                <span><strong>{{ blog()?.category }}</strong></span>
+                <span><strong>{{ blog().category }}</strong></span>
             </div>
             <div class="app-blog-list-footer">
-                <app-blog-user-info [userInfo]="blog()?.user"></app-blog-user-info>
+                <app-blog-user-info [userInfo]="blog().user"></app-blog-user-info>
             </div>
         </div>
     </div>

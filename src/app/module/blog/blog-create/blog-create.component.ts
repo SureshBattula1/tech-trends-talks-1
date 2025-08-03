@@ -1,4 +1,4 @@
-import { Component, computed, inject, model, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, inject, model, OnInit, signal, ViewChild, ViewEncapsulation } from '@angular/core';
 import { SharedModule } from '../../shared/shared.module';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgxEditorComponent, Editor, Toolbar } from 'ngx-editor';
@@ -14,12 +14,19 @@ import { LiveAnnouncer } from '@angular/cdk/a11y';
   standalone: true,
   imports: [SharedModule,  ],
   templateUrl: './blog-create.component.html',
-  styleUrl: './blog-create.component.scss'
+  styleUrl: './blog-create.component.scss',
+  encapsulation: ViewEncapsulation.None
+
 })
 export class BlogCreateComponent implements OnInit {
 
   html = '';
   editor!: Editor;
+
+  editorConfig: any;
+
+   @ViewChild('imageInput') imageInput!: ElementRef; 
+
 
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   readonly currenttag = model('');
@@ -43,6 +50,7 @@ export class BlogCreateComponent implements OnInit {
     ['link', 'image'],
     ['text_color', 'background_color'],
     ['align_left', 'align_center', 'align_right', 'align_justify'],
+    
   ];
  
 
@@ -53,6 +61,11 @@ export class BlogCreateComponent implements OnInit {
   ngOnInit() {
     this.editor = new Editor();
     this.formInit();
+    this.editorConfig = {
+      minHeight: '800px',
+      toolbar: this.toolbar
+    };
+
   }
 
   formInit() {
@@ -104,6 +117,38 @@ export class BlogCreateComponent implements OnInit {
   save(){
     console.log(`form data::`, this.form.value);
   }
+
+   onImageButtonClick() {
+     this.imageInput.nativeElement.click(); // Trigger the file input click
+  }
+
+  onFileSelected(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const imageUrl = reader.result as string;
+        this.insertImageToEditor(imageUrl); // inject into ngx-editor
+      };
+
+      reader.readAsDataURL(file); // preview as base64
+    }
+  }
+
+  insertImageToEditor(imageUrl: string) {
+  const selection = this.editor.view.state.selection;
+  const { schema, tr } = this.editor.view.state;
+
+  const node = schema.nodes['image'].create({
+    src: imageUrl,
+    alt: 'Uploaded Image'
+  });
+
+  const transaction = tr.replaceSelectionWith(node).scrollIntoView();
+  this.editor.view.dispatch(transaction);
+}
+
    
 
 }

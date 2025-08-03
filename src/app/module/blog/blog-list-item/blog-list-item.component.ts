@@ -10,7 +10,7 @@ interface BlogListItem {
   image: string;
   date: string;
   category: string; 
-  user?: UserInfo
+  user: UserInfo
 }
 
 export interface UserInfo {
@@ -31,7 +31,23 @@ export interface UserInfo {
 })
 export class BlogListItemComponent implements OnInit {
 
-  blogListItem = input<BlogListItem>();
+  defaultBlog={
+  title: "",
+  subtitle: "",   
+  description: "",
+  image: "",
+  date: "",
+  category: "", 
+  user: {
+    userName: '',
+    userHandle: '',
+    profileImage: '',
+    blogDate: '',
+    readDuration: '',
+  }
+  }
+
+  blogListItem = input<BlogListItem>(this.defaultBlog);
   blog = computed(() => this.blogListItem());
 
   ngOnInit() {

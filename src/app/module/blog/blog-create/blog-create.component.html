@@ -1,5 +1,5 @@
 <div class="app-blog-container">
-    <form  [formGroup]="form">
+    <form class="app-form" [formGroup]="form">
         <mat-form-field appearance="outline">
             <mat-label>Title</mat-label>
             <input type="text" matInput formControlName="title" placeholder="Ex. Blog Title" />
@@ -9,13 +9,12 @@
         </mat-form-field><br />
 
          <mat-form-field appearance="outline">
-            <mat-label>subTitle</mat-label>
+            <mat-label>Sub Title</mat-label>
             <input type="text" matInput formControlName="subTitle" placeholder="Ex. Blog subTitle" />
             @if (form.get('subTitle')?.hasError('required')) {
             <mat-error>subTitle is <strong>required</strong></mat-error>
             }
         </mat-form-field><br />
-
 
         <div>
             <mat-form-field class="example-chip-list">
@@ -53,18 +52,29 @@
             <mat-label>Content</mat-label>
             <div class="editor-container">
 
-                <ngx-editor-menu [editor]="editor" [toolbar]="toolbar" formControlName="content">
-                    </ngx-editor-menu>
-                    <ngx-editor [editor]="editor" >
-                    </ngx-editor>
+                <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"  [customMenuRef]="customMenu">  </ngx-editor-menu>
+                <ngx-editor [editor]="editor" ></ngx-editor>
+                <input type="file" #imageInput (change)="onFileSelected($event)" style="display: none;"> 
+
+                <!-- Create template reference -->
+                <ng-template #customMenu>
+                  <div class="custom-toolbar">
+                      <button type="button" (click)="onImageButtonClick()">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M5 20h14v-2H5v2zm7-14l-5 5h3v4h4v-4h3l-5-5z"/>
+                        </svg>
+                      </button>
+                  </div>
+                </ng-template>  
+
             </div>
         </div>
         
          <mat-form-field appearance="outline">
-            <mat-label>decription</mat-label>
+            <mat-label>Decription</mat-label>
             <input type="text" matInput formControlName="decription" placeholder="Ex. Blog decription" />
             @if (form.get('decription')?.hasError('required')) {
-            <mat-error>decription is <strong>required</strong></mat-error>
+            <mat-error>Description is <strong>required</strong></mat-error>
             }
         </mat-form-field><br />
 
