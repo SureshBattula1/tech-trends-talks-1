@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
 import { EligibilityCheckerComponent } from './eligibility-checker.component';
 import { EligibilityCheckerRoutingModule } from './eligibility-checker-routing.module';
 
@@ -11,6 +13,9 @@ import { EligibilityCheckerRoutingModule } from './eligibility-checker-routing.m
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
+    MatAutocompleteModule,
+    MatInputModule,
     EligibilityCheckerRoutingModule
   ]
 })
