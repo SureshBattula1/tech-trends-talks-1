@@ -53,7 +53,7 @@
             <div class="editor-container">
 
                 <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"  [customMenuRef]="customMenu">  </ngx-editor-menu>
-                <ngx-editor [editor]="editor" ></ngx-editor>
+                <ngx-editor [editor]="editor" formControlName="content" ></ngx-editor>
                 <input type="file" #imageInput (change)="onFileSelected($event)" style="display: none;"> 
 
                 <!-- Create template reference -->
