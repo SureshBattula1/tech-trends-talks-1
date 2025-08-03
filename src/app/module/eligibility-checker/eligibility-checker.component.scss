@@ -43,17 +43,17 @@ p {
 
     .input-field {
       padding: 0.75rem 1rem;
-      border-radius: 25px;
+      border-radius: 5px;
       border: none;
       font-size: 1rem;
       outline: none;
       transition: box-shadow 0.3s ease;
       box-shadow: inset 0 0 8px rgba(255,255,255,0.2);
-      background-color: rgba(151, 201, 228, 1);
+      // background-color: rgba(151, 201, 228, 1);
       color: #000000;
 
       &:focus {
-        box-shadow: 0 0 12px 3px #a5d6a7;
+        box-shadow: 0 0 12px 3px #81c0e7;
         background-color: rgba(255, 255, 255, 0.25);
       }
     }
@@ -61,9 +61,9 @@ p {
 
   .submit-button {
     padding: 1rem;
-    border-radius: 12px;
+    border-radius: 3px;
     border: none;
-    background: #2e7d32;
+    background: #49b2cf;
     color: white;
     font-weight: 700;
     font-size: 1.3rem;
