@@ -23,27 +23,31 @@ export class AppComponent implements OnInit{
 
   ngOnInit(): void {
   
-    this.title.setTitle('Tech Trends Talks - EMI Calculators & Smart Loan Insights');
+    this.title.setTitle('Tech Trends Talks - EMI Calculators & Smart Loan Insights & SIP Calculator');
 
-    const link: HTMLLinkElement = this.renderer.createElement('link');
-    link.setAttribute('rel', 'canonical');
-    link.setAttribute('href', 'https://techtrendstalks.com/calculator/emi-calculator');
-    this.renderer.appendChild(this.document.head, link);
-
+    this.addCanonicalTag('https://techtrendstalks.com/calculator/emi-calculator');
+    this.addCanonicalTag('https://techtrendstalks.com/calculator/sip-calculator');
+    this.addCanonicalTag('https://techtrendstalks.com/loan-eligibility-calculator/checker');
 
     this.meta.addTags([
-      { name: 'description', content: 'EMI calculators for home, car, personal, gold, and more loans. Fast approvals, flexible repayment, and PDF download of EMI breakdowns.' },
+      { name: 'description', content: 'EMI calculators for home, car, personal, gold, and more loans. Fast approvals, flexible repayment, and PDF download of EMI breakdowns and sip calculator.' },
       { name: 'keywords', content: 'emi calculator, sip calculator, loan calculator, mutual fund calculator, sip return calculator, समान मासिक किस्त, personal loan, home loan, car loan , emi download' },
       { name: 'author', content: 'Tech Trends Talks' },
       { name: 'robots', content: 'index, follow' },
-      { property: 'og:title', content: 'Tech Trends Talks - Smart Loan Insights' },
-      { property: 'og:description', content: 'Get loan EMI breakdowns, tips and more.' },
+      { property: 'og:title', content: 'Tech Trends Talks - EMI Calculators & Smart Loan Insights & SIP Calculator' },
+      { property: 'og:description', content: 'Get loan EMI breakdowns, SIP Calculator, tips and more.' },
       { property: 'og:url', content: 'https://techtrendstalks.com/' },
       { property: 'og:type', content: 'website' },
       { property: 'og:image',  content: 'https://techtrendstalks.com/assets/images/social-preview.jpg' 
       }
     ]);
-
     
+  }
+
+  addCanonicalTag(url: string): void {
+    const link: HTMLLinkElement = this.renderer.createElement('link');
+    link.setAttribute('rel', 'canonical');
+    link.setAttribute('href', url);
+    this.renderer.appendChild(this.document.head, link);
   }
 }
