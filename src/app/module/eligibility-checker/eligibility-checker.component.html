@@ -1,83 +1,120 @@
 <div class="eligibility-checker-container" [@fadeInAnimation]>
-  <h1>Eligibility Checker</h1>
+  <h1>Loan Eligibility Checker</h1>
   <p>Check your loan eligibility quickly and easily.</p>
 
   <form class="eligibility-form" (ngSubmit)="onSubmit(eligibilityForm)" #eligibilityForm="ngForm">
-    <div class="form-group">
-      <label for="loanType">Loan Type</label>
-      <input
-        type="text"
-        id="loanType"
-        [formControl]="loanTypeControl"
-        [matAutocomplete]="auto"
-        placeholder="Select or type loan type"
-        required
-        class="input-field fadeSlideRight_TechTrends"
-      />
-      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onLoanTypeSelected($event)">
-        <mat-option *ngFor="let option of filteredLoanTypes | async" [value]="option.viewValue">
-          {{ option.viewValue }}
-        </mat-option>
-      </mat-autocomplete>
-    </div>
+    <div class="moving-note-wrapper">
+      <p class="moving-note-text">
+        ⚠️ This tool provides a highly reliable estimate of your loan eligibility based on the details you enter. While it's not definitive, it aims to offer the most accurate results possible.
 
-    <div class="form-group">
-      <label for="monthlySalary">Monthly Salary (₹)</label>
-      <input
-        type="number"
-        id="monthlySalary"
-        name="monthlySalary"
-        [(ngModel)]="monthlySalary"
-        required
-        min="0"
-        class="input-field"
-      />
+      </p>
     </div>
+    
+    <!-- Row 1: Loan Type -->
+    <div class="loan_type_row justify-end">
+      <div class="refers-icon">
+        <img src="assets/icons/refers_right.png" alt="Loan Type Icon" loading="lazy" />
+      </div>
 
-    <div class="form-group">
-      <label for="loanAmount">Loan Amount (₹)</label>
-      <input
-        type="number"
-        id="loanAmount"
-        name="loanAmount"
-        [(ngModel)]="loanAmount"
-        required
-        min="0"
-        class="input-field"
-      />
+      <div class="form-group ">
+    
+        <label for="loanType" class="label-with-icon">
+          Loan Type:
+          <img src="assets/icons/loan_type.png" alt="Loan Type Icon" loading="lazy" />
+        </label>
+        <input
+          type="text"
+          id="loanType"
+          [formControl]="loanTypeControl"
+          [matAutocomplete]="auto"
+          placeholder="Select a loan type"
+          required
+          class="input-field"
+          aria-required="true"
+        />
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onLoanTypeSelected($event)">
+          <mat-option *ngFor="let option of filteredLoanTypes | async" [value]="option.viewValue">
+            {{ option.viewValue }}
+          </mat-option>
+        </mat-autocomplete>
+        <div class="error-message" *ngIf="loanTypeControl.touched && loanTypeControl.hasError('required')">
+          Loan type is required.
+        </div>
+        
+      </div>
     </div>
-
-    <div class="form-group">
-      <label for="tenureMonths">Loan Tenure (months)</label>
-      <input
-        type="number"
-        id="tenureMonths"
-        name="tenureMonths"
-        [(ngModel)]="tenureMonths"
-        required
-        min="1"
-        class="input-field"
-      />
+  
+    <!-- Row 2: Monthly Salary + Loan Amount -->
+    <div class="form-row">
+      <div class="form-group half-width">
+        <label for="monthlySalary" class="label-with-icon">Monthly Salary (₹):
+          <img src="assets/icons/monthly_loan.png" alt="Monthly Salary Icon" loading="lazy" />
+        </label>
+        <input
+          type="number"
+          id="monthlySalary"
+          name="monthlySalary"
+          [(ngModel)]="monthlySalary"
+          required
+          min="0"
+          class="input-field"
+        />
+      </div>
+      <div class="form-group half-width">
+        <label for="loanAmount" class="label-with-icon">Loan Amount (₹):
+          <img src="assets/icons/loan_amount.png" alt="Loan Amount Icon" loading="lazy" />
+        </label>
+        <input
+          type="number"
+          id="loanAmount"
+          name="loanAmount"
+          [(ngModel)]="loanAmount"
+          required
+          min="0"
+          class="input-field"
+        />
+      </div>
     </div>
-
-    <div class="form-group">
-      <label for="expenses">Monthly Expenses (₹)</label>
-      <input
-        type="number"
-        id="expenses"
-        name="expenses"
-        [(ngModel)]="expenses"
-        min="0"
-        class="input-field"
-      />
+  
+    <!-- Row 3: Loan Tenure + Expenses -->
+    <div class="form-row">
+      <div class="form-group half-width">
+        <label for="tenureMonths" class="label-with-icon">Loan Tenure (months):
+          <img src="assets/icons/days.png" alt="Loan Tenure Icon" loading="lazy" />
+        </label>
+        <input
+          type="number"
+          id="tenureMonths"
+          name="tenureMonths"
+          [(ngModel)]="tenureMonths"
+          required
+          min="1"
+          class="input-field"
+        />
+      </div>
+      <div class="form-group half-width">
+        <label for="expenses" class="label-with-icon">Existing Emis (₹):
+          <img src="assets/icons/emis.png" alt="Existing Emi Icon" loading="lazy" />
+        </label>
+        <input
+          type="number"
+          id="expenses"
+          name="expenses"
+          [(ngModel)]="expenses"
+          min="0"
+          class="input-field"
+        />
+      </div>
     </div>
-
-    <div class="checker-btn">
+  
+    <!-- Row 4: Submit button -->
+    <div class="form-row justify-end">
       <button type="submit" [disabled]="!eligibilityForm.form.valid" class="submit-button">
         Check Eligibility
       </button>
     </div>
   </form>
+  
 
   <div class="result" *ngIf="result !== null" [@fadeInAnimation]>
       <h3>Result</h3>

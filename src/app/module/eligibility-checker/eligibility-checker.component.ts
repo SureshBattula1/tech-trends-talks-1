@@ -1,6 +1,6 @@
 import { Component, inject, signal, ViewChild } from '@angular/core';
 import { trigger, style, animate, transition } from '@angular/animations';
-import { FormControl } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { Observable, startWith, map } from 'rxjs';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
@@ -41,7 +41,10 @@ export class EligibilityCheckerComponent {
   public loader = inject(LoaderService);
   readonly panelOpenState = signal(false);
   
-  loanTypeControl = new FormControl('');
+  loanTypeControl = new FormControl<string>('',{
+    validators: [Validators.required], 
+    nonNullable: true,
+  });
   filteredLoanTypes: Observable<any[]>;
 
   selectedLoanType: any = null;
@@ -49,6 +52,7 @@ export class EligibilityCheckerComponent {
   loanAmount: number | null = null;
   tenureMonths: number | null = null;
   expenses: number | null = 0;
+  
 
   result: { eligible: boolean; emi: number; ratio: number } | null = null;
   explanation: string = '';
@@ -101,6 +105,12 @@ export class EligibilityCheckerComponent {
   }
 
   onSubmit(form: any) {
+    this.loanTypeControl.markAllAsTouched();
+
+    if(this.loanTypeControl.invalid){
+      return;
+    }
+
     this.loader.show();
 
     if (!this.monthlySalary || !this.loanAmount || !this.tenureMonths || !this.selectedLoanType) {
@@ -133,9 +143,10 @@ export class EligibilityCheckerComponent {
     // ✅ Trigger chart update
     setTimeout(() => {
       this.chart?.update();
-      this.loader.hide();
     }, 0);
-
+    setTimeout(() => {
+      this.loader.hide();
+      }, 100);
     if (eligible) {
       this.explanation = `Based on your monthly salary and the selected loan type (${this.selectedLoanType.viewValue}), your EMI of ₹${emi.toFixed(2)} is within the acceptable limit. You are eligible for this loan.`;
     } else {

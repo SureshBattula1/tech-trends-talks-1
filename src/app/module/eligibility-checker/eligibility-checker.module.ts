@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { EligibilityCheckerComponent } from './eligibility-checker.component';
 import { EligibilityCheckerRoutingModule } from './eligibility-checker-routing.module';
 import { NgChartsModule } from 'ng2-charts';
+import { MatSliderModule } from '@angular/material/slider';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import { NgChartsModule } from 'ng2-charts';
     MatAutocompleteModule,
     MatInputModule,
     EligibilityCheckerRoutingModule,
-    NgChartsModule
+    NgChartsModule,
+    MatSliderModule
   ]
 })
 export class EligibilityCheckerModule { }

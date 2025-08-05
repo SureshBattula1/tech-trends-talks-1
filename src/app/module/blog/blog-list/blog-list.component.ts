@@ -1,11 +1,12 @@
 import { Component, inject, Input, OnInit, signal } from '@angular/core';
 import { BlogListItemComponent } from '../blog-list-item/blog-list-item.component';
 import { ActivatedRoute } from '@angular/router';
+import { PageComingSoonComponent } from '../../../core/page-coming-soon/page-coming-soon.component';
 
 @Component({
   selector: 'app-blog-list',
   standalone: true,
-  imports: [BlogListItemComponent],
+  imports: [BlogListItemComponent,PageComingSoonComponent],
   templateUrl: './blog-list.component.html',
   styleUrl: './blog-list.component.scss'
 })

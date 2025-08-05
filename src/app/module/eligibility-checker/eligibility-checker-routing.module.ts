@@ -8,7 +8,7 @@ const routes: Routes = [
      path: '', component: ComponentSidenavComponent, children: [
         { path: 'checker', component: EligibilityCheckerComponent, data: { breadcrumb: 'Checker' } },
         { path: '',  redirectTo: 'checker', pathMatch: 'full', data: { breadcrumb: 'Checker' }}
-    ], data: { breadcrumb: 'Eligibility Checker' }
+    ], data: { breadcrumb: 'Loan Eligibility Calculator' }
   }
 ];
 
