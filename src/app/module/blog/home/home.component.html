@@ -1,0 +1,149 @@
+<div class="app-blog-container">
+  <!-- Main Content -->
+  <div  class="home-content">
+    
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-background">
+        <img src="assets/blogs/blog-home.gif" alt="Blog Hero" (error)="onImageError($event)">
+        <div class="hero-overlay"></div>
+      </div>
+      <div class="hero-content">
+        <h1 class="hero-title">Welcome to Our Blog</h1>
+        <p class="hero-subtitle">
+          Discover amazing stories, insights, and knowledge across various topics. 
+          Stay informed and inspired with our curated content.
+        </p>
+        <!-- <div class="hero-actions">
+          <button mat-raised-button color="primary" (click)="navigateToBlogs()">
+            <mat-icon>explore</mat-icon>
+            Explore All Blogs
+          </button>
+          <button mat-stroked-button color="primary" [routerLink]="['/blogs']" [queryParams]="{featured: true}">
+            <mat-icon>star</mat-icon>
+            Featured Content
+          </button>
+        </div> -->
+      </div>
+    </section>
+  
+    <!-- Featured Blogs Section -->
+    <!-- <section class="featured-section" *ngIf="featuredBlogs.length > 0">
+      <div class="section-header">
+        <h2>
+          <mat-icon>star</mat-icon>
+          Featured Articles
+        </h2>
+        <button mat-button color="primary" [routerLink]="['/blogs']" [queryParams]="{featured: true}">
+          View All Featured
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+  
+      <div class="featured-grid">
+        <app-blog-card 
+          *ngFor="let blog of featuredBlogs" 
+          [blogInput]="blog" 
+          [featuredInput]="true">
+        </app-blog-card>
+      </div>
+    </section> -->
+  
+    <!-- Categories Section -->
+    <section class="categories-section" *ngIf="categories.length > 0">
+      <div class="section-header">
+        <h2>
+          <mat-icon>category</mat-icon>
+          Browse Categories
+        </h2>
+        <button mat-button color="primary" (click)="navigateToBlogs()">
+          View All Categories
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+  
+      <div class="categories-grid">
+        <mat-card 
+          *ngFor="let category of categories" 
+          class="category-card"
+          (click)="navigateToCategory(category.id)"
+          role="button"
+          tabindex="0">
+          <div class="category-image">
+            <img [src]="getCategoryImageUrl(category.image)" 
+                 [alt]="category.name"
+                 (error)="onImageError($event)"
+                 loading="lazy">
+          </div>
+          <mat-card-content>
+            <div class="category-content">
+              <div class="category-info">
+                <h3>{{ category.name }}</h3>
+                <p>{{ category.description || 'Explore articles in this category' }}</p>
+                <div class="category-stats">
+                  <span *ngIf="category.blogs">
+                    <mat-icon>article</mat-icon>
+                    {{ category.blogs.length }} articles
+                  </span>
+                  <span *ngIf="category.subcategories">
+                    <mat-icon>folder</mat-icon>
+                    {{ category.subcategories.length }} subcategories
+                  </span>
+                </div>
+              </div>
+              <mat-icon class="category-arrow">arrow_forward</mat-icon>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </section>
+  
+    <!-- Latest Blogs Section -->
+    <section class="latest-section" *ngIf="latestBlogs.length > 0">
+      <div class="section-header">
+        <h2>
+          <mat-icon>schedule</mat-icon>
+          Latest Articles
+        </h2>
+        <button mat-button color="primary" (click)="navigateToBlogs()">
+          View All Articles
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+  
+      <div class="latest-grid">
+        <app-blog-card 
+          *ngFor="let blog of latestBlogs" 
+          [blogInput]="blog">
+        </app-blog-card>
+      </div>
+    </section>
+  
+    <!-- Newsletter Section -->
+    <!-- <section class="newsletter-section">
+      <mat-card class="newsletter-card">
+        <mat-card-content>
+          <div class="newsletter-content">
+            <div class="newsletter-info">
+              <h3>Stay Updated</h3>
+              <p>Subscribe to our newsletter and never miss the latest articles and updates.</p>
+            </div>
+            <div class="newsletter-form">
+              <mat-form-field appearance="outline">
+                <mat-label>Enter your email</mat-label>
+                <input matInput type="email" placeholder="your@email.com">
+              </mat-form-field>
+              <button mat-raised-button color="primary">
+                <mat-icon>mail</mat-icon>
+                Subscribe
+              </button>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </section> -->
+  
+  </div>
+
+</div>
+  

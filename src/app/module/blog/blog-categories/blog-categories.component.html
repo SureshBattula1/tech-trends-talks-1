@@ -1,20 +1,40 @@
 <div class="app-blog-container">
-    <div class="flex-row">
+    <!-- <div class="flex-row">
         <div class="flex-item-auto">
             <h4>Our Blog Categories</h4>
             <p>Read our recent articles on various categories</p>
         </div>
-    </div>
+    </div> -->
 
     <div class="flex-row">
         <div class="flex-item-auto">
-            <mat-chip-set  cdkDropList cdkDropListOrientation="horizontal">
-                @for (blogcategory of blogCategories(); track blogcategory) {
-                    <mat-chip  routerLink="/blogs/category/{{ toKebabCase(blogcategory?.name ?? '') }}">
-                      {{blogcategory?.name}}
-                    </mat-chip>
+            <section class="categories-grid">
+                @for (blogcategory of blogCategories(); track blogcategory; let i = $index) {
+                    <mat-card  routerLink="/blogs/category/{{ toKebabCase(blogcategory?.name ?? '') }}" [ngStyle]="{ 'border-left': getBorderStyle(i) }">
+                        <mat-card-content>
+                            <div class="category-content">
+                                <div class="category-info">
+                                    <div class="category-body">
+                                        <h3>  {{blogcategory?.name}}</h3>
+                                        <p> {{ blogcategory?.description}}</p>
+                                    </div>
+                                    <div class="category-stats">
+                                    <span *ngIf="blogcategory.blogs">
+                                        <mat-icon>article</mat-icon>
+                                        {{ blogcategory.blogs.length }} articles
+                                    </span>
+                                    <span *ngIf="blogcategory.subcategories">
+                                        <mat-icon>folder</mat-icon>
+                                        {{ blogcategory.subcategories.length }} subcategories
+                                    </span>
+                                    </div>
+                                </div>
+                                <mat-icon class="category-arrow">arrow_forward</mat-icon>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
                 }
-            </mat-chip-set>
+            </section>
         </div>
     </div> 
 </div>

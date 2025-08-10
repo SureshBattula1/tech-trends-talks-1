@@ -1,0 +1,20 @@
+<div class="category-container">
+    <div>
+      <div class="category-header">
+        <h1>{{ category()?.name }}</h1>
+        <p *ngIf="category()?.description">{{ category()?.description }}</p>
+      </div>
+      
+      <div class="blogs-grid" *ngIf="blogs().length > 0">
+        <app-blog-card 
+          *ngFor="let blog of blogs()" 
+          [blogInput]="blog">
+        </app-blog-card>
+      </div>
+      
+      <div *ngIf="blogs().length === 0 ">
+        <p>No blogs found in this category.</p>
+      </div>
+    </div>
+  </div>
+  

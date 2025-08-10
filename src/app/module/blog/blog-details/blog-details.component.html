@@ -1,0 +1,49 @@
+<div class="app-blog-container">
+<div class="blog-detail-container">
+    <!-- Blog exists -->
+    <div *ngIf="blog() as b" class="blog-content">
+      <header class="blog-header">
+        <h1>{{ b.title }}</h1>
+        <div class="blog-meta">
+          <span class="author">By {{ b.author }}</span>
+          <span class="date">{{ formatDate(b.published_at) }}</span>
+          <span class="views">{{ b.views }} views</span>
+        </div>
+  
+        <!-- Category and Tags -->
+        <div class="blog-tags" *ngIf="b.category || b.tags?.length">
+          <mat-chip *ngIf="b.category" color="primary">{{ b.category.name }}</mat-chip>
+          <mat-chip *ngIf="b.subcategory" color="accent">{{ b.subcategory.name }}</mat-chip>
+          <mat-chip *ngFor="let tag of b.tags" color="warn">{{ tag }}</mat-chip>
+        </div>
+      </header>
+  
+      <!-- Featured Image -->
+      <div class="featured-image" *ngIf="b.featured_image">
+        <img
+          [ngSrc]="getImageUrl(b.featured_image)"
+          [alt]="b.title"
+          (error)="onImageError($event)"
+          width="800"
+          height="400"
+          priority
+        />
+      </div>
+  
+      <!-- Excerpt -->
+      <div class="blog-excerpt" *ngIf="b.excerpt">
+        <p>{{ b.excerpt }}</p>
+      </div>
+  
+      <div class="blog-body">
+        <div [innerHTML]="b.content"></div>
+      </div>
+    </div>
+  
+    <!-- Blog not found -->
+    <div *ngIf="!blog()" class="not-found">
+      <h4>Blog data is empty!</h4>
+    </div>
+  </div>
+</div>
+  

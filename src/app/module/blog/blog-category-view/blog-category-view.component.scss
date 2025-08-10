@@ -1,0 +1,29 @@
+.category-container {
+    padding: 20px 0;
+  }
+  
+  .category-header {
+    margin-bottom: 30px;
+    
+    h1 {
+      margin: 0 0 8px;
+      color: var(--text-primary);
+    }
+    
+    p {
+      color: var(--text-secondary);
+      margin: 0;
+    }
+  }
+  
+  .blogs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 24px;
+  }
+  
+  .no-blogs {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-secondary);
+  }

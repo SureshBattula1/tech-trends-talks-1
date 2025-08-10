@@ -11,6 +11,28 @@ body {
    box-sizing: border-box;
 }
 
+// Custom theme variables
+:root {
+  --primary-color: #1976d2;
+  --accent-color: #ff4081;
+  --warn-color: #f44336;
+  --background-color: #fafafa;
+  --surface-color: #ffffff;
+  --text-primary: rgba(0, 0, 0, 0.87);
+  --text-secondary: rgba(0, 0, 0, 0.54);
+}
+
+[data-theme="dark"] {
+  --primary-color: #1976d2;
+  --accent-color: #ff4081;
+  --warn-color: #f44336;
+  --background-color: #121212;
+  --surface-color: #1e1e1e;
+  --text-primary: rgba(255, 255, 255, 0.87);
+  --text-secondary: rgba(255, 255, 255, 0.54);
+}
+
+
 .app-background {
     background: #faf9fd;
 }
@@ -40,9 +62,9 @@ app-component-sidenav {
     -webkit-overflow-scrolling: touch;
 }
 
-mat-card.mat-mdc-card.mdc-card{
-    background: #fff;
-}
+// mat-card.mat-mdc-card.mdc-card{
+//     background: #fff;
+// }
 
 .flex-row {
   margin-bottom: 0.5rem;

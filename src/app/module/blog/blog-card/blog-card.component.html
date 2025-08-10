@@ -1,0 +1,84 @@
+<mat-card 
+  class="blog-card" 
+  [class.featured]="featured()"
+  [routerLink]="['/blogs', blog()?.id]"
+  role="article">
+
+  <!-- Featured Badge -->
+  <div class="featured-badge" *ngIf="blog()?.is_featured">
+    <mat-icon>star</mat-icon>
+    <span>Featured</span>
+  </div>
+
+  <!-- Image -->
+  <div class="image-container">
+    <img 
+      mat-card-image
+      [ngSrc]="getImageUrl(blog()?.featured_image || '')"
+      [alt]="blog()?.title || ''"
+      class="featured-image"
+      width="400"
+      height="250"
+      loading="lazy"
+      (error)="onImageError($event)">
+
+    <!-- Category Badge -->
+    <div class="category-badge" *ngIf="blog()?.category">
+      <mat-chip color="primary">{{ blog()?.category?.name }}</mat-chip>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <mat-card-content *ngIf="blog() as b">
+    <div class="blog-meta">
+      <span class="author">
+        <mat-icon>person</mat-icon>
+        {{ b.author }}
+      </span>
+      <span class="date">
+        <mat-icon>schedule</mat-icon>
+        {{ formatDate(b.published_at) }}
+      </span>
+      <span class="views">
+        <mat-icon>visibility</mat-icon>
+        {{ b.views }}
+      </span>
+    </div>
+
+    <h3 class="blog-title">{{ b.title }}</h3>
+
+    <p class="blog-excerpt">
+      {{ getTruncatedExcerpt(b.excerpt) }}
+    </p>
+
+    <!-- Tags -->
+    <div class="tags" *ngIf="(b.tags?.length ?? 0) > 0">
+      <mat-chip-set>
+        <mat-chip *ngFor="let tag of b.tags.slice(0, 3)" class="tag-chip">
+          {{ tag }}
+        </mat-chip>
+        <mat-chip *ngIf="b.tags.length > 3" class="more-tags">
+          +{{ b.tags.length - 3 }} more
+        </mat-chip>
+      </mat-chip-set>
+    </div>
+
+    <!-- Subcategory -->
+    <div class="subcategory" *ngIf="b.subcategory">
+      <mat-icon>folder</mat-icon>
+      <span>{{ b.subcategory.name }}</span>
+    </div>
+  </mat-card-content>
+
+  <!-- Actions -->
+  <mat-card-actions align="end">
+    <button 
+      mat-button 
+      color="primary"
+      [routerLink]="['/blogs', blog()?.id]"
+      aria-label="Read full article">
+      Read More
+      <mat-icon>arrow_forward</mat-icon>
+    </button>
+  </mat-card-actions>
+</mat-card>
