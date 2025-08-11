@@ -9,6 +9,7 @@ import { CategoryBreadcrumbResolver } from '../../services/breadcrumb/category-b
 import { HomeComponent } from './home/home.component';
 import { BlogCategoryViewComponent } from './blog-category-view/blog-category-view.component';
 import { BlogDetailsComponent } from './blog-details/blog-details.component';
+import { CreateBlogComponent } from './create-blog/create-blog.component';
 
 const routes: Routes = [
   { 
@@ -19,6 +20,7 @@ const routes: Routes = [
       { path: 'view', component: BlogViewComponent,data: { breadcrumb: 'View' } },
       { path: 'home', component: HomeComponent,data: { breadcrumb: 'Home' } },
       { path: 'category/:id', component: BlogCategoryViewComponent , data: { breadcrumb: 'Category' } },
+      { path: 'create-post', component: CreateBlogComponent, data: { breadcrumb: 'Create Post' } },
       { path: ':id', component: BlogDetailsComponent, data: { breadcrumb: 'Details' } },
       { path: '', redirectTo: 'home', pathMatch: 'full' },
     ], data: { breadcrumb: 'Blogs' },

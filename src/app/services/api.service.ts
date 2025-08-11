@@ -80,6 +80,19 @@ export interface BlogFilters {
   page?: number;
 }
 
+export interface CreateBlogRequest {
+  title: string;
+  excerpt: string;
+  content: string;
+  category_id: number;
+  subcategory_id?: number;
+  author: string;
+  tags: string[];
+  is_published: boolean;
+  is_featured: boolean;
+  featured_image?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -148,5 +161,19 @@ export class ApiService {
 
   getLatestBlogs(limit: number = 5): Observable<PaginatedResponse<Blog>> {
     return this.getBlogs({ per_page: limit });
+  }
+
+  // Create Blog
+  createBlog(blogData: CreateBlogRequest): Observable<ApiResponse<Blog>> {
+    return this.http.post<ApiResponse<Blog>>(`${this.baseUrl}/blogs`, blogData);
+  }
+
+  // Upload Image
+  uploadImage(image: File, type: string = 'blog'): Observable<ApiResponse<{ url: string }>> {
+    const formData = new FormData();
+    formData.append('image', image);
+    formData.append('type', type);
+    
+    return this.http.post<ApiResponse<{ url: string }>>(`${this.baseUrl}/upload-image`, formData);
   }
 }

@@ -16,6 +16,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatTableModule} from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -57,7 +58,8 @@ const materialModules: any[] = [
   MatExpansionModule,
   MatDividerModule,
   MatGridListModule,
-  MatTabsModule
+  MatTabsModule,
+  MatCheckboxModule
   
 ]
 
