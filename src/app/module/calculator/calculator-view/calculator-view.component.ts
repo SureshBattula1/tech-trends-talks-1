@@ -57,19 +57,55 @@ export class CalculatorViewComponent implements OnInit{
   scheduleYears:any[] = [];
   selectedOption: any;
 
+  // New properties for enhanced table
+  expandedYears: Set<number> = new Set();
+  yearlySchedule: any[] = [];
+
   suggestedLoanAmounts = [1000000, 2000000, 2500000, 3000000, 4000000, 5000000, 7500000, 10000000, 20000000, 50000000];
 
-  showAllRows = false;
+  // Keep this property as it's still used
   selectedLoanTypeIndex = 0;
 
-  displayedColumns: string[] = ['id', 'month', 'principal', 'interest', 'emi', 'balance'];
+  // Remove old properties
+  // showAllRows = false;
+  // displayedColumns: string[] = ['id', 'month', 'principal', 'interest', 'emi', 'balance'];
 
-  get filteredSchedule() {
-    return this.showAllRows ? this.schedule : this.schedule.slice(0, 1);
+  // Remove old getter
+  // get filteredSchedule() {
+  //   return this.showAllRows ? this.schedule : this.schedule.slice(0, 1);
+  // }
+
+  // Remove old method
+  // toggleRows() {
+  //   this.showAllRows = !this.showAllRows;
+  // }
+
+  // New methods for enhanced table
+  toggleYearExpansion(year: number) {
+    if (this.expandedYears.has(year)) {
+      this.expandedYears.delete(year);
+    } else {
+      this.expandedYears.add(year);
+    }
+    this.cd.markForCheck();
   }
 
-  toggleRows() {
-    this.showAllRows = !this.showAllRows;
+  isYearExpanded(year: number): boolean {
+    return this.expandedYears.has(year);
+  }
+
+  getYearlyRowClass(year: number): string {
+    return this.isYearExpanded(year) ? 'year-row-expanded' : 'year-row-collapsed';
+  }
+
+  trackByYear(index: number, yearData: any): number {
+    return yearData.year;
+  }
+
+  // Custom function to truncate to 2 decimal places without rounding
+  truncateToTwoDecimals(value: number): string {
+    const truncated = Math.floor(value * 100) / 100;
+    return truncated.toFixed(2);
   }
   
   onLoanTypeChange(index: number) {
@@ -259,6 +295,7 @@ validateAmount() {
 
   calculateYearlyEMI(principal: number, totalMonths: number, monthlyInterest: number) {
     this.scheduleYears = [];
+    this.yearlySchedule = [];
     let balance = principal;
   
     const today = new Date();
@@ -276,6 +313,7 @@ validateAmount() {
       let yearlyPrincipal = 0;
       let yearlyInterest = 0;
       let monthsInYear = 0;
+      const yearMonths: any[] = [];
   
       // For the first year start from current month, else from January
       const monthStart = (yearIndex === 0) ? startMonth : 1;
@@ -293,16 +331,43 @@ validateAmount() {
         yearlyInterest += interest;
         yearlyPrincipal += principalPaid;
         monthsInYear++;
+  
+        // Store monthly details for this year
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const monthLabel = `${monthNames[month - 1]} ${year}`;
+        
+        yearMonths.push({
+          month: monthsProcessed,
+          monthLabel: monthLabel,
+          emi: this.truncateToTwoDecimals(this.emi),
+          principal: this.truncateToTwoDecimals(principalPaid),
+          interest: this.truncateToTwoDecimals(interest),
+          balance: balance > 0 ? this.truncateToTwoDecimals(balance) : '0.00'
+        });
       }
   
       const yearlyEmi = this.emi * monthsInYear;
   
       this.scheduleYears.push({
         year: year,
-        emi: yearlyEmi.toFixed(2),
-        principal: yearlyPrincipal.toFixed(2),
-        interest: yearlyInterest.toFixed(2),
-        balance: balance > 0 ? balance.toFixed(2) : '0.00'
+        emi: this.truncateToTwoDecimals(yearlyEmi),
+        principal: this.truncateToTwoDecimals(yearlyPrincipal),
+        interest: this.truncateToTwoDecimals(yearlyInterest),
+        balance: balance > 0 ? this.truncateToTwoDecimals(balance) : '0.00'
+      });
+
+      // Store yearly schedule with monthly details
+      this.yearlySchedule.push({
+        year: year,
+        yearlyData: {
+          emi: this.truncateToTwoDecimals(yearlyEmi),
+          principal: this.truncateToTwoDecimals(yearlyPrincipal),
+          interest: this.truncateToTwoDecimals(yearlyInterest),
+          balance: balance > 0 ? this.truncateToTwoDecimals(balance) : '0.00'
+        },
+        monthlyDetails: yearMonths,
+        isExpanded: false
       });
     }
   }
@@ -328,10 +393,10 @@ validateAmount() {
         id: i + 1,
         month: i + 1,
         monthLabel: monthLabel,               // e.g. "Jul 2025"
-        emi: this.emi.toFixed(2),             // Monthly EMI
-        principal: principalPaid.toFixed(2),
-        interest: interest.toFixed(2),
-        balance: balance > 0 ? balance.toFixed(2) : '0.00'
+        emi: this.truncateToTwoDecimals(this.emi),             // Monthly EMI
+        principal: this.truncateToTwoDecimals(principalPaid),
+        interest: this.truncateToTwoDecimals(interest),
+        balance: balance > 0 ? this.truncateToTwoDecimals(balance) : '0.00'
       });
     }
   }
@@ -341,69 +406,64 @@ validateAmount() {
 
   exportToExcel() {
     this.loader.show();
-    // Step 1: Filter columns you want to export
-    const filteredSchedule = this.schedule.map(({ month, principal, interest,emi, balance, monthLabel }) => ({
-      Month: month,
-      MonthLabel: monthLabel,
-      Principal: principal,
-      EMI: emi,
-      Interest: interest,
-      Balance: balance
-    }));
-  
-    // Step 2: Add a title row
-    const title = [['Loan Repayment Schedule']]; // Title as first row
-    const headers = [['S NO','Month', 'Principal', 'Interest', 'EMI','Balance']]; // Header row
-    const dataRows = filteredSchedule.map(row => [row.Month, row.MonthLabel, row.Principal, row.Interest, row.EMI, row.Balance]);
-  
-    const sheetData = [...title, ...headers, ...dataRows];
-  
-    // Step 3: Convert to worksheet
-    const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
-  
-    // Step 4: Merge cells for title row (optional)
-    worksheet['!merges'] = [
-      { s: { r: 0, c: 0 }, e: { r: 0, c: 5 } } // Merge A1:D1
-    ];
-  
-    // Step 5: Set column widths
-    worksheet['!cols'] = [
-      { wch: 10 }, // Month
-      { wch: 25 }, // Month Label
-      { wch: 25 }, // Principal
-      { wch: 25 }, // Interest
-      { wch: 25 }, // EMI
-      { wch: 25 }  // Balance
-    ];
-
-    worksheet['!rows'] = [
-      { hpt: 23 }, // Row 1: title
-      { hpt: 20 }  // Row 2: header
-      // More rows can be added if needed
-    ];
-
-    worksheet['A1'].s = {
-      alignment: { horizontal: 'center', vertical: 'center' },
-      font: { bold: true, sz: 14, color: { rgb: '000000' } },
-      fill: { fgColor: { rgb: 'DDEBF7' } }
-    };
-  
-    // Step 6: Create workbook and export
+    
+    // Create workbook
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Schedule');
-    XLSX.writeFile(workbook, 'LoanSchedule.xlsx');
-    setTimeout(() => {
-    this.loader.hide();
-    }, 50);
+    
+    // Export Yearly Summary
+    const yearlyData = this.yearlySchedule.map((yearData, index) => ({
+      'Year': yearData.year,
+      'Total EMI': parseFloat(yearData.yearlyData.emi),
+      'Principal Paid': parseFloat(yearData.yearlyData.principal),
+      'Interest Paid': parseFloat(yearData.yearlyData.interest),
+      'Remaining Balance': parseFloat(yearData.yearlyData.balance)
+    }));
 
+    const yearlyWorksheet = XLSX.utils.json_to_sheet(yearlyData);
+    yearlyWorksheet['!cols'] = [
+      { wch: 10 }, // Year
+      { wch: 15 }, // Total EMI
+      { wch: 15 }, // Principal Paid
+      { wch: 15 }, // Interest Paid
+      { wch: 18 }  // Remaining Balance
+    ];
+
+    // Export Monthly Details
+    const monthlyData = this.schedule.map((month, index) => ({
+      'Month': month.month,
+      'Month Label': month.monthLabel,
+      'EMI': parseFloat(month.emi),
+      'Principal': parseFloat(month.principal),
+      'Interest': parseFloat(month.interest),
+      'Balance': parseFloat(month.balance)
+    }));
+
+    const monthlyWorksheet = XLSX.utils.json_to_sheet(monthlyData);
+    monthlyWorksheet['!cols'] = [
+      { wch: 10 }, // Month
+      { wch: 20 }, // Month Label
+      { wch: 15 }, // EMI
+      { wch: 15 }, // Principal
+      { wch: 15 }, // Interest
+      { wch: 15 }  // Balance
+    ];
+
+    // Add worksheets to workbook
+    XLSX.utils.book_append_sheet(workbook, yearlyWorksheet, 'Yearly Summary');
+    XLSX.utils.book_append_sheet(workbook, monthlyWorksheet, 'Monthly Details');
+    
+    // Export file
+    XLSX.writeFile(workbook, 'LoanSchedule.xlsx');
+    
+    setTimeout(() => {
+      this.loader.hide();
+    }, 50);
   }
 
 
   exportToEMIPdf(): void {
     this.loader.show();
-    if(this.showAllRows === false){
-      this.toggleRows();
-    }
+    
     const doc = new jsPDF('p', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
@@ -462,21 +522,19 @@ validateAmount() {
     img.src = 'assets/images/company_name.png';
     img.onload = () => {
      
-
-    // const imgData = canvas.toDataURL('image/png');
-      const tableBody = this.filteredSchedule.map((row, index) => ([
-        (index + 1).toString(),
-        row.monthLabel,
-        this.currencyFormat(row.principal),
-        this.currencyFormat(row.interest),
-        this.currencyFormat(row.emi),
-        this.currencyFormat(row.balance)
+      // Yearly Summary Table
+      const yearlyTableBody = this.yearlySchedule.map((yearData, index) => ([
+        yearData.year.toString(),
+        this.currencyFormat(parseFloat(yearData.yearlyData.emi)),
+        this.currencyFormat(parseFloat(yearData.yearlyData.principal)),
+        this.currencyFormat(parseFloat(yearData.yearlyData.interest)),
+        this.currencyFormat(parseFloat(yearData.yearlyData.balance))
       ]));
   
-      // Render table after summary — startY must be below summary box
+      // Render Yearly Summary table
       autoTable(doc, {
-        head: [['S.NO', 'Month', 'Principal', 'Interest', 'EMI', 'Balance']],
-        body: tableBody,
+        head: [['Year', 'Total EMI', 'Principal Paid', 'Interest Paid', 'Remaining Balance']],
+        body: yearlyTableBody,
         startY: 110,
         theme: 'grid',
         styles: {
@@ -494,12 +552,11 @@ validateAmount() {
           halign: 'center',
         },
         columnStyles: {
-          0: { cellWidth: 15, halign: 'center' },
-          1: { cellWidth: 25, halign: 'left' },
-          2: { cellWidth: 30, halign: 'right' },
-          3: { cellWidth: 30, halign: 'right' },
-          4: { cellWidth: 30, halign: 'right' },
-          5: { cellWidth: 45, halign: 'right' },
+          0: { cellWidth: 20, halign: 'center' },
+          1: { cellWidth: 35, halign: 'right' },
+          2: { cellWidth: 35, halign: 'right' },
+          3: { cellWidth: 35, halign: 'right' },
+          4: { cellWidth: 40, halign: 'right' },
         },
         willDrawCell: (data) => {
           const text = Array.isArray(data.cell.text) ? data.cell.text.join('') : data.cell.text;
@@ -510,14 +567,72 @@ validateAmount() {
         didDrawPage: () => {
           doc.setFontSize(8);
           doc.setTextColor(100);
-          // doc.addImage(img, 'PNG',
-          //   (pageWidth / 2) - 40, // x
-          //   120,                  // y (should be table Y position)
-          //   100,                  // width
-          //   100,                  // height
-          //   undefined,
-          //   'FAST'
-          // );
+          doc.text(`© ${new Date().getFullYear()} Tech Trends Talks. All rights reserved.`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+        }
+      });
+
+      // Add Yearly Summary Title
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(41, 128, 185);
+      doc.text("Yearly Summary", 14, 105);
+
+      // Get the end position of yearly table
+      const yearlyTableEndY = (doc as any).lastAutoTable.finalY || 200;
+
+      // Add Monthly Details Title
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(41, 128, 185);
+      doc.text("Monthly Details", 14, yearlyTableEndY + 15);
+
+      // Monthly Details Table
+      const monthlyTableBody = this.schedule.map((month, index) => ([
+        month.month.toString(),
+        month.monthLabel,
+        this.currencyFormat(parseFloat(month.emi)),
+        this.currencyFormat(parseFloat(month.principal)),
+        this.currencyFormat(parseFloat(month.interest)),
+        this.currencyFormat(parseFloat(month.balance))
+      ]));
+
+      // Render Monthly Details table
+      autoTable(doc, {
+        head: [['Month', 'Month Label', 'EMI', 'Principal', 'Interest', 'Balance']],
+        body: monthlyTableBody,
+        startY: yearlyTableEndY + 20,
+        theme: 'grid',
+        styles: {
+          fontSize: 7,
+          font: 'helvetica',
+          cellPadding: { top: 2, right: 1, bottom: 2, left: 1 },
+          valign: 'middle',
+          halign: 'right',
+          overflow: 'linebreak',
+        },
+        headStyles: {
+          fillColor: [52, 73, 94],
+          textColor: 255,
+          fontStyle: 'bold',
+          halign: 'center',
+        },
+        columnStyles: {
+          0: { cellWidth: 15, halign: 'center' },
+          1: { cellWidth: 25, halign: 'left' },
+          2: { cellWidth: 25, halign: 'right' },
+          3: { cellWidth: 25, halign: 'right' },
+          4: { cellWidth: 25, halign: 'right' },
+          5: { cellWidth: 30, halign: 'right' },
+        },
+        willDrawCell: (data) => {
+          const text = Array.isArray(data.cell.text) ? data.cell.text.join('') : data.cell.text;
+          if (text.length > 12) {
+            data.cell.styles.fontSize = 6;
+          }
+        },
+        didDrawPage: () => {
+          doc.setFontSize(8);
+          doc.setTextColor(100);
           doc.text(`© ${new Date().getFullYear()} Tech Trends Talks. All rights reserved.`, pageWidth / 2, pageHeight - 10, { align: 'center' });
         }
       });
@@ -528,7 +643,120 @@ validateAmount() {
         }, 50);
     };
   }
+
+  // New function to export only monthly details
+  exportMonthlyDetailsPdf(): void {
+    this.loader.show();
+    
+    const doc = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
   
+    // Header
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.setTextColor(40, 40, 40);
+    doc.text('Tech Trends Talks', pageWidth / 2, 20, { align: 'center' });
+  
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text('Monthly EMI Schedule - Detailed Breakdown', pageWidth / 2, 26, { align: 'center' });
+  
+    // Loan Summary Box
+    doc.setDrawColor(52, 73, 94);
+    doc.setLineWidth(0.5);
+    doc.roundedRect(12, 32, pageWidth - 24, 28, 2, 2 , 'S');
+  
+    doc.setFontSize(11);
+    doc.setTextColor(0);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${this.loanTypes[this.selectedLoanTypeIndex].viewValue} Amount: ${this.currencyFormat(this.amount)}`, 16, 40);
+    doc.text(`Interest Rate (%): ${this.interestRate.toFixed(2)}`, 16, 46);
+    doc.text(`Loan Tenure (years): ${this.years}`, 16, 52);
+  
+    // Payment Summary Box
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(52, 73, 94);
+    doc.text("Payment Summary", 14, 70);
+  
+    doc.setFillColor(248, 250, 252);
+    doc.roundedRect(12, 74, pageWidth - 24, 24, 2, 2, 'F');
+  
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+    doc.setTextColor(0);
+    doc.text("Monthly EMI:", 16, 82);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${this.currencyFormat(this.emi)}`, 60, 82);
+  
+    doc.setFont('helvetica', 'normal');
+    doc.text("Total Interest Payable:", 16, 88);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${this.currencyFormat(this.totalInterest)}`, 60, 88);
+  
+    doc.setFont('helvetica', 'normal');
+    doc.text("Total Payment (Principal + Interest):", 16, 94);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${this.currencyFormat(this.totalPayment)}`, 85, 94);
+  
+    // Monthly Details Table
+    const monthlyTableBody = this.schedule.map((month, index) => ([
+      month.month.toString(),
+      month.monthLabel,
+      this.currencyFormat(parseFloat(month.emi)),
+      this.currencyFormat(parseFloat(month.principal)),
+      this.currencyFormat(parseFloat(month.interest)),
+      this.currencyFormat(parseFloat(month.balance))
+    ]));
+
+    // Render Monthly Details table
+    autoTable(doc, {
+      head: [['Month', 'Month Label', 'EMI', 'Principal', 'Interest', 'Balance']],
+      body: monthlyTableBody,
+      startY: 110, // Increased startY to accommodate payment summary
+      theme: 'grid',
+      styles: {
+        fontSize: 8,
+        font: 'helvetica',
+        cellPadding: { top: 3, right: 2, bottom: 3, left: 2 },
+        valign: 'middle',
+        halign: 'right',
+        overflow: 'linebreak',
+      },
+      headStyles: {
+        fillColor: [52, 73, 94],
+        textColor: 255,
+        fontStyle: 'bold',
+        halign: 'center',
+      },
+      columnStyles: {
+        0: { cellWidth: 18, halign: 'center' },
+        1: { cellWidth: 30, halign: 'left' },
+        2: { cellWidth: 28, halign: 'right' },
+        3: { cellWidth: 28, halign: 'right' },
+        4: { cellWidth: 28, halign: 'right' },
+        5: { cellWidth: 35, halign: 'right' },
+      },
+      willDrawCell: (data) => {
+        const text = Array.isArray(data.cell.text) ? data.cell.text.join('') : data.cell.text;
+        if (text.length > 15) {
+          data.cell.styles.fontSize = 7;
+        }
+      },
+      didDrawPage: () => {
+        doc.setFontSize(8);
+        doc.setTextColor(100);
+        doc.text(`© ${new Date().getFullYear()} Tech Trends Talks. All rights reserved.`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+      }
+    });
+  
+    doc.save('Monthly-EMI-Schedule.pdf');
+    setTimeout(() => {
+      this.loader.hide();
+      }, 50);
+  }
 
   currencyFormat(amount: number): string {
     return new Intl.NumberFormat('en-IN', {
