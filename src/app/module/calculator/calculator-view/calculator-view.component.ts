@@ -102,6 +102,19 @@ export class CalculatorViewComponent implements OnInit{
     return yearData.year;
   }
 
+  // Methods for expand/collapse all functionality
+  expandAllYears() {
+    this.yearlySchedule.forEach(yearData => {
+      this.expandedYears.add(yearData.year);
+    });
+    this.cd.markForCheck();
+  }
+
+  collapseAllYears() {
+    this.expandedYears.clear();
+    this.cd.markForCheck();
+  }
+
   // Custom function to truncate to 2 decimal places without rounding
   truncateToTwoDecimals(value: number): string {
     const truncated = Math.floor(value * 100) / 100;
@@ -114,7 +127,7 @@ export class CalculatorViewComponent implements OnInit{
     const selected = this.loanTypes[index];
     if (selected?.interest) {
       this.interestRate = selected.interest;
-      this.interestForm.setValue(this.interestRate, { emitEvent: false });  // updates the input field
+      this.interestForm.setValue(this.formatInputValue(this.interestRate), { emitEvent: false });  // updates the input field
       this.calculateEMI();
       this.cd.markForCheck();
       setTimeout(() => {
@@ -163,48 +176,61 @@ export class CalculatorViewComponent implements OnInit{
   
   loanTypeForm = new FormControl('');
 
-  amountForm = new FormControl(this.amount);
-  interestForm = new FormControl(this.interestRate);
-  yearsForm = new FormControl(this.years);
+  // Form controls for inputs
+  amountForm = new FormControl(this.formatInputValue(this.amount));
+  interestForm = new FormControl(this.formatInputValue(this.interestRate));
+  yearsForm = new FormControl(this.formatInputValue(this.years));
+
+  // Flags to prevent subscription interference
+  private isUpdatingFromProgressBar = false;
 
   public cd = inject(ChangeDetectorRef);
 
-  ngOnInit(): void {
-    this.initForm();
-    this.calculateEMI();
-  }
+  ngOnInit() {
+    // Initialize form controls with formatted values
+    this.amountForm.setValue(this.formatInputValue(this.amount));
+    this.interestForm.setValue(this.formatInputValue(this.interestRate));
+    this.yearsForm.setValue(this.formatInputValue(this.years));
 
-  initForm(){
-
-    this.loanTypeForm.valueChanges.subscribe(
-      (value: any) =>{
-        this.interestRate = value.interest;
-        this.cd.markForCheck();
-        this.calculateEMI();
-        console.log(`interest reate`, this.interestRate);
-      }
-    )
-
+    // Subscribe to form control changes
     this.amountForm.valueChanges.subscribe(
-      (value: any) =>  {
-        this.amount = value;
-        this.cd.markForCheck();
+      (value) => {
+        if (value && !this.isUpdatingFromProgressBar) {
+          const numericValue = this.parseInputValue(value);
+          if (numericValue > 0) {
+            this.amount = numericValue;
+            this.cd.markForCheck();
+          }
+        }
       }
     );
 
     this.interestForm.valueChanges.subscribe(
-      (value: any) =>  {
-        this.interestRate = value;
-        this.cd.markForCheck();
+      (value) => {
+        if (value && !this.isUpdatingFromProgressBar) {
+          const numericValue = this.parseInputValue(value);
+          if (numericValue > 0) {
+            this.interestRate = numericValue;
+            this.cd.markForCheck();
+          }
+        }
       }
     );
 
     this.yearsForm.valueChanges.subscribe(
-      (value: any) =>  {
-        this.years = value;
-        this.cd.markForCheck();
+      (value) => {
+        if (value && !this.isUpdatingFromProgressBar) {
+          const numericValue = this.parseInputValue(value);
+          if (numericValue > 0) {
+            this.years = numericValue;
+            this.cd.markForCheck();
+          }
+        }
       }
     );
+
+    // Initial calculation
+    this.calculateEMI();
   }
 
   
@@ -216,7 +242,7 @@ validateAmount() {
     this.amount = min;
   } 
   
-  this.amountForm.setValue(this.amount, { emitEvent: false });
+  this.amountForm.setValue(this.formatInputValue(this.amount), { emitEvent: false });
   this.amountForm.updateValueAndValidity();
   this.cd.markForCheck();
   this.calculateEMI();
@@ -226,7 +252,7 @@ validateAmount() {
     const min = 1;
     const max = 50;
     if (!this.years || this.years < min || this.years > max) {
-      this.yearsForm.setValue(min, { emitEvent: false });
+      this.yearsForm.setValue(this.formatInputValue(min), { emitEvent: false });
       this.yearsForm.updateValueAndValidity();
       this.years = min;
       this.cd.markForCheck();
@@ -238,7 +264,7 @@ validateAmount() {
     const min = 1;
     const max = 30;
     if (!this.interestRate || this.interestRate < min || this.interestRate > max) {
-      this.interestForm.setValue(8 , { emitEvent: false });
+      this.interestForm.setValue(this.formatInputValue(8), { emitEvent: false });
       this.interestForm.updateValueAndValidity();
       this.interestRate = 8;
       this.cd.markForCheck();
@@ -246,51 +272,64 @@ validateAmount() {
     this.calculateEMI();
   }
 
-  priceProgressChange($event: any , modeType: string = ''){
-    switch(modeType){
-      case 'PRICE':
-        this.amount = $event;
-        this.amountForm.setValue(this.amount, { emitEvent: false });
-        this.cd.detectChanges();
-        break;
-      case 'PERCENTAGE':
-          this.interestRate = $event;
-          this.interestForm.setValue(this.interestRate, { emitEvent: false });
-          this.cd.detectChanges();
-          break;
-      case 'TENURE':
-          this.years = $event;
-          this.yearsForm.setValue(this.years, { emitEvent: false });
-          this.cd.detectChanges();
-          break;
-      default:
+  priceProgressChange(value: number, mode: string) {
+    // Set flag to prevent subscription interference
+    this.isUpdatingFromProgressBar = true;
+    
+    if (mode === 'PRICE') {
+      this.amount = value;
+      this.amountForm.setValue(this.formatInputValue(value), { emitEvent: false });
+      this.amountForm.updateValueAndValidity();
+    } else if (mode === 'TENURE') {
+      const min = Math.max(1, Math.min(50, value));
+      this.years = min;
+      this.yearsForm.setValue(this.formatInputValue(min), { emitEvent: false });
+      this.yearsForm.updateValueAndValidity();
+    } else if (mode === 'PERCENTAGE') {
+      // Use the actual value from progress bar instead of hardcoding to 8
+      this.interestRate = value;
+      this.interestForm.setValue(this.formatInputValue(value), { emitEvent: false });
+      this.interestForm.updateValueAndValidity();
     }
-
+    
+    // Reset flag after a short delay to allow form control updates
+    setTimeout(() => {
+      this.isUpdatingFromProgressBar = false;
+    }, 100);
+    
+    // Trigger change detection to update the UI
+    this.cd.markForCheck();
+    
+    // Calculate EMI with new values
     this.calculateEMI();
   }
 
   calculateEMI() {
+    this.loader.show();
+    if (this.amount > 0 && this.interestRate > 0 && this.years > 0) {
+      const principal = this.amount;
+      const monthlyInterest = this.interestRate / 1200;
+      const totalMonths = this.years * 12;
+      
+      this.emi = (principal * monthlyInterest * Math.pow(1 + monthlyInterest, totalMonths)) / 
+                 (Math.pow(1 + monthlyInterest, totalMonths) - 1);
 
-    const principal = this.amount;
-    const monthlyInterest = this.interestRate / 1200;
-    const totalMonths = this.years * 12;
+      this.totalPayment = this.emi * totalMonths;
+      this.totalInterest = this.totalPayment - principal;
+      this.pricipalAmount = principal;
 
-    this.emi = (principal * monthlyInterest * Math.pow(1 + monthlyInterest, totalMonths)) / 
-               (Math.pow(1 + monthlyInterest, totalMonths) - 1);
+      // Update chart
+      this.chartData.datasets[0].data = [principal, this.totalInterest];
+      this.chart?.update();
 
-    this.totalPayment = this.emi * totalMonths;
-    this.totalInterest = this.totalPayment - principal;
-
-    this.pricipalAmount = principal;
-
-    // Update chart
-    this.chartData.datasets[0].data = [principal, this.totalInterest];
-    this.chart?.update();
-
-    this.calculateYearlyEMI(principal, totalMonths, monthlyInterest);
-
-    this.calculateMonthlyEMI(principal, totalMonths, monthlyInterest);
-    
+      this.calculateYearlyEMI(principal, totalMonths, monthlyInterest);
+      this.calculateMonthlyEMI(principal, totalMonths, monthlyInterest);
+      
+      this.cd.markForCheck();
+    }
+    setTimeout(() => {
+      this.loader.hide();
+      }, 100);  
   }
 
   calculateYearlyEMI(principal: number, totalMonths: number, monthlyInterest: number) {
@@ -404,318 +443,650 @@ validateAmount() {
 
 
 
+  // Export to Excel with enhanced design
   exportToExcel() {
-    this.loader.show();
-    
-    // Create workbook
-    const workbook = XLSX.utils.book_new();
-    
-    // Export Yearly Summary
-    const yearlyData = this.yearlySchedule.map((yearData, index) => ({
+    // Create workbook with multiple sheets
+    const wb = XLSX.utils.book_new();
+
+    // Yearly Summary Sheet
+    const yearlyData = this.yearlySchedule.map(yearData => ({
       'Year': yearData.year,
-      'Total EMI': parseFloat(yearData.yearlyData.emi),
-      'Principal Paid': parseFloat(yearData.yearlyData.principal),
-      'Interest Paid': parseFloat(yearData.yearlyData.interest),
-      'Remaining Balance': parseFloat(yearData.yearlyData.balance)
+      'Total EMI': Number(yearData.yearlyData.emi),
+      'Principal Paid': Number(yearData.yearlyData.principal),
+      'Interest Paid': Number(yearData.yearlyData.interest),
+      'Remaining Balance': Number(yearData.yearlyData.balance)
     }));
 
-    const yearlyWorksheet = XLSX.utils.json_to_sheet(yearlyData);
-    yearlyWorksheet['!cols'] = [
-      { wch: 10 }, // Year
-      { wch: 15 }, // Total EMI
-      { wch: 15 }, // Principal Paid
-      { wch: 15 }, // Interest Paid
-      { wch: 18 }  // Remaining Balance
+    // Create structured yearly sheet data
+    const yearlySheetData = [
+      // App Headings Section
+      { 'A': 'TECH TRENDS TALKS' },
+      { 'A': 'EMI Calculator - Professional Report' },
+      { 'A': '' },
+      { 'A': '' },
+      
+      // Loan Summary Section
+      { 'A': 'LOAN SUMMARY' },
+      { 'A': 'Description', 'B': 'Amount' },
+      { 'A': 'Loan Amount', 'B': Number(this.pricipalAmount) },
+      { 'A': 'Interest Rate (%)', 'B': Number(this.interestRate) },
+      { 'A': 'Loan Tenure (Years)', 'B': Number(this.years) },
+      { 'A': 'Monthly EMI', 'B': Number(this.emi) },
+      { 'A': 'Total Interest', 'B': Number(this.totalInterest) },
+      { 'A': 'Total Payment', 'B': Number(this.totalPayment) },
+      { 'A': '' },
+      { 'A': '' },
+      
+      // EMI Statement Headers
+      { 'A': 'YEARLY EMI STATEMENT' },
+      { 'A': 'Year', 'B': 'Total EMI', 'C': 'Principal Paid', 'D': 'Interest Paid', 'E': 'Remaining Balance' },
+      
+      // Yearly Data
+      ...yearlyData.map(item => ({
+        'A': item['Year'],
+        'B': item['Total EMI'],
+        'C': item['Principal Paid'],
+        'D': item['Interest Paid'],
+        'E': item['Remaining Balance']
+      }))
     ];
 
-    // Export Monthly Details
-    const monthlyData = this.schedule.map((month, index) => ({
-      'Month': month.month,
-      'Month Label': month.monthLabel,
-      'EMI': parseFloat(month.emi),
-      'Principal': parseFloat(month.principal),
-      'Interest': parseFloat(month.interest),
-      'Balance': parseFloat(month.balance)
+    const yearlyWs = XLSX.utils.json_to_sheet(yearlySheetData);
+    
+    // Style the yearly sheet
+    this.styleExcelSheet(yearlyWs, 'Yearly Summary');
+    XLSX.utils.book_append_sheet(wb, yearlyWs, 'Yearly Summary');
+
+    // Monthly Details Sheet
+    const monthlyData = this.schedule.map(item => ({
+      'Month': item.month,
+      'Month Label': item.monthLabel,
+      'EMI': Number(item.emi),
+      'Principal': Number(item.principal),
+      'Interest': Number(item.interest),
+      'Balance': Number(item.balance)
     }));
 
-    const monthlyWorksheet = XLSX.utils.json_to_sheet(monthlyData);
-    monthlyWorksheet['!cols'] = [
-      { wch: 10 }, // Month
-      { wch: 20 }, // Month Label
-      { wch: 15 }, // EMI
-      { wch: 15 }, // Principal
-      { wch: 15 }, // Interest
-      { wch: 15 }  // Balance
+    // Create structured monthly sheet data
+    const monthlySheetData = [
+      // App Headings Section
+      { 'A': 'TECH TRENDS TALKS' },
+      { 'A': 'EMI Calculator - Monthly Details Report' },
+      { 'A': '' },
+      { 'A': '' },
+      
+      // Loan Summary Section
+      { 'A': 'LOAN SUMMARY' },
+      { 'A': 'Description', 'B': 'Amount' },
+      { 'A': 'Loan Amount', 'B': Number(this.pricipalAmount) },
+      { 'A': 'Interest Rate (%)', 'B': Number(this.interestRate) },
+      { 'A': 'Loan Tenure (Years)', 'B': Number(this.years) },
+      { 'A': 'Monthly EMI', 'B': Number(this.emi) },
+      { 'A': 'Total Interest', 'B': Number(this.totalInterest) },
+      { 'A': 'Total Payment', 'B': Number(this.totalPayment) },
+      { 'A': '' },
+      { 'A': '' },
+      
+      // EMI Statement Headers
+      { 'A': 'MONTHLY EMI STATEMENT' },
+      { 'A': 'Month', 'B': 'Month Label', 'C': 'EMI', 'D': 'Principal', 'E': 'Interest', 'F': 'Balance' },
+      
+      // Monthly Data
+      ...monthlyData.map(item => ({
+        'A': item['Month'],
+        'B': item['Month Label'],
+        'C': item['EMI'],
+        'D': item['Principal'],
+        'E': item['Interest'],
+        'F': item['Balance']
+      }))
     ];
 
-    // Add worksheets to workbook
-    XLSX.utils.book_append_sheet(workbook, yearlyWorksheet, 'Yearly Summary');
-    XLSX.utils.book_append_sheet(workbook, monthlyWorksheet, 'Monthly Details');
+    const monthlyWs = XLSX.utils.json_to_sheet(monthlySheetData);
     
-    // Export file
-    XLSX.writeFile(workbook, 'LoanSchedule.xlsx');
-    
-    setTimeout(() => {
-      this.loader.hide();
-    }, 50);
+    // Style the monthly sheet
+    this.styleExcelSheet(monthlyWs, 'Monthly Details');
+    XLSX.utils.book_append_sheet(wb, monthlyWs, 'Monthly Details');
+
+    // Generate filename with timestamp
+    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+    const filename = `TechTrendsTalks_EMI_Report_${timestamp}.xlsx`;
+
+    // Save the file
+    XLSX.writeFile(wb, filename);
   }
 
+  // Style Excel sheet with better design
+  private styleExcelSheet(worksheet: XLSX.WorkSheet, sheetName: string) {
+    // Set column widths
+    const colWidths = sheetName === 'Yearly Summary' 
+      ? [{ wch: 25 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 25 }]
+      : [{ wch: 15 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }];
 
-  exportToEMIPdf(): void {
-    this.loader.show();
+    worksheet['!cols'] = colWidths;
+
+    // Get the range of the worksheet
+    const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1');
     
-    const doc = new jsPDF('p', 'mm', 'a4');
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-  
-    // Header
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.setTextColor(40, 40, 40);
-    doc.text('Tech Trends Talks', pageWidth / 2, 20, { align: 'center' });
-  
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(100);
-    doc.text('Grow with us: Empowering Your Financial Journey', pageWidth / 2, 26, { align: 'center' });
-  
-    // Loan Summary Box
-    doc.setDrawColor(41, 128, 185);
-    doc.setLineWidth(0.5);
-    doc.roundedRect(12, 32, pageWidth - 24, 28, 2, 2 , 'S');
-  
-    doc.setFontSize(11);
-    doc.setTextColor(0);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`${this.loanTypes[this.selectedLoanTypeIndex].viewValue} Amount: ${this.currencyFormat(this.amount)}`, 16, 40);
-    doc.text(`Interest Rate (%): ${this.interestRate.toFixed(2)}`, 16, 46);
-    doc.text(`Loan Tenure (years): ${this.years}`, 16, 52);
-  
-    // Payment Summary
-    doc.setFontSize(13);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(41, 128, 185);
-    doc.text("Payment Summary", 14, 70);
-  
-    doc.setFillColor(245, 245, 245);
-    doc.roundedRect(12, 74, pageWidth - 24, 24, 2, 2, 'F');
-  
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(11);
-    doc.setTextColor(0);
-    doc.text("Loan EMI:", 16, 82);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`${this.currencyFormat(this.emi)}`, 60, 82);
-  
-    doc.setFont('helvetica', 'normal');
-    doc.text("Total Interest Payable:", 16, 88);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`${this.currencyFormat(this.totalInterest)}`, 60, 88);
-  
-    doc.setFont('helvetica', 'normal');
-    doc.text("Total Payment (Principal + Interest):", 16, 94);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`${this.currencyFormat(this.totalPayment)}`, 85, 94);
-  
-    // Load and wait for watermark image
-    const img = new Image();
-    img.src = 'assets/images/company_name.png';
-    img.onload = () => {
-     
-      // Yearly Summary Table
-      const yearlyTableBody = this.yearlySchedule.map((yearData, index) => ([
-        yearData.year.toString(),
-        this.currencyFormat(parseFloat(yearData.yearlyData.emi)),
-        this.currencyFormat(parseFloat(yearData.yearlyData.principal)),
-        this.currencyFormat(parseFloat(yearData.yearlyData.interest)),
-        this.currencyFormat(parseFloat(yearData.yearlyData.balance))
-      ]));
-  
-      // Render Yearly Summary table
-      autoTable(doc, {
-        head: [['Year', 'Total EMI', 'Principal Paid', 'Interest Paid', 'Remaining Balance']],
-        body: yearlyTableBody,
-        startY: 110,
-        theme: 'grid',
-        styles: {
-          fontSize: 8,
-          font: 'helvetica',
-          cellPadding: { top: 3, right: 2, bottom: 3, left: 2 },
-          valign: 'middle',
-          halign: 'right',
-          overflow: 'linebreak',
-        },
-        headStyles: {
-          fillColor: [41, 128, 185],
-          textColor: 255,
-          fontStyle: 'bold',
-          halign: 'center',
-        },
-        columnStyles: {
-          0: { cellWidth: 20, halign: 'center' },
-          1: { cellWidth: 35, halign: 'right' },
-          2: { cellWidth: 35, halign: 'right' },
-          3: { cellWidth: 35, halign: 'right' },
-          4: { cellWidth: 40, halign: 'right' },
-        },
-        willDrawCell: (data) => {
-          const text = Array.isArray(data.cell.text) ? data.cell.text.join('') : data.cell.text;
-          if (text.length > 15) {
-            data.cell.styles.fontSize = 6.5;
-          }
-        },
-        didDrawPage: () => {
-          doc.setFontSize(8);
-          doc.setTextColor(100);
-          doc.text(`© ${new Date().getFullYear()} Tech Trends Talks. All rights reserved.`, pageWidth / 2, pageHeight - 10, { align: 'center' });
-        }
-      });
-
-      // Add Yearly Summary Title
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(41, 128, 185);
-      doc.text("Yearly Summary", 14, 105);
-
-      // Get the end position of yearly table
-      const yearlyTableEndY = (doc as any).lastAutoTable.finalY || 200;
-
-      // Add Monthly Details Title
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(41, 128, 185);
-      doc.text("Monthly Details", 14, yearlyTableEndY + 15);
-
-      // Monthly Details Table
-      const monthlyTableBody = this.schedule.map((month, index) => ([
-        month.month.toString(),
-        month.monthLabel,
-        this.currencyFormat(parseFloat(month.emi)),
-        this.currencyFormat(parseFloat(month.principal)),
-        this.currencyFormat(parseFloat(month.interest)),
-        this.currencyFormat(parseFloat(month.balance))
-      ]));
-
-      // Render Monthly Details table
-      autoTable(doc, {
-        head: [['Month', 'Month Label', 'EMI', 'Principal', 'Interest', 'Balance']],
-        body: monthlyTableBody,
-        startY: yearlyTableEndY + 20,
-        theme: 'grid',
-        styles: {
-          fontSize: 7,
-          font: 'helvetica',
-          cellPadding: { top: 2, right: 1, bottom: 2, left: 1 },
-          valign: 'middle',
-          halign: 'right',
-          overflow: 'linebreak',
-        },
-        headStyles: {
-          fillColor: [52, 73, 94],
-          textColor: 255,
-          fontStyle: 'bold',
-          halign: 'center',
-        },
-        columnStyles: {
-          0: { cellWidth: 15, halign: 'center' },
-          1: { cellWidth: 25, halign: 'left' },
-          2: { cellWidth: 25, halign: 'right' },
-          3: { cellWidth: 25, halign: 'right' },
-          4: { cellWidth: 25, halign: 'right' },
-          5: { cellWidth: 30, halign: 'right' },
-        },
-        willDrawCell: (data) => {
-          const text = Array.isArray(data.cell.text) ? data.cell.text.join('') : data.cell.text;
-          if (text.length > 12) {
-            data.cell.styles.fontSize = 6;
-          }
-        },
-        didDrawPage: () => {
-          doc.setFontSize(8);
-          doc.setTextColor(100);
-          doc.text(`© ${new Date().getFullYear()} Tech Trends Talks. All rights reserved.`, pageWidth / 2, pageHeight - 10, { align: 'center' });
-        }
-      });
-  
-      doc.save('Loan-Schedule.pdf');
-      setTimeout(() => {
-        this.loader.hide();
-        }, 50);
+    // Define styles with better colors and formatting
+    const brandTitleStyle = {
+      font: { bold: true, size: 18, color: { rgb: 'FFFFFF' } },
+      fill: { fgColor: { rgb: '1A237E' } }, // Deep blue background
+      alignment: { horizontal: 'center', vertical: 'center' }
     };
+
+    const subtitleStyle = {
+      font: { bold: true, size: 14, color: { rgb: 'FFFFFF' } },
+      fill: { fgColor: { rgb: '303F9F' } }, // Medium blue background
+      alignment: { horizontal: 'center', vertical: 'center' }
+    };
+
+    const sectionTitleStyle = {
+      font: { bold: true, size: 16, color: { rgb: 'FFFFFF' } },
+      fill: { fgColor: { rgb: '1976D2' } }, // Blue background
+      alignment: { horizontal: 'left', vertical: 'center' }
+    };
+
+    const loanSummaryHeaderStyle = {
+      font: { bold: true, size: 12, color: { rgb: 'FFFFFF' } },
+      fill: { fgColor: { rgb: '42A5F5' } }, // Light blue background
+      alignment: { horizontal: 'left', vertical: 'center' },
+      border: {
+        top: { style: 'medium', color: { rgb: '1976D2' } },
+        bottom: { style: 'medium', color: { rgb: '1976D2' } },
+        left: { style: 'medium', color: { rgb: '1976D2' } },
+        right: { style: 'medium', color: { rgb: '1976D2' } }
+      }
+    };
+
+    const loanSummaryValueStyle = {
+      font: { bold: true, size: 12, color: { rgb: '1A237E' } },
+      fill: { fgColor: { rgb: 'E3F2FD' } }, // Very light blue background
+      alignment: { horizontal: 'right', vertical: 'center' },
+      border: {
+        top: { style: 'medium', color: { rgb: '1976D2' } },
+        bottom: { style: 'medium', color: { rgb: '1976D2' } },
+        left: { style: 'medium', color: { rgb: '1976D2' } },
+        right: { style: 'medium', color: { rgb: '1976D2' } }
+      }
+    };
+
+    const statementTitleStyle = {
+      font: { bold: true, size: 16, color: { rgb: 'FFFFFF' } },
+      fill: { fgColor: { rgb: '388E3C' } }, // Green background
+      alignment: { horizontal: 'left', vertical: 'center' }
+    };
+
+    const dataHeaderStyle = {
+      font: { bold: true, size: 12, color: { rgb: 'FFFFFF' } },
+      fill: { fgColor: { rgb: '388E3C' } }, // Green background
+      alignment: { horizontal: 'center', vertical: 'center' },
+      border: {
+        top: { style: 'thick', color: { rgb: '2E7D32' } },
+        bottom: { style: 'thick', color: { rgb: '2E7D32' } },
+        left: { style: 'thick', color: { rgb: '2E7D32' } },
+        right: { style: 'thick', color: { rgb: '2E7D32' } }
+      }
+    };
+
+    const dataRowStyle = {
+      font: { size: 11, color: { rgb: '212121' } },
+      fill: { fgColor: { rgb: 'F5F5F5' } }, // Light gray background
+      alignment: { horizontal: 'center', vertical: 'center' },
+      border: {
+        top: { style: 'thin', color: { rgb: 'E0E0E0' } },
+        bottom: { style: 'thin', color: { rgb: 'E0E0E0' } },
+        left: { style: 'thin', color: { rgb: 'E0E0E0' } },
+        right: { style: 'thin', color: { rgb: 'E0E0E0' } }
+      }
+    };
+
+    const amountRowStyle = {
+      font: { size: 11, color: { rgb: '212121' } },
+      fill: { fgColor: { rgb: 'F5F5F5' } }, // Light gray background
+      alignment: { horizontal: 'right', vertical: 'center' },
+      border: {
+        top: { style: 'thin', color: { rgb: 'E0E0E0' } },
+        bottom: { style: 'thin', color: { rgb: 'E0E0E0' } },
+        left: { style: 'thin', color: { rgb: 'E0E0E0' } },
+        right: { style: 'thin', color: { rgb: 'E0E0E0' } }
+      }
+    };
+
+    const alternateRowStyle = {
+      font: { size: 11, color: { rgb: '212121' } },
+      fill: { fgColor: { rgb: 'FFFFFF' } }, // White background
+      alignment: { horizontal: 'center', vertical: 'center' },
+      border: {
+        top: { style: 'thin', color: { rgb: 'E0E0E0' } },
+        bottom: { style: 'thin', color: { rgb: 'E0E0E0' } },
+        left: { style: 'thin', color: { rgb: 'E0E0E0' } },
+        right: { style: 'thin', color: { rgb: 'E0E0E0' } }
+      }
+    };
+
+    const alternateAmountRowStyle = {
+      font: { size: 11, color: { rgb: '212121' } },
+      fill: { fgColor: { rgb: 'FFFFFF' } }, // White background
+      alignment: { horizontal: 'right', vertical: 'center' },
+      border: {
+        top: { style: 'thin', color: { rgb: 'E0E0E0' } },
+        bottom: { style: 'thin', color: { rgb: 'E0E0E0' } },
+        left: { style: 'thin', color: { rgb: 'E0E0E0' } },
+        right: { style: 'thin', color: { rgb: 'E0E0E0' } }
+      }
+    };
+
+    // Apply styles and merge cells safely
+    if (sheetName === 'Yearly Summary') {
+      // App Headings Section (Rows 1-4)
+      // Row 1: Brand Title
+      const brandCell = XLSX.utils.encode_cell({ r: 0, c: 0 });
+      if (worksheet[brandCell]) {
+        worksheet[brandCell].s = brandTitleStyle;
+      }
+      worksheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }];
+
+      // Row 2: Subtitle
+      const subtitleCell = XLSX.utils.encode_cell({ r: 1, c: 0 });
+      if (worksheet[subtitleCell]) {
+        worksheet[subtitleCell].s = subtitleStyle;
+      }
+      worksheet['!merges'].push({ s: { r: 1, c: 0 }, e: { r: 1, c: 4 } });
+
+      // Rows 3-4: Empty spacing
+      for (let i = 2; i <= 3; i++) {
+        const emptyCell = XLSX.utils.encode_cell({ r: i, c: 0 });
+        if (worksheet[emptyCell]) {
+          worksheet[emptyCell].s = { fill: { fgColor: { rgb: 'FFFFFF' } } };
+        }
+      }
+
+      // Loan Summary Section (Rows 5-16)
+      // Row 5: Section Title
+      const summaryTitleCell = XLSX.utils.encode_cell({ r: 4, c: 0 });
+      if (worksheet[summaryTitleCell]) {
+        worksheet[summaryTitleCell].s = sectionTitleStyle;
+      }
+      worksheet['!merges'].push({ s: { r: 4, c: 0 }, e: { r: 4, c: 4 } });
+
+      // Row 6: Table Headers
+      const descHeaderCell = XLSX.utils.encode_cell({ r: 5, c: 0 });
+      const amountHeaderCell = XLSX.utils.encode_cell({ r: 5, c: 1 });
+      if (worksheet[descHeaderCell]) {
+        worksheet[descHeaderCell].s = loanSummaryHeaderStyle;
+      }
+      if (worksheet[amountHeaderCell]) {
+        worksheet[amountHeaderCell].s = loanSummaryHeaderStyle;
+      }
+      worksheet['!merges'].push({ s: { r: 5, c: 1 }, e: { r: 5, c: 4 } });
+
+      // Rows 7-12: Loan Summary Details
+      for (let i = 6; i <= 11; i++) {
+        const descCell = XLSX.utils.encode_cell({ r: i, c: 0 });
+        const amountCell = XLSX.utils.encode_cell({ r: i, c: 1 });
+        
+        if (worksheet[descCell]) {
+          worksheet[descCell].s = loanSummaryHeaderStyle;
+        }
+        if (worksheet[amountCell]) {
+          worksheet[amountCell].s = loanSummaryValueStyle;
+        }
+      }
+
+      // Rows 13-14: Empty spacing
+      for (let i = 12; i <= 13; i++) {
+        const emptyCell = XLSX.utils.encode_cell({ r: i, c: 0 });
+        if (worksheet[emptyCell]) {
+          worksheet[emptyCell].s = { fill: { fgColor: { rgb: 'FFFFFF' } } };
+        }
+      }
+
+      // EMI Statement Section (Rows 15 onwards)
+      // Row 15: Statement Title
+      const statementTitleCell = XLSX.utils.encode_cell({ r: 14, c: 0 });
+      if (worksheet[statementTitleCell]) {
+        worksheet[statementTitleCell].s = statementTitleStyle;
+      }
+      worksheet['!merges'].push({ s: { r: 14, c: 0 }, e: { r: 14, c: 4 } });
+
+      // Row 16: Data Headers
+      const headerRow = 15;
+      for (let j = 0; j < 5; j++) {
+        const cellRef = XLSX.utils.encode_cell({ r: headerRow, c: j });
+        if (worksheet[cellRef]) {
+          worksheet[cellRef].s = dataHeaderStyle;
+        }
+      }
+
+      // Data Rows (Row 17 onwards) - Alternating colors
+      for (let i = 16; i <= range.e.r; i++) {
+        const isAlternate = (i - 16) % 2 === 1;
+        for (let j = 0; j < 5; j++) {
+          const cellRef = XLSX.utils.encode_cell({ r: i, c: j });
+          if (worksheet[cellRef]) {
+            if (j === 0) {
+              worksheet[cellRef].s = isAlternate ? alternateRowStyle : dataRowStyle;
+            } else {
+              worksheet[cellRef].s = isAlternate ? alternateAmountRowStyle : amountRowStyle;
+            }
+          }
+        }
+      }
+
+    } else {
+      // Monthly Details Sheet
+      // App Headings Section (Rows 1-4)
+      // Row 1: Brand Title
+      const brandCell = XLSX.utils.encode_cell({ r: 0, c: 0 });
+      if (worksheet[brandCell]) {
+        worksheet[brandCell].s = brandTitleStyle;
+      }
+      worksheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }];
+
+      // Row 2: Subtitle
+      const subtitleCell = XLSX.utils.encode_cell({ r: 1, c: 0 });
+      if (worksheet[subtitleCell]) {
+        worksheet[subtitleCell].s = subtitleStyle;
+      }
+      worksheet['!merges'].push({ s: { r: 1, c: 0 }, e: { r: 1, c: 5 } });
+
+      // Rows 3-4: Empty spacing
+      for (let i = 2; i <= 3; i++) {
+        const emptyCell = XLSX.utils.encode_cell({ r: i, c: 0 });
+        if (worksheet[emptyCell]) {
+          worksheet[emptyCell].s = { fill: { fgColor: { rgb: 'FFFFFF' } } };
+        }
+      }
+
+      // Loan Summary Section (Rows 5-16)
+      // Row 5: Section Title
+      const summaryTitleCell = XLSX.utils.encode_cell({ r: 4, c: 0 });
+      if (worksheet[summaryTitleCell]) {
+        worksheet[summaryTitleCell].s = sectionTitleStyle;
+      }
+      worksheet['!merges'].push({ s: { r: 4, c: 0 }, e: { r: 4, c: 5 } });
+
+      // Row 6: Table Headers
+      const descHeaderCell = XLSX.utils.encode_cell({ r: 5, c: 0 });
+      const amountHeaderCell = XLSX.utils.encode_cell({ r: 5, c: 1 });
+      if (worksheet[descHeaderCell]) {
+        worksheet[descHeaderCell].s = loanSummaryHeaderStyle;
+      }
+      if (worksheet[amountHeaderCell]) {
+        worksheet[amountHeaderCell].s = loanSummaryHeaderStyle;
+      }
+      worksheet['!merges'].push({ s: { r: 5, c: 1 }, e: { r: 5, c: 5 } });
+
+      // Rows 7-12: Loan Summary Details
+      for (let i = 6; i <= 11; i++) {
+        const descCell = XLSX.utils.encode_cell({ r: i, c: 0 });
+        const amountCell = XLSX.utils.encode_cell({ r: i, c: 1 });
+        
+        if (worksheet[descCell]) {
+          worksheet[descCell].s = loanSummaryHeaderStyle;
+        }
+        if (worksheet[amountCell]) {
+          worksheet[amountCell].s = loanSummaryValueStyle;
+        }
+      }
+
+      // Rows 13-14: Empty spacing
+      for (let i = 12; i <= 13; i++) {
+        const emptyCell = XLSX.utils.encode_cell({ r: i, c: 0 });
+        if (worksheet[emptyCell]) {
+          worksheet[emptyCell].s = { fill: { fgColor: { rgb: 'FFFFFF' } } };
+        }
+      }
+
+      // EMI Statement Section (Rows 15 onwards)
+      // Row 15: Statement Title
+      const statementTitleCell = XLSX.utils.encode_cell({ r: 14, c: 0 });
+      if (worksheet[statementTitleCell]) {
+        worksheet[statementTitleCell].s = statementTitleStyle;
+      }
+      worksheet['!merges'].push({ s: { r: 14, c: 0 }, e: { r: 14, c: 5 } });
+
+      // Row 16: Data Headers
+      const headerRow = 15;
+      for (let j = 0; j < 6; j++) {
+        const cellRef = XLSX.utils.encode_cell({ r: headerRow, c: j });
+        if (worksheet[cellRef]) {
+          worksheet[cellRef].s = dataHeaderStyle;
+        }
+      }
+
+      // Data Rows (Row 17 onwards) - Alternating colors
+      for (let i = 16; i <= range.e.r; i++) {
+        const isAlternate = (i - 16) % 2 === 1;
+        for (let j = 0; j < 6; j++) {
+          const cellRef = XLSX.utils.encode_cell({ r: i, c: j });
+          if (worksheet[cellRef]) {
+            if (j === 0 || j === 1) {
+              worksheet[cellRef].s = isAlternate ? alternateRowStyle : dataRowStyle;
+            } else {
+              worksheet[cellRef].s = isAlternate ? alternateAmountRowStyle : amountRowStyle;
+            }
+          }
+        }
+      }
+    }
   }
 
-  // New function to export only monthly details
-  exportMonthlyDetailsPdf(): void {
-    this.loader.show();
-    
-    const doc = new jsPDF('p', 'mm', 'a4');
+  // Enhanced PDF export with yearly and monthly data
+  exportToEMIPdf() {
+    const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-  
-    // Header
+
+    // Header with site branding
+    doc.setFillColor(44, 62, 80);
+    doc.rect(0, 0, pageWidth, 30, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.setTextColor(40, 40, 40);
-    doc.text('Tech Trends Talks', pageWidth / 2, 20, { align: 'center' });
-  
+    doc.text('TECH TRENDS TALKS', pageWidth / 2, 15, { align: 'center' });
+    
+    doc.setFontSize(12);
+    doc.text('EMI Calculator - Complete Report', pageWidth / 2, 25, { align: 'center' });
+
+    // Loan Summary Box
+    doc.setFillColor(236, 240, 241);
+    doc.roundedRect(12, 40, pageWidth - 24, 40, 2, 2, 'F'); // Increased height from 30 to 40
+    
+    doc.setTextColor(44, 62, 80);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Loan Summary', 14, 52);
+    
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
-    doc.setTextColor(100);
-    doc.text('Monthly EMI Schedule - Detailed Breakdown', pageWidth / 2, 26, { align: 'center' });
-  
-    // Loan Summary Box
-    doc.setDrawColor(52, 73, 94);
-    doc.setLineWidth(0.5);
-    doc.roundedRect(12, 32, pageWidth - 24, 28, 2, 2 , 'S');
-  
-    doc.setFontSize(11);
     doc.setTextColor(0);
+    doc.text('Loan Amount:', 16, 62);
+    doc.text('Interest Rate:', 16, 68);
+    doc.text('Tenure:', 16, 74);
+    
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${this.currencyFormat(this.pricipalAmount)}`, 60, 62);
+    doc.text(`${this.interestRate}%`, 60, 68);
+    doc.text(`${this.years} years`, 60, 74);
+
+    // Yearly Summary Table
+    const yearlyTableBody = this.yearlySchedule.map(yearData => [
+      yearData.year.toString(),
+      this.currencyFormat(parseFloat(yearData.yearlyData.emi)),
+      this.currencyFormat(parseFloat(yearData.yearlyData.principal)),
+      this.currencyFormat(parseFloat(yearData.yearlyData.interest)),
+      this.currencyFormat(parseFloat(yearData.yearlyData.balance))
+    ]);
+
+    autoTable(doc, {
+      head: [['Year', 'Total EMI', 'Principal Paid', 'Interest Paid', 'Remaining Balance']],
+      body: yearlyTableBody,
+      startY: 90, // Adjusted from 80 to 90 to account for increased loan summary box height
+      theme: 'grid',
+      styles: {
+        fontSize: 9,
+        font: 'helvetica',
+        cellPadding: { top: 3, right: 2, bottom: 3, left: 2 },
+        valign: 'middle',
+        halign: 'center',
+        overflow: 'linebreak',
+      },
+      headStyles: {
+        fillColor: [44, 62, 80],
+        textColor: 255,
+        fontStyle: 'bold',
+        halign: 'center',
+      },
+      columnStyles: {
+        0: { cellWidth: 25, halign: 'center' },
+        1: { cellWidth: 35, halign: 'right' },
+        2: { cellWidth: 35, halign: 'right' },
+        3: { cellWidth: 35, halign: 'right' },
+        4: { cellWidth: 35, halign: 'right' },
+      },
+      didDrawPage: () => {
+        doc.setFontSize(8);
+        doc.setTextColor(100);
+        doc.text(`© ${new Date().getFullYear()} Tech Trends Talks. All rights reserved.`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+      }
+    });
+
+    const yearlyTableEndY = (doc as any).lastAutoTable.finalY;
+
+    // Monthly Details Table
+    const monthlyTableBody = this.schedule.map(item => [
+      item.monthLabel,
+      this.currencyFormat(parseFloat(item.emi)),
+      this.currencyFormat(parseFloat(item.principal)),
+      this.currencyFormat(parseFloat(item.interest)),
+      this.currencyFormat(parseFloat(item.balance))
+    ]);
+
+    autoTable(doc, {
+      head: [['Month', 'EMI', 'Principal', 'Interest', 'Balance']],
+      body: monthlyTableBody,
+      startY: yearlyTableEndY + 20,
+      theme: 'grid',
+      styles: {
+        fontSize: 7,
+        font: 'helvetica',
+        cellPadding: { top: 2, right: 1, bottom: 2, left: 1 },
+        valign: 'middle',
+        halign: 'right',
+        overflow: 'linebreak',
+      },
+      headStyles: {
+        fillColor: [52, 73, 94],
+        textColor: 255,
+        fontStyle: 'bold',
+        halign: 'center',
+      },
+      columnStyles: {
+        0: { cellWidth: 25, halign: 'left' },
+        1: { cellWidth: 35, halign: 'right' },
+        2: { cellWidth: 35, halign: 'right' },
+        3: { cellWidth: 35, halign: 'right' },
+        4: { cellWidth: 35, halign: 'right' },
+      },
+      willDrawCell: (data) => {
+        const text = Array.isArray(data.cell.text) ? data.cell.text.join('') : data.cell.text;
+        if (text.length > 12) {
+          data.cell.styles.fontSize = 6;
+        }
+      },
+      didDrawPage: () => {
+        doc.setFontSize(8);
+        doc.setTextColor(100);
+        doc.text(`© ${new Date().getFullYear()} Tech Trends Talks. All rights reserved.`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+      }
+    });
+
+    // Save the PDF
+    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+    doc.save(`TechTrendsTalks_Complete_EMI_Report_${timestamp}.pdf`);
+  }
+
+  // Enhanced Monthly Details PDF with payment summary
+  exportMonthlyDetailsPdf() {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // Header with site branding
+    doc.setFillColor(44, 62, 80);
+    doc.rect(0, 0, pageWidth, 30, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text('TECH TRENDS TALKS', pageWidth / 2, 15, { align: 'center' });
+    
+    doc.setFontSize(12);
+    doc.text('EMI Calculator - Monthly Details Report', pageWidth / 2, 25, { align: 'center' });
+
+    // Loan Summary Box
+    doc.setFillColor(236, 240, 241);
+    doc.roundedRect(12, 40, pageWidth - 24, 40, 2, 2, 'F'); // Increased height from 24 to 40
+    
+    doc.setTextColor(44, 62, 80);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Loan Summary', 14, 52);
+    
     doc.setFont('helvetica', 'normal');
-    doc.text(`${this.loanTypes[this.selectedLoanTypeIndex].viewValue} Amount: ${this.currencyFormat(this.amount)}`, 16, 40);
-    doc.text(`Interest Rate (%): ${this.interestRate.toFixed(2)}`, 16, 46);
-    doc.text(`Loan Tenure (years): ${this.years}`, 16, 52);
-  
+    doc.setFontSize(10);
+    doc.setTextColor(0);
+    doc.text('Loan Amount:', 16, 62);
+    doc.text('Interest Rate:', 16, 68);
+    doc.text('Tenure:', 16, 74);
+    
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${this.currencyFormat(this.pricipalAmount)}`, 60, 62);
+    doc.text(`${this.interestRate}%`, 60, 68);
+    doc.text(`${this.years} years`, 60, 74);
+
     // Payment Summary Box
     doc.setFontSize(13);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(52, 73, 94);
-    doc.text("Payment Summary", 14, 70);
+    doc.setTextColor(44, 62, 80);
+    doc.text("Payment Summary", 14, 90);
   
     doc.setFillColor(248, 250, 252);
-    doc.roundedRect(12, 74, pageWidth - 24, 24, 2, 2, 'F');
+    doc.roundedRect(12, 94, pageWidth - 24, 30, 2, 2, 'F'); // Increased height from 24 to 30
   
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(11);
     doc.setTextColor(0);
-    doc.text("Monthly EMI:", 16, 82);
+    doc.text("Monthly EMI:", 16, 102);
     doc.setFont('helvetica', 'bold');
-    doc.text(`${this.currencyFormat(this.emi)}`, 60, 82);
+    doc.text(`${this.currencyFormat(this.emi)}`, 60, 102);
   
     doc.setFont('helvetica', 'normal');
-    doc.text("Total Interest Payable:", 16, 88);
+    doc.text("Total Interest Payable:", 16, 108);
     doc.setFont('helvetica', 'bold');
-    doc.text(`${this.currencyFormat(this.totalInterest)}`, 60, 88);
+    doc.text(`${this.currencyFormat(this.totalInterest)}`, 60, 108);
   
     doc.setFont('helvetica', 'normal');
-    doc.text("Total Payment (Principal + Interest):", 16, 94);
+    doc.text("Total Payment (Principal + Interest):", 16, 114);
     doc.setFont('helvetica', 'bold');
-    doc.text(`${this.currencyFormat(this.totalPayment)}`, 85, 94);
-  
-    // Monthly Details Table
-    const monthlyTableBody = this.schedule.map((month, index) => ([
-      month.month.toString(),
-      month.monthLabel,
-      this.currencyFormat(parseFloat(month.emi)),
-      this.currencyFormat(parseFloat(month.principal)),
-      this.currencyFormat(parseFloat(month.interest)),
-      this.currencyFormat(parseFloat(month.balance))
-    ]));
+    doc.text(`${this.currencyFormat(this.totalPayment)}`, 85, 114);
 
-    // Render Monthly Details table
+    // Monthly Schedule Table
+    const monthlyTableBody = this.schedule.map(item => [
+      item.monthLabel,
+      this.currencyFormat(parseFloat(item.emi)),
+      this.currencyFormat(parseFloat(item.principal)),
+      this.currencyFormat(parseFloat(item.interest)),
+      this.currencyFormat(parseFloat(item.balance))
+    ]);
+
     autoTable(doc, {
-      head: [['Month', 'Month Label', 'EMI', 'Principal', 'Interest', 'Balance']],
+      head: [['Month', 'EMI', 'Principal', 'Interest', 'Balance']],
       body: monthlyTableBody,
-      startY: 110, // Increased startY to accommodate payment summary
+      startY: 140, // Adjusted from 130 to 140 to account for increased payment summary box height
       theme: 'grid',
       styles: {
         fontSize: 8,
@@ -732,16 +1103,15 @@ validateAmount() {
         halign: 'center',
       },
       columnStyles: {
-        0: { cellWidth: 18, halign: 'center' },
-        1: { cellWidth: 30, halign: 'left' },
-        2: { cellWidth: 28, halign: 'right' },
-        3: { cellWidth: 28, halign: 'right' },
-        4: { cellWidth: 28, halign: 'right' },
-        5: { cellWidth: 35, halign: 'right' },
+        0: { cellWidth: 25, halign: 'left' },
+        1: { cellWidth: 35, halign: 'right' },
+        2: { cellWidth: 35, halign: 'right' },
+        3: { cellWidth: 35, halign: 'right' },
+        4: { cellWidth: 35, halign: 'right' },
       },
       willDrawCell: (data) => {
         const text = Array.isArray(data.cell.text) ? data.cell.text.join('') : data.cell.text;
-        if (text.length > 15) {
+        if (text.length > 12) {
           data.cell.styles.fontSize = 7;
         }
       },
@@ -751,18 +1121,92 @@ validateAmount() {
         doc.text(`© ${new Date().getFullYear()} Tech Trends Talks. All rights reserved.`, pageWidth / 2, pageHeight - 10, { align: 'center' });
       }
     });
-  
-    doc.save('Monthly-EMI-Schedule.pdf');
-    setTimeout(() => {
-      this.loader.hide();
-      }, 50);
+
+    // Save the PDF
+    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+    doc.save(`TechTrendsTalks_Monthly_EMI_Details_${timestamp}.pdf`);
   }
 
   currencyFormat(amount: number): string {
+    // Return only the formatted number without currency symbol
     return new Intl.NumberFormat('en-IN', {
       minimumFractionDigits: 2,
-       maximumFractionDigits: 2 
+      maximumFractionDigits: 2 
     }).format(amount);
+  }
+
+  // Format input value with comma separation
+  formatInputValue(value: number): string {
+    if (!value || value === 0) return '';
+    return new Intl.NumberFormat('en-IN', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value);
+  }
+
+  // Parse comma-separated input value back to number
+  parseInputValue(value: string): number {
+    if (!value) return 0;
+    // Remove all commas and convert to number
+    const cleanValue = value.replace(/,/g, '');
+    return parseInt(cleanValue) || 0;
+  }
+
+  // Handle amount input formatting
+  onAmountInput(event: any) {
+    const input = event.target;
+    const value = this.parseInputValue(input.value);
+    
+    if (value > 0) {
+      this.amount = value;
+      // Update the form control with formatted value
+      this.amountForm.setValue(this.formatInputValue(value), { emitEvent: false });
+    }
+  }
+
+  // Handle amount input blur (when user leaves the field)
+  onAmountBlur() {
+    this.validateAmount();
+    // Format the display value
+    this.amountForm.setValue(this.formatInputValue(this.amount), { emitEvent: false });
+  }
+
+  // Handle years input formatting
+  onYearsInput(event: any) {
+    const input = event.target;
+    const value = this.parseInputValue(input.value);
+    
+    if (value > 0) {
+      this.years = value;
+      // Update the form control with formatted value
+      this.yearsForm.setValue(this.formatInputValue(value), { emitEvent: false });
+    }
+  }
+
+  // Handle years input blur
+  onYearsBlur() {
+    this.validateTenure();
+    // Format the display value
+    this.yearsForm.setValue(this.formatInputValue(this.years), { emitEvent: false });
+  }
+
+  // Handle interest rate input formatting
+  onInterestInput(event: any) {
+    const input = event.target;
+    const value = this.parseInputValue(input.value);
+    
+    if (value > 0) {
+      this.interestRate = value;
+      // Update the form control with formatted value
+      this.interestForm.setValue(this.formatInputValue(value), { emitEvent: false });
+    }
+  }
+
+  // Handle interest rate input blur
+  onInterestBlur() {
+    this.validateInterestRate();
+    // Format the display value
+    this.interestForm.setValue(this.formatInputValue(this.interestRate), { emitEvent: false });
   }
   
 }

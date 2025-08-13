@@ -1,303 +1,299 @@
-<div class="app-calculator-container">
-  <div class="flex-row">
-    <div class="flex-item-24">
-      <form (ngSubmit)="calculateEMI()">
-        <div class="align-end menu-bar">
-          <mat-tab-group [(selectedIndex)]="selectedLoanTypeIndex" (selectedIndexChange)="onLoanTypeChange($event)"
-            animationDuration="400ms" class="loan-tab-group" @tabStagger>
-            <mat-tab *ngFor="let loanType of loanTypes; let i = index"  [ngClass]="{
-           'active-tab': selectedLoanTypeIndex === i,
-           'floating-tab': selectedLoanTypeIndex !== i
-            }" #tabRef>
-              <ng-template mat-tab-label>
-                <div class="tab-icon-container">
-                  <mat-icon [ngClass]="'icon-' + loanType.value">{{ loanType.icon }}</mat-icon>
-                  <span>{{ loanType.viewValue }}</span>
-                </div>
-              </ng-template>
-            </mat-tab>
-          </mat-tab-group>
-        </div>
-        <div class="flex-row">
-          <div class="flex-item-auto">
-            <mat-card>
-              <mat-card-content>
-                <div class="flex-col">
-                  <div class="flex-item-24">
-                    <mat-form-field appearance="outline">
-                      <mat-label>Loan Amount</mat-label>
-                      <mat-icon matPrefix> ₹</mat-icon>
-                      <input matInput type="number" (blur)="validateAmount()" [formControl]="amountForm" name="amount"
-                        required />
-                    </mat-form-field>
-                  </div>
-                  <div class="flex-item-24">
-                    <app-price-progress-bar [mode]="'PRICE'" [minPrice]="10000" [maxPrice]="100000000" [step]="1"
-                      [currentPrice]="amount"
-                      (priceChanged)="priceProgressChange($event,'PRICE')"></app-price-progress-bar>
-                  </div>
-                </div>
-              </mat-card-content>
-
-            </mat-card>
-          </div>
-          <div class="flex-item-auto">
-            <mat-card>
-              <mat-card-content>
-                <div class="flex-col">
-                  <div class="flex-item-24">
-                    <mat-form-field appearance="outline">
-                      <mat-label>Loan Term (Years)</mat-label>
-                      <input matInput type="number" (blur)="validateTenure()" [formControl]="yearsForm" name="years"
-                        required />
-                      <mat-icon matSuffix> Yr </mat-icon>
-                    </mat-form-field>
-                  </div>
-                </div>
-                <div class="flex-item-24">
-                  <app-price-progress-bar [mode]="'TENURE'" [minPrice]="1" [maxPrice]="50" [step]="1" [discrete]="true"
-                    [currentPrice]="years"
-                    (priceChanged)="priceProgressChange($event,'TENURE')"></app-price-progress-bar>
-                </div>
-              </mat-card-content>
-            </mat-card>
-
-          </div>
-          <div class="flex-item-auto">
-            <mat-card>
-              <mat-card-content>
-                <div class="flex-col">
-                  <div class="flex-item-24">
-                    <mat-form-field appearance="outline">
-                      <mat-label>Interest Rate (%)</mat-label>
-                      <input matInput type="number" (blur)="validateInterestRate()" [formControl]="interestForm"
-                        name="interestRate" required />
-                      <mat-icon matSuffix> % </mat-icon>
-                    </mat-form-field>
-                  </div>
-                </div>
-                <div class="flex-item-24">
-                  <app-price-progress-bar [mode]="'PERCENTAGE'" [minPrice]="1" [maxPrice]="30" [step]="1"
-                    [discrete]="true" [currentPrice]="interestRate"
-                    (priceChanged)="priceProgressChange($event,'PERCENTAGE')"></app-price-progress-bar>
-                </div>
-              </mat-card-content>
-            </mat-card>
-          </div>
-        </div>
-
-      </form>
+<div class="calculator-container">
+  <!-- Header Section -->
+  <div class="calculator-header">
+    <div class="header-content">
+      <h1>₹ EMI Calculator</h1>
+      <p>Calculate your monthly EMI and view complete repayment schedule</p>
     </div>
   </div>
 
-  <div class="flex-row">
-    <div class="flex-item-24">
-      <mat-card *ngIf="emi !== null" class="app-calculator-result-card">
-
-        <mat-card-content>
-          <div class="app-cal culator-result-content">
-            <div class="flex-row">
-              <div class="flex-item-auto table-result">
-                <table class="table-emi">
-                  <tr>
-                    <td class="table-emi-title">Monthly EMI:</td>
-                    <td class="table-emi-price"> {{ emi | currency:'INR':'symbol':'1.2-2' }}</td>
-                  </tr>
-                  <tr>
-                    <td>Total Interest:</td>
-                    <td>{{ totalInterest | currency:'INR':'symbol':'1.2-2' }}</td>
-                  </tr>
-                  <tr>
-                    <td>Principal Amount:</td>
-                    <td>{{ pricipalAmount | currency:'INR':'symbol':'1.2-2' }}</td>
-                  </tr>
-                  <tr>
-                    <td>Total Payment:</td>
-                    <td>{{ totalPayment | currency:'INR':'symbol':'1.2-2' }}</td>
-                  </tr>
-                </table>
-
-              </div>
-              <div class="flex-item-auto">
-                <div class="app-chart">
-                  <canvas baseChart [data]="chartData" [type]="chartType" [options]="chartOptions">
-                  </canvas>
-                </div>
-              </div>
+  <!-- Main Calculator Form -->
+  <div class="calculator-main">
+    <div class="form-container">
+      <!-- Loan Type Selection -->
+      <div class="loan-type-section">
+        <h3>Select Loan Type</h3>
+        <div class="loan-type-grid">
+          <div 
+            *ngFor="let loanType of loanTypes; let i = index" 
+            class="loan-type-card"
+            [class.active]="selectedLoanTypeIndex === i"
+            (click)="onLoanTypeChange(i)">
+            <div class="loan-icon">
+              <mat-icon>{{ loanType.icon }}</mat-icon>
             </div>
-
-          </div>
-        </mat-card-content>
-      </mat-card>
-    </div>
-  </div>
-
-  <!-- <div class="flex-row">
-    <div class="flex-item-24">
-    <div *ngIf="scheduleYears.length > 0" class="schedule-table">
-      <mat-accordion>
-        <mat-expansion-panel>
-          <mat-expansion-panel-header togglePosition="before">
-            <mat-panel-title>Year </mat-panel-title>
-            <mat-panel-description> 
-              <table class="expansion-table">
-                <tr>
-                  <td>EMI</td>
-                  <td>Principal Amount</td>
-                  <td>Interest</td>
-                  <td>Balance</td>
-                </tr>
-              </table>
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-        </mat-expansion-panel>
-        <mat-expansion-panel *ngFor="let row of scheduleYears">
-          <mat-expansion-panel-header togglePosition="before">
-            <mat-panel-title>
-              {{ row.year }} 
-            </mat-panel-title>
-            <mat-panel-description>
-              <table class="expansion-table">
-                <tr>
-                  <td>  ₹{{ row.emi }}</td>
-                  <td> ₹{{ row.principal }}</td>
-                  <td> ₹{{ row.interest }}</td>
-                  <td> ₹{{ row.balance }}</td>
-                </tr>
-              </table>
-            
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-      
-          <p><strong>Principal:</strong> ₹{{ row.principal }}</p>
-          <p><strong>Interest:</strong> ₹{{ row.interest }}</p>
-          <p><strong>Balance:</strong> ₹{{ row.balance }}</p>
-        </mat-expansion-panel>
-      </mat-accordion>
-      
-      
-    </div>
-  </div>
-  </div> -->
-
-  <div class="flex-row">
-    <div class="flex-item-24">
-      <div class="export-buttons">
-        <div class="export-section">
-          <h4>📄 PDF Downloads</h4>
-          <div class="button-group">
-            <button mat-raised-button color="primary" (click)="exportToEMIPdf()" class="export-btn">
-              📊 Complete Schedule
-            </button>
-            <button mat-raised-button color="accent" (click)="exportMonthlyDetailsPdf()" class="export-btn">
-              📅 Monthly Details
-            </button>
+            <div class="loan-info">
+              <h4>{{ loanType.viewValue }}</h4>
+              <span class="interest-rate">{{ loanType.interest }}% p.a.</span>
+            </div>
           </div>
         </div>
-        <div class="export-section">
-          <h4>📊 Excel Export</h4>
-          <div class="button-group">
-            <button mat-raised-button color="warn" (click)="exportToExcel()" class="export-btn">
-              📈 Export Excel
-            </button>
+      </div>
+
+      <!-- Calculator Inputs -->
+      <div class="calculator-inputs">
+        <div class="input-row">
+          <div class="input-group">
+            <label>Loan Amount</label>
+            <div class="input-wrapper">
+              <span class="currency-symbol">₹</span>
+              <input 
+                type="text" 
+                [formControl]="amountForm" 
+                (input)="onAmountInput($event)"
+                (blur)="onAmountBlur()"
+                placeholder="Enter loan amount"
+                class="form-input">
+            </div>
+            <app-price-progress-bar 
+              [mode]="'PRICE'" 
+              [minPrice]="10000" 
+              [maxPrice]="100000000" 
+              [step]="1"
+              [currentPrice]="amount"
+              (priceChanged)="priceProgressChange($event,'PRICE')">
+            </app-price-progress-bar>
           </div>
+
+          <div class="input-group">
+            <label>Loan Tenure (Years)</label>
+            <div class="input-wrapper">
+              <input 
+                type="text" 
+                [formControl]="yearsForm" 
+                (input)="onYearsInput($event)"
+                (blur)="onYearsBlur()"
+                placeholder="Enter years"
+                class="form-input">
+              <span class="unit">Years</span>
+            </div>
+            <app-price-progress-bar 
+              [mode]="'TENURE'" 
+              [minPrice]="1" 
+              [maxPrice]="50" 
+              [step]="1" 
+              [discrete]="true"
+              [currentPrice]="years"
+              (priceChanged)="priceProgressChange($event,'TENURE')">
+            </app-price-progress-bar>
+          </div>
+
+          <div class="input-group">
+            <label>Interest Rate (%)</label>
+            <div class="input-wrapper">
+              <input 
+                type="text" 
+                [formControl]="interestForm" 
+                (input)="onInterestInput($event)"
+                (blur)="onInterestBlur()"
+                placeholder="Enter rate"
+                class="form-input">
+              <span class="unit">%</span>
+            </div>
+            <app-price-progress-bar 
+              [mode]="'PERCENTAGE'" 
+              [minPrice]="1" 
+              [maxPrice]="30" 
+              [step]="1"
+              [discrete]="true" 
+              [currentPrice]="interestRate"
+              (priceChanged)="priceProgressChange($event,'PERCENTAGE')">
+            </app-price-progress-bar>
+          </div>
+        </div>
+
+        <!-- Calculate Button -->
+        <div class="calculate-section">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="calculateEMI()"
+            class="calculate-btn">
+            <mat-icon>calculate</mat-icon>
+            Calculate EMI
+          </button>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="flex-row">
-    <div class="flex-item-24">
-      <div *ngIf="yearlySchedule.length > 0" class="enhanced-schedule-table">
-        <div class="table-header">
-          <h3>📊 Loan Repayment Schedule</h3>
-          <p>Click on any year to view monthly breakdown</p>
-        </div>
-        
-        <!-- Summary Section -->
-        <div class="summary-section">
-          <div class="summary-grid">
-            <div class="summary-item">
-              <div class="summary-label">Total EMI Amount</div>
-              <div class="summary-value">
-                <span class="currency">₹</span>
-                <span class="amount">{{ totalPayment | number:'1.2-2' }}</span>
-              </div>
+  <!-- Results Section -->
+  <div class="results-section" *ngIf="emi !== null">
+    <!-- Results Header -->
+    <div class="results-header">
+      <div class="header-icon">
+        <mat-icon>calculate</mat-icon>
+      </div>
+      <div class="header-content">
+        <h2>Your EMI Results</h2>
+        <p>Here's your complete loan breakdown and repayment schedule</p>
+      </div>
+    </div>
+
+    <!-- Main Results Layout - Side by Side -->
+    <div class="results-main-layout">
+      <!-- Summary Cards Grid -->
+      <div class="summary-cards-grid">
+        <div class="summary-card primary">
+          <div class="card-header">
+            <div class="card-icon">
+              <mat-icon>payments</mat-icon>
             </div>
-            <div class="summary-item">
-              <div class="summary-label">Total Interest</div>
-              <div class="summary-value">
-                <span class="currency">₹</span>
-                <span class="amount">{{ totalInterest | number:'1.2-2' }}</span>
-              </div>
-            </div>
-            <div class="summary-item">
-              <div class="summary-label">Monthly EMI</div>
-              <div class="summary-value">
-                <span class="currency">₹</span>
-                <span class="amount">{{ emi | number:'1.2-2' }}</span>
-              </div>
-            </div>
-            <div class="summary-item">
-              <div class="summary-label">Principal Amount</div>
-              <div class="summary-value">
-                <span class="currency">₹</span>
-                <span class="amount">{{ pricipalAmount | number:'1.2-2' }}</span>
-              </div>
-            </div>
+            <div class="card-badge">Monthly</div>
+          </div>
+          <div class="card-content">
+            <h3>Monthly EMI</h3>
+            <div class="amount">₹{{ emi | number:'1.2-2' }}</div>
+            <p class="description">Fixed monthly payment</p>
           </div>
         </div>
+
+        <div class="summary-card secondary">
+          <div class="card-header">
+            <div class="card-icon">
+              <mat-icon>trending_up</mat-icon>
+            </div>
+            <div class="card-badge">Total</div>
+          </div>
+          <div class="card-content">
+            <h3>Total Interest</h3>
+            <div class="amount">₹{{ totalInterest | number:'1.2-2' }}</div>
+            <p class="description">Interest over {{ years }} years</p>
+          </div>
+        </div>
+
+        <div class="summary-card accent">
+          <div class="card-header">
+            <div class="card-icon">
+              <mat-icon>account_balance_wallet</mat-icon>
+            </div>
+            <div class="card-badge">Total</div>
+          </div>
+          <div class="card-content">
+            <h3>Total Payment</h3>
+            <div class="amount">₹{{ totalPayment | number:'1.2-2' }}</div>
+            <p class="description">Principal + Interest</p>
+          </div>
+        </div>
+
+        <div class="summary-card info">
+          <div class="card-header">
+            <div class="card-icon">
+              <mat-icon>credit_card</mat-icon>
+            </div>
+            <div class="card-badge">Principal</div>
+          </div>
+          <div class="card-content">
+            <h3>Loan Amount</h3>
+            <div class="amount">₹{{ pricipalAmount | number:'1.2-2' }}</div>
+            <p class="description">Original loan amount</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart Container -->
+      <div class="chart-container">
+        <div class="chart-header">
+          <h3>Payment Breakdown</h3>
+          <p>Visual representation of your loan</p>
+        </div>
+        <div class="chart-wrapper">
+          <canvas baseChart
+            [data]="chartData"
+            [type]="chartType"
+            [options]="chartOptions">
+          </canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Download Reports Section - Single Row -->
+    <div class="download-reports-section">
+      <div class="reports-header">
+        <h3>📥 Download Reports</h3>
+        <p>Get detailed information in your preferred format</p>
+      </div>
+      
+      <div class="reports-buttons">
+        <button mat-raised-button color="primary" (click)="exportToEMIPdf()" class="report-btn">
+          <mat-icon>picture_as_pdf</mat-icon>
+          Complete Schedule PDF
+        </button>
         
+        <button mat-raised-button color="accent" (click)="exportMonthlyDetailsPdf()" class="report-btn">
+          <mat-icon>schedule</mat-icon>
+          Monthly Details PDF
+        </button>
+        
+        <button mat-raised-button color="warn" (click)="exportToExcel()" class="report-btn">
+          <mat-icon>table_chart</mat-icon>
+          Excel Report
+        </button>
+      </div>
+    </div>
+
+    <!-- Repayment Schedule -->
+    <div class="schedule-section" *ngIf="yearlySchedule.length > 0">
+      <div class="schedule-header">
+        <div class="header-content">
+          <h3>📊 Repayment Schedule</h3>
+          <p>Click on any year to view monthly breakdown</p>
+        </div>
+        <div class="schedule-actions">
+          <button mat-button class="action-btn" (click)="expandAllYears()">
+            <mat-icon>expand_all</mat-icon>
+            Expand All
+          </button>
+          <button mat-button class="action-btn" (click)="collapseAllYears()">
+            <mat-icon>collapse_all</mat-icon>
+            Collapse All
+          </button>
+        </div>
+      </div>
+      
+      <div class="schedule-table-wrapper">
         <div class="table-container">
           <table class="schedule-table">
             <thead>
-              <tr class="table-header-row">
-                <th class="year-header">Year</th>
-                <th class="emi-header">Total EMI</th>
-                <th class="principal-header">Principal Paid</th>
-                <th class="interest-header">Interest Paid</th>
-                <th class="balance-header">Remaining Balance</th>
-                <th class="action-header">Details</th>
+              <tr>
+                <th>Year</th>
+                <th>Total EMI</th>
+                <th>Principal Paid</th>
+                <th>Interest Paid</th>
+                <th>Remaining Balance</th>
+                <th>Details</th>
               </tr>
             </thead>
             <tbody>
               <ng-container *ngFor="let yearData of yearlySchedule; trackBy: trackByYear">
                 <!-- Yearly Summary Row -->
-                <tr class="yearly-summary-row" [ngClass]="getYearlyRowClass(yearData.year)">
+                <tr class="yearly-row" [ngClass]="getYearlyRowClass(yearData.year)">
                   <td class="year-cell">
                     <div class="year-info">
                       <span class="year-number">{{ yearData.year }}</span>
                       <span class="year-label">Year</span>
                     </div>
                   </td>
-                  <td class="emi-cell">
-                    <div class="amount-display">
-                      <span class="currency">₹</span>
-                      <span class="amount">{{ yearData.yearlyData.emi | number:'1.2-2' }}</span>
-                    </div>
+                  <td class="amount-cell">
+                    <span class="currency">₹</span>
+                    <span class="amount">{{ yearData.yearlyData.emi | number:'1.2-2' }}</span>
                   </td>
-                  <td class="principal-cell">
-                    <div class="amount-display">
-                      <span class="currency">₹</span>
-                      <span class="amount">{{ yearData.yearlyData.principal | number:'1.2-2' }}</span>
-                    </div>
+                  <td class="amount-cell">
+                    <span class="currency">₹</span>
+                    <span class="amount">{{ yearData.yearlyData.principal | number:'1.2-2' }}</span>
                   </td>
-                  <td class="interest-cell">
-                    <div class="amount-display">
-                      <span class="currency">₹</span>
-                      <span class="amount">{{ yearData.yearlyData.interest | number:'1.2-2' }}</span>
-                    </div>
+                  <td class="amount-cell">
+                    <span class="currency">₹</span>
+                    <span class="amount">{{ yearData.yearlyData.interest | number:'1.2-2' }}</span>
                   </td>
-                  <td class="balance-cell">
-                    <div class="amount-display">
-                      <span class="currency">₹</span>
-                      <span class="amount">{{ yearData.yearlyData.balance | number:'1.2-2' }}</span>
-                    </div>
+                  <td class="amount-cell">
+                    <span class="currency">₹</span>
+                    <span class="amount">{{ yearData.yearlyData.balance | number:'1.2-2' }}</span>
                   </td>
                   <td class="action-cell">
                     <button 
                       mat-icon-button 
-                      class="expand-button"
+                      class="expand-btn"
                       (click)="toggleYearExpansion(yearData.year)"
                       [attr.aria-label]="isYearExpanded(yearData.year) ? 'Collapse monthly details' : 'Expand monthly details'">
                       <mat-icon [class.rotated]="isYearExpanded(yearData.year)">
@@ -307,10 +303,10 @@
                   </td>
                 </tr>
                 
-                <!-- Monthly Details Row (Expandable) -->
-                <tr class="monthly-details-row" *ngIf="isYearExpanded(yearData.year)">
-                  <td colspan="6" class="monthly-details-cell">
-                    <div class="monthly-table-container">
+                <!-- Monthly Details Row -->
+                <tr class="monthly-details" *ngIf="isYearExpanded(yearData.year)">
+                  <td colspan="6" class="monthly-container">
+                    <div class="monthly-table-wrapper">
                       <table class="monthly-table">
                         <thead>
                           <tr>
@@ -324,19 +320,19 @@
                         <tbody>
                           <tr *ngFor="let month of yearData.monthlyDetails" class="monthly-row">
                             <td class="month-label">{{ month.monthLabel }}</td>
-                            <td class="month-emi">
+                            <td class="month-amount">
                               <span class="currency">₹</span>
                               <span class="amount">{{ month.emi | number:'1.2-2' }}</span>
                             </td>
-                            <td class="month-principal">
+                            <td class="month-amount">
                               <span class="currency">₹</span>
                               <span class="amount">{{ month.principal | number:'1.2-2' }}</span>
                             </td>
-                            <td class="month-interest">
+                            <td class="month-amount">
                               <span class="currency">₹</span>
                               <span class="amount">{{ month.interest | number:'1.2-2' }}</span>
                             </td>
-                            <td class="month-balance">
+                            <td class="month-amount">
                               <span class="currency">₹</span>
                               <span class="amount">{{ month.balance | number:'1.2-2' }}</span>
                             </td>
@@ -354,54 +350,43 @@
     </div>
   </div>
 
+  <!-- Information Section -->
+  <div class="info-section">
+    <div class="info-container">
+      <h3>📚 How EMI Calculator Works</h3>
+      <div class="info-grid">
+        <div class="info-card">
+          <h4>EMI Formula</h4>
+          <p><strong>EMI = P × R × (1 + R)^N / [(1 + R)^N - 1]</strong></p>
+          <p>Where:</p>
+          <ul>
+            <li><strong>P</strong> = Principal Loan Amount</li>
+            <li><strong>R</strong> = Monthly Interest Rate (Annual Rate ÷ 12 ÷ 100)</li>
+            <li><strong>N</strong> = Total Number of Months</li>
+          </ul>
+        </div>
+        
+        <div class="info-card">
+          <h4>Key Factors</h4>
+          <ul>
+            <li><strong>Principal Amount:</strong> Higher amount = Higher EMI</li>
+            <li><strong>Interest Rate:</strong> Higher rate = Higher EMI</li>
+            <li><strong>Loan Tenure:</strong> Longer tenure = Lower EMI</li>
+            <li><strong>Processing Fees:</strong> Additional costs to consider</li>
+          </ul>
+        </div>
 
-
-  <!-- About Block -->
-
-  <section class="loan-emi-info">
-
-    <h2>📌 Key Factors Affecting Your Personal Loan EMI</h2>
-    <p>Understanding what influences your Equated Monthly Instalment (EMI) can help you select smarter loan options:</p>
-    <ul>
-      <li><strong>Principal Amount:</strong> The total amount borrowed. Higher principal equals higher EMIs.</li>
-      <li><strong>Interest Rate:</strong> The lender’s rate directly affects EMI. Higher rates increase monthly
-        obligations.</li>
-      <li><strong>Loan Tenure:</strong> Longer tenures lower EMIs but raise total interest paid. Shorter tenures do the
-        opposite.</li>
-      <li><strong>Processing Fees & Charges:</strong> Not part of EMI itself, but these add to the overall loan cost.
-      </li>
-      <li><strong>Credit Score & Profile:</strong> A healthy score may unlock lower interest rates, reducing EMI burden.
-      </li>
-    </ul>
-
-    <h2>🛠️ How to Use the TECH TRNDS TALKS EMI Calculator</h2>
-    <ul>
-      <li><strong>Enter Loan Amount:</strong> Input your desired amount or use the slider.</li>
-      <li><strong>Choose Interest Rate:</strong> Adjust the rate manually or via the slider.</li>
-      <li><strong>Select Tenure:</strong> Define your repayment duration in months.</li>
-      <li><strong>View EMI Instantly:</strong> See your estimated monthly instalment at a glance.</li>
-      <li><strong>Review Amortisation Table:</strong> Check the detailed breakdown including total interest and
-        repayment.</li>
-      <li><strong>Adjust & Compare:</strong> Modify values to compare plans and find what suits your budget best.</li>
-    </ul>
-
-    <h2>📐 EMI Calculation Formula</h2>
-    <p>The EMI is calculated using the standard formula:</p>
-    <pre>
-  EMI = [P × R × (1+R)^N] / [(1+R)^N – 1]
-    </pre>
-    <p>
-      Where:<br>
-      <strong>P</strong> = Loan Amount (Principal)<br>
-      <strong>R</strong> = Monthly Interest Rate (Annual Rate ÷ 12 ÷ 100)<br>
-      <strong>N</strong> = Loan Tenure in Months
-    </p>
-    <p><em>Example:</em> A ₹5,00,000 loan at 10.70% annual interest for 5 years yields an EMI of approximately ₹10,829.
-    </p>
-
-    <p><strong>💡 Tip:</strong> Manual calculations may lead to errors. Using the EMI calculator ensures precise and
-      hassle-free results.</p>
-
-  </section>
-
+        <div class="info-card">
+          <h4>Tips for Lower EMI</h4>
+          <ul>
+            <li>Choose longer loan tenure</li>
+            <li>Maintain good credit score</li>
+            <li>Compare different lenders</li>
+            <li>Consider prepayment options</li>
+            <li>Negotiate interest rates</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
