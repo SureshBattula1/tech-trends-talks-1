@@ -1,113 +1,271 @@
-<div class="app-calculator-container">
-    <div class="flex-row">
-      <div class="flex-item-24">
-      <form  (ngSubmit)="calculateSIP()">
-     
-        <div class="flex-row">
-          <div class="flex-item-auto">
-            <mat-card>
-              <mat-card-content>
-                <div class="flex-col">
-                  <div class="flex-item-24">
-                    <mat-form-field  appearance="outline">
-                      <mat-label>Monthly Investment</mat-label>
-                      <mat-icon matPrefix> ₹</mat-icon>
-                      <input matInput type="number"  (blur)="validateMonthlyInvestment()" [formControl]="monthlyInvestmentForm" name="monthlyInvestment" required />
-                    </mat-form-field>
-                  </div>
-                  <div class="flex-item-24"> 
-                    <app-price-progress-bar [mode]="'PRICE'"  [minPrice]="10000" [maxPrice]="100000000" [step]="1" [currentPrice]="monthlyInvestment" (priceChanged)="priceProgressChange($event,'PRICE')"></app-price-progress-bar>
-                  </div>
-                </div>
-              </mat-card-content>
-            </mat-card>
-          </div>
-
-          <div class="flex-item-auto">
-            <mat-card>
-              <mat-card-content>
-                <div class="flex-col">
-                  <div class="flex-item-24">
-                    <mat-form-field  appearance="outline">
-                      <mat-label>Expected Return Rate (p.a)</mat-label>
-                      <input matInput type="number" (blur)="validateAnnualInterestRate()"  [formControl]="annualInterestRateForm" name="annualInterestRate" required />
-                      <mat-icon matSuffix> % </mat-icon>
-                    </mat-form-field>
-                  </div>
-                </div>
-                <div class="flex-item-24">
-                  <app-price-progress-bar [mode]="'PERCENTAGE'" [minPrice]="1" [maxPrice]="30" [step]="1" [discrete]="true"  [currentPrice]="annualInterestRate" (priceChanged)="priceProgressChange($event,'PERCENTAGE')"></app-price-progress-bar>
-                </div>
-              </mat-card-content>
-            </mat-card> 
-          </div>
-
-          <div class="flex-item-auto">
-            <mat-card>
-              <mat-card-content>
-                <div class="flex-col">
-                  <div class="flex-item-24">
-                    <mat-form-field  appearance="outline">
-                      <mat-label>Time Period (Years)</mat-label>
-                      <input matInput type="number"  (blur)="validateInvestmentPeriod()"  [formControl]="investmentPeriodForm" name="investmentPeriod" required />
-                      <mat-icon matSuffix> Yr </mat-icon>
-                    </mat-form-field>
-                  </div>
-                </div>
-                <div class="flex-item-24">
-                  <app-price-progress-bar [mode]="'TENURE'"  [minPrice]="1" [maxPrice]="50" [step]="1" [discrete]="true" [currentPrice]="investmentPeriod" (priceChanged)="priceProgressChange($event,'TENURE')"></app-price-progress-bar>
-                </div>
-              </mat-card-content>
-            </mat-card>
-      
-          </div>
-         
-        </div>
-        
-      </form>
+<div class="calculator-container">
+  <!-- Header Section -->
+  <div class="calculator-header">
+    <div class="header-content">
+      <h1>💰 Investment Calculator</h1>
+      <p>Calculate your investment returns with SIP or Lumpsum investment</p>
     </div>
-    </div>
-  
-    <div class="flex-row">
-      <div class="flex-item-24">
-      <mat-card *ngIf="TOTAL_VALUE !== null" class="app-calculator-result-card">
-     
-          <mat-card-content>
-            <div class="app-cal culator-result-content"> 
-              <div class="flex-row">
-                <div class="flex-item-auto table-result">
-                  <table class="table-emi">
-                    <tr>
-                      <td class="table-emi-title">Est. Returns:</td>
-                      <td class="table-emi-price"> {{ EST_RETURNS | currency:'INR':'symbol':'1.2-2' }}</td>
-                    </tr>
-                    <tr>
-                      <td>Invested Amount:</td>
-                      <td>{{ INVESTED_AMOUNT | currency:'INR':'symbol':'1.2-2'  }}</td>
-                    </tr>
-                    <tr>
-                      <td>Total Payment:</td>
-                      <td>{{ TOTAL_VALUE | currency:'INR':'symbol':'1.2-2'  }}</td>
-                    </tr>
-                  </table>
-                  
-                </div>
-                <div class="flex-item-auto">
-                  <div class="app-chart">
-                    <canvas baseChart
-                            [data]="chartData"
-                            [type]="chartType"
-                            [options]="chartOptions">
-                    </canvas>
-                  </div>
-                </div>
-              </div>
-            
-            </div>
-          </mat-card-content>
-      </mat-card>
-    </div>
-    </div>
-  
   </div>
+
+  <!-- Calculator Mode Toggle -->
+  <div class="calculator-mode-toggle">
+    <div class="mode-toggle-container">
+      <button 
+        class="mode-toggle-btn"
+        [class.active]="calculatorMode === 'SIP'"
+        (click)="toggleCalculatorMode('SIP')">
+        <mat-icon>trending_up</mat-icon>
+        SIP Calculator
+      </button>
+      <button 
+        class="mode-toggle-btn"
+        [class.active]="calculatorMode === 'LUMPSUM'"
+        (click)="toggleCalculatorMode('LUMPSUM')">
+        <mat-icon>account_balance</mat-icon>
+        Lumpsum Calculator
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Calculator Form -->
+  <div class="calculator-main">
+    <div class="form-container">
+      <!-- SIP Calculator Form -->
+      <div *ngIf="calculatorMode === 'SIP'" class="calculator-form">
+        <h3>📈 Systematic Investment Plan (SIP)</h3>
+        <p class="form-description">Calculate returns on your monthly investments</p>
+        
+        <div class="form-grid">
+          <!-- Monthly Investment -->
+          <div class="form-card">
+            <div class="input-group">
+              <label>Monthly Investment</label>
+              <div class="input-wrapper">
+                <span class="currency-symbol">₹</span>
+                <input 
+                  type="text" 
+                  [formControl]="monthlyInvestmentForm" 
+                  (blur)="onInputBlur('monthlyInvestment')" 
+                  (focus)="onInputFocus('monthlyInvestment')"
+                  placeholder="Enter monthly amount"
+                  class="form-input">
+              </div>
+              <app-price-progress-bar 
+                [mode]="'PRICE'"  
+                [minPrice]="100" 
+                [maxPrice]="100000000" 
+                [step]="1" 
+                [currentPrice]="monthlyInvestment" 
+                (priceChanged)="priceProgressChange($event,'PRICE')">
+              </app-price-progress-bar>
+            </div>
+          </div>
+
+          <!-- Annual Interest Rate -->
+          <div class="form-card">
+            <div class="input-group">
+              <label>Expected Return Rate (p.a)</label>
+              <div class="input-wrapper">
+                <input 
+                  type="text" 
+                  [formControl]="annualInterestRateForm" 
+                  (blur)="onInputBlur('annualInterestRate')"  
+                  placeholder="Enter rate"
+                  class="form-input">
+                <span class="unit">%</span>
+              </div>
+              <app-price-progress-bar 
+                [mode]="'PERCENTAGE'" 
+                [minPrice]="1" 
+                [maxPrice]="30" 
+                [step]="1" 
+                [discrete]="true"  
+                [currentPrice]="annualInterestRate" 
+                (priceChanged)="priceProgressChange($event,'PERCENTAGE')">
+              </app-price-progress-bar>
+            </div>
+          </div>
+
+          <!-- Investment Period -->
+          <div class="form-card">
+            <div class="input-group">
+              <label>Time Period (Years)</label>
+              <div class="input-wrapper">
+                <input 
+                  type="text" 
+                  [formControl]="investmentPeriodForm" 
+                  (blur)="onInputBlur('investmentPeriod')"  
+                  placeholder="Enter years"
+                  class="form-input">
+                <span class="unit">Years</span>
+              </div>
+              <app-price-progress-bar 
+                [mode]="'TENURE'"  
+                [minPrice]="1" 
+                [maxPrice]="50" 
+                [step]="1" 
+                [discrete]="true" 
+                [currentPrice]="investmentPeriod" 
+                (priceChanged)="priceProgressChange($event,'TENURE')">
+              </app-price-progress-bar>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lumpsum Calculator Form -->
+      <div *ngIf="calculatorMode === 'LUMPSUM'" class="calculator-form">
+        <h3>💎 Lumpsum Investment</h3>
+        <p class="form-description">Calculate returns on your one-time investment</p>
+        
+        <div class="form-grid">
+          <!-- Lumpsum Amount -->
+          <div class="form-card">
+            <div class="input-group">
+              <label>Investment Amount</label>
+              <div class="input-wrapper">
+                <span class="currency-symbol">₹</span>
+                <input 
+                  type="text" 
+                  [formControl]="lumpsumAmountForm" 
+                  (blur)="onInputBlur('lumpsumAmount')" 
+                  (focus)="onInputFocus('lumpsumAmount')"
+                  placeholder="Enter investment amount"
+                  class="form-input">
+              </div>
+              <app-price-progress-bar 
+                [mode]="'PRICE'"  
+                [minPrice]="1000" 
+                [maxPrice]="100000000" 
+                [step]="1" 
+                [currentPrice]="lumpsumAmount" 
+                (priceChanged)="priceProgressChange($event,'PRICE')">
+              </app-price-progress-bar>
+            </div>
+          </div>
+
+          <!-- Annual Interest Rate -->
+          <div class="form-card">
+            <div class="input-group">
+              <label>Expected Return Rate (p.a)</label>
+              <div class="input-wrapper">
+                <input 
+                  type="text" 
+                  [formControl]="lumpsumAnnualInterestRateForm" 
+                  (blur)="onInputBlur('lumpsumAnnualInterestRate')"  
+                  placeholder="Enter rate"
+                  class="form-input">
+                <span class="unit">%</span>
+              </div>
+              <app-price-progress-bar 
+                [mode]="'PERCENTAGE'" 
+                [minPrice]="1" 
+                [maxPrice]="30" 
+                [step]="1" 
+                [discrete]="true"  
+                [currentPrice]="lumpsumAnnualInterestRate" 
+                (priceChanged)="priceProgressChange($event,'PERCENTAGE')">
+              </app-price-progress-bar>
+            </div>
+          </div>
+
+          <!-- Investment Period -->
+          <div class="form-card">
+            <div class="input-group">
+              <label>Time Period (Years)</label>
+              <div class="input-wrapper">
+                <input 
+                  type="text" 
+                  [formControl]="lumpsumInvestmentPeriodForm" 
+                  (blur)="onInputBlur('lumpsumInvestmentPeriod')"  
+                  placeholder="Enter years"
+                  class="form-input">
+                <span class="unit">Years</span>
+              </div>
+              <app-price-progress-bar 
+                [mode]="'TENURE'"  
+                [minPrice]="1" 
+                [maxPrice]="50" 
+                [step]="1" 
+                [discrete]="true" 
+                [currentPrice]="lumpsumInvestmentPeriod" 
+                (priceChanged)="priceProgressChange($event,'TENURE')">
+              </app-price-progress-bar>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Section -->
+  <div class="results-section" *ngIf="TOTAL_VALUE !== null">
+    <!-- Results Header -->
+    <div class="results-header">
+      <div class="header-icon">
+        <mat-icon>calculate</mat-icon>
+      </div>
+      <div class="header-content">
+        <h2>Your Investment Results</h2>
+        <p>Here's your complete investment breakdown and projected returns</p>
+      </div>
+    </div>
+
+    <!-- Main Results Layout -->
+    <div class="results-main-layout">
+      <!-- Summary Cards Grid -->
+      <div class="summary-cards-grid">
+        <!-- Est. Returns Card -->
+        <div class="summary-card returns-card">
+          <div class="card-icon">
+            <mat-icon>trending_up</mat-icon>
+          </div>
+          <div class="card-content">
+            <h3>Est. Returns</h3>
+            <div class="amount">{{ EST_RETURNS | currency:'INR':'symbol':'1.2-2' }}</div>
+            <p>Projected earnings</p>
+          </div>
+        </div>
+
+        <!-- Invested Amount Card -->
+        <div class="summary-card invested-card">
+          <div class="card-icon">
+            <mat-icon>account_balance_wallet</mat-icon>
+          </div>
+          <div class="card-content">
+            <h3>Invested Amount</h3>
+            <div class="amount">{{ INVESTED_AMOUNT | currency:'INR':'symbol':'1.2-2' }}</div>
+            <p>{{ calculatorMode === 'SIP' ? 'Total invested' : 'Initial investment' }}</p>
+          </div>
+        </div>
+
+        <!-- Total Value Card -->
+        <div class="summary-card total-card">
+          <div class="card-icon">
+            <mat-icon>account_balance</mat-icon>
+          </div>
+          <div class="card-content">
+            <h3>Total Value</h3>
+            <div class="amount">{{ TOTAL_VALUE | currency:'INR':'symbol':'1.2-2' }}</div>
+            <p>Final portfolio value</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart Section -->
+      <div class="chart-section">
+        <div class="chart-container">
+          <h3>Investment Breakdown</h3>
+          <div class="chart-wrapper">
+            <canvas baseChart
+                    [data]="chartData"
+                    [type]="chartType"
+                    [options]="chartOptions">
+            </canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
   
