@@ -10,6 +10,7 @@ import { PriceProgressBarComponent } from '../price-progress-bar/price-progress-
 import { MetaTagsService, CalculatorType } from '../../../services/meta-tags.service';
 import { StructuredDataService } from '../../../services/structured-data.service';
 import { Router } from '@angular/router';
+import { LoaderService } from '../../../services/loading-bar/loader.service';
 
 @Component({
   selector: 'app-calculator-sip-view',
@@ -23,6 +24,7 @@ export class CalculatorSipViewComponent implements OnInit{
 
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
+  public loader = inject(LoaderService);
   private cd = inject(ChangeDetectorRef);
   private metaTagsService = inject(MetaTagsService);
   private structuredDataService = inject(StructuredDataService);
@@ -404,6 +406,7 @@ export class CalculatorSipViewComponent implements OnInit{
   }
 
   calculateSIP(): void {
+    this.loader.show();
     const P = this.monthlyInvestment;
     const r = this.annualInterestRate / 12 / 100;
     const n = this.investmentPeriod * 12;
@@ -423,9 +426,14 @@ export class CalculatorSipViewComponent implements OnInit{
     // Update chart
     this.chartData.datasets[0].data = [this.INVESTED_AMOUNT, this.EST_RETURNS];
     this.chart?.update();
+
+    setTimeout(() => {
+      this.loader.hide();
+      }, 100);
   }
 
   calculateLumpsum(): void {
+    this.loader.show();
     const P = this.lumpsumAmount;
     const r = this.lumpsumAnnualInterestRate / 100;
     const n = this.lumpsumInvestmentPeriod;
@@ -445,6 +453,10 @@ export class CalculatorSipViewComponent implements OnInit{
     // Update chart
     this.chartData.datasets[0].data = [this.INVESTED_AMOUNT, this.EST_RETURNS];
     this.chart?.update();
+
+    setTimeout(() => {
+      this.loader.hide();
+      }, 100);
   }
   
 }
