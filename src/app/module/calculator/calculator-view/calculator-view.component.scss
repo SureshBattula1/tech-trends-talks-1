@@ -1417,25 +1417,32 @@
   }
 }
 
-// SEO Keywords Section
+
+/* SEO Keywords Section */
 .seo-keywords {
+  margin-top: 1.5rem;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 15px;
-}
+  gap: 0.8rem;
+  justify-content: center;
 
-.keyword-tag {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
+  .keyword-tag {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    &:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+  }
 }
 
 .keyword-tag:hover {
