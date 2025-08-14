@@ -2,8 +2,18 @@
   <!-- Header Section -->
   <div class="calculator-header">
     <div class="header-content">
-      <h1>💰 Investment Calculator</h1>
-      <p>Calculate your investment returns with SIP or Lumpsum investment</p>
+      <h1>SIP Calculator - Calculate Mutual Fund Returns & Investment Growth</h1>
+      <p>Use our free SIP calculator to estimate returns on your Systematic Investment Plan. Calculate monthly SIP amounts, track potential wealth creation, and plan your mutual fund investments with precision. Get detailed breakdowns and downloadable reports.</p>
+      
+      <!-- SEO Keywords Section -->
+      <div class="seo-keywords">
+        <span class="keyword-tag">SIP Calculator</span>
+        <span class="keyword-tag">Mutual Fund Calculator</span>
+        <span class="keyword-tag">Investment Calculator</span>
+        <span class="keyword-tag">SIP Returns Calculator</span>
+        <span class="keyword-tag">Monthly Investment Calculator</span>
+        <span class="keyword-tag">Wealth Calculator</span>
+      </div>
     </div>
   </div>
 
@@ -32,14 +42,14 @@
     <div class="form-container">
       <!-- SIP Calculator Form -->
       <div *ngIf="calculatorMode === 'SIP'" class="calculator-form">
-        <h3>📈 Systematic Investment Plan (SIP)</h3>
-        <p class="form-description">Calculate returns on your monthly investments</p>
+        <h3>📈 Systematic Investment Plan (SIP) Calculator</h3>
+        <p class="form-description">Calculate returns on your monthly investments and plan your financial future</p>
         
         <div class="form-grid">
           <!-- Monthly Investment -->
           <div class="form-card">
             <div class="input-group">
-              <label>Monthly Investment</label>
+              <label>Monthly Investment Amount</label>
               <div class="input-wrapper">
                 <span class="currency-symbol">₹</span>
                 <input 
@@ -64,7 +74,7 @@
           <!-- Annual Interest Rate -->
           <div class="form-card">
             <div class="input-group">
-              <label>Expected Return Rate (p.a)</label>
+              <label>Expected Annual Return Rate</label>
               <div class="input-wrapper">
                 <input 
                   type="text" 
@@ -89,7 +99,7 @@
           <!-- Investment Period -->
           <div class="form-card">
             <div class="input-group">
-              <label>Time Period (Years)</label>
+              <label>Investment Time Period</label>
               <div class="input-wrapper">
                 <input 
                   type="text" 
@@ -100,23 +110,88 @@
                 <span class="unit">Years</span>
               </div>
               <app-price-progress-bar 
-                [mode]="'TENURE'"  
+                [mode]="'TENURE'" 
                 [minPrice]="1" 
                 [maxPrice]="50" 
                 [step]="1" 
-                [discrete]="true" 
+                [discrete]="true"  
                 [currentPrice]="investmentPeriod" 
                 (priceChanged)="priceProgressChange($event,'TENURE')">
               </app-price-progress-bar>
             </div>
           </div>
         </div>
+
+        <!-- Calculate Button -->
+        <div class="calculate-section">
+          <button class="calculate-btn" (click)="calculate()">
+            <mat-icon>calculate</mat-icon>
+            Calculate SIP Returns
+          </button>
+        </div>
+
+        <!-- Results Section -->
+        <div *ngIf="TOTAL_VALUE > 0" class="results-section">
+          <h3>📊 SIP Investment Results</h3>
+          <div class="results-grid">
+            <div class="result-card">
+              <div class="result-icon">💰</div>
+              <div class="result-content">
+                <h4>Total Invested</h4>
+                <p class="result-amount">₹{{ formatCurrency(INVESTED_AMOUNT) }}</p>
+                <small>Monthly SIP × {{ investmentPeriod * 12 }} months</small>
+              </div>
+            </div>
+            
+            <div class="result-card">
+              <div class="result-icon">📈</div>
+              <div class="result-content">
+                <h4>Estimated Returns</h4>
+                <p class="result-amount">₹{{ formatCurrency(EST_RETURNS) }}</p>
+                <small>Compound interest earned</small>
+              </div>
+            </div>
+            
+            <div class="result-card">
+              <div class="result-icon">🎯</div>
+              <div class="result-content">
+                <h4>Total Value</h4>
+                <p class="result-amount">₹{{ formatCurrency(TOTAL_VALUE) }}</p>
+                <small>Invested + Returns</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart Section -->
+          <div class="chart-section">
+            <h4>Investment Breakdown</h4>
+            <div class="chart-container">
+              <canvas baseChart
+                [data]="chartData"
+                [type]="chartType"
+                [options]="chartOptions">
+              </canvas>
+            </div>
+          </div>
+
+          <!-- Download Section -->
+          <div class="download-section">
+            <button class="download-btn" (click)="downloadPDF()">
+              <mat-icon>download</mat-icon>
+              Download PDF Report
+            </button>
+            <button class="download-btn" (click)="downloadExcel()">
+              <mat-icon>table_chart</mat-icon>
+              Download Excel
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Lumpsum Calculator Form -->
       <div *ngIf="calculatorMode === 'LUMPSUM'" class="calculator-form">
-        <h3>💎 Lumpsum Investment</h3>
-        <p class="form-description">Calculate returns on your one-time investment</p>
+        <h3>💎 Lumpsum Investment Calculator</h3>
+        <p class="form-description">Calculate returns on your one-time investment amount</p>
         
         <div class="form-grid">
           <!-- Lumpsum Amount -->
@@ -128,9 +203,9 @@
                 <input 
                   type="text" 
                   [formControl]="lumpsumAmountForm" 
-                  (blur)="onInputBlur('lumpsumAmount')" 
+                  (blur)="onInputBlur('lumpsumAmount')"  
                   (focus)="onInputFocus('lumpsumAmount')"
-                  placeholder="Enter investment amount"
+                  placeholder="Enter amount"
                   class="form-input">
               </div>
               <app-price-progress-bar 
@@ -139,7 +214,7 @@
                 [maxPrice]="100000000" 
                 [step]="1" 
                 [currentPrice]="lumpsumAmount" 
-                (priceChanged)="priceProgressChange($event,'PRICE')">
+                (priceChanged)="priceProgressChange($event,'LUMPSUM_PRICE')">
               </app-price-progress-bar>
             </div>
           </div>
@@ -147,7 +222,7 @@
           <!-- Annual Interest Rate -->
           <div class="form-card">
             <div class="input-group">
-              <label>Expected Return Rate (p.a)</label>
+              <label>Expected Annual Return Rate</label>
               <div class="input-wrapper">
                 <input 
                   type="text" 
@@ -164,7 +239,7 @@
                 [step]="1" 
                 [discrete]="true"  
                 [currentPrice]="lumpsumAnnualInterestRate" 
-                (priceChanged)="priceProgressChange($event,'PERCENTAGE')">
+                (priceChanged)="priceProgressChange($event,'LUMPSUM_PERCENTAGE')">
               </app-price-progress-bar>
             </div>
           </div>
@@ -172,7 +247,7 @@
           <!-- Investment Period -->
           <div class="form-card">
             <div class="input-group">
-              <label>Time Period (Years)</label>
+              <label>Investment Time Period</label>
               <div class="input-wrapper">
                 <input 
                   type="text" 
@@ -183,87 +258,172 @@
                 <span class="unit">Years</span>
               </div>
               <app-price-progress-bar 
-                [mode]="'TENURE'"  
+                [mode]="'TENURE'" 
                 [minPrice]="1" 
                 [maxPrice]="50" 
                 [step]="1" 
-                [discrete]="true" 
+                [discrete]="true"  
                 [currentPrice]="lumpsumInvestmentPeriod" 
-                (priceChanged)="priceProgressChange($event,'TENURE')">
+                (priceChanged)="priceProgressChange($event,'LUMPSUM_TENURE')">
               </app-price-progress-bar>
             </div>
+          </div>
+        </div>
+
+        <!-- Calculate Button -->
+        <div class="calculate-section">
+          <button class="calculate-btn" (click)="calculate()">
+            <mat-icon>calculate</mat-icon>
+            Calculate Lumpsum Returns
+          </button>
+        </div>
+
+        <!-- Results Section -->
+        <div *ngIf="TOTAL_VALUE > 0" class="results-section">
+          <h3>📊 Lumpsum Investment Results</h3>
+          <div class="results-grid">
+            <div class="result-card">
+              <div class="result-icon">💰</div>
+              <div class="result-content">
+                <h4>Principal Amount</h4>
+                <p class="result-amount">₹{{ formatCurrency(lumpsumAmount) }}</p>
+                <small>Initial investment</small>
+              </div>
+            </div>
+            
+            <div class="result-card">
+              <div class="result-icon">📈</div>
+              <div class="result-content">
+                <h4>Estimated Returns</h4>
+                <p class="result-amount">₹{{ formatCurrency(EST_RETURNS) }}</p>
+                <small>Compound interest earned</small>
+              </div>
+            </div>
+            
+            <div class="result-card">
+              <div class="result-icon">🎯</div>
+              <div class="result-content">
+                <h4>Total Value</h4>
+                <p class="result-amount">₹{{ formatCurrency(TOTAL_VALUE) }}</p>
+                <small>Principal + Returns</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart Section -->
+          <div class="chart-section">
+            <h4>Investment Breakdown</h4>
+            <div class="chart-container">
+              <canvas baseChart
+                [data]="chartData"
+                [type]="chartType"
+                [options]="chartOptions">
+              </canvas>
+            </div>
+          </div>
+
+          <!-- Download Section -->
+          <div class="download-section">
+            <button class="download-btn" (click)="downloadPDF()">
+              <mat-icon>download</mat-icon>
+              Download PDF Report
+            </button>
+            <button class="download-btn" (click)="downloadExcel()">
+              <mat-icon>table_chart</mat-icon>
+              Download Excel
+            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Results Section -->
-  <div class="results-section" *ngIf="TOTAL_VALUE !== null">
-    <!-- Results Header -->
-    <div class="results-header">
-      <div class="header-icon">
-        <mat-icon>calculate</mat-icon>
+  <!-- Educational Content Section -->
+  <div class="educational-content">
+    <div class="content-container">
+      <h2>What is SIP Calculator?</h2>
+      <p>A SIP (Systematic Investment Plan) calculator is a financial tool that helps investors estimate the potential returns on their regular monthly investments. It's essential for planning long-term wealth creation through mutual funds and other investment instruments.</p>
+      
+      <h3>How SIP Calculator Works</h3>
+      <p>The SIP calculator uses compound interest formula to calculate returns. It considers your monthly investment amount, expected annual return rate, and investment time period to show you the total invested amount, estimated returns, and final corpus value.</p>
+      
+      <h3>Benefits of SIP Investment</h3>
+      <ul>
+        <li><strong>Rupee Cost Averaging:</strong> Buy more units when prices are low and fewer when high</li>
+        <li><strong>Discipline:</strong> Regular investment habit regardless of market conditions</li>
+        <li><strong>Compound Growth:</strong> Long-term wealth creation through compounding</li>
+        <li><strong>Affordability:</strong> Start with small amounts and increase gradually</li>
+        <li><strong>Tax Benefits:</strong> ELSS funds offer tax deductions under Section 80C</li>
+      </ul>
+
+      <h3>When to Use SIP Calculator</h3>
+      <ul>
+        <li>Planning retirement corpus</li>
+        <li>Children's education planning</li>
+        <li>Buying a house or car</li>
+        <li>Building emergency fund</li>
+        <li>Wealth creation for financial goals</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div class="faq-section">
+    <div class="content-container">
+      <h2>Frequently Asked Questions</h2>
+      
+      <div class="faq-item">
+        <h3>What is the minimum SIP amount?</h3>
+        <p>Most mutual funds allow SIP investments starting from ₹500 per month. Some funds may have higher minimum amounts.</p>
       </div>
-      <div class="header-content">
-        <h2>Your Investment Results</h2>
-        <p>Here's your complete investment breakdown and projected returns</p>
+      
+      <div class="faq-item">
+        <h3>How often can I change my SIP amount?</h3>
+        <p>You can modify your SIP amount, frequency, or stop it anytime. Most funds allow changes with 30 days notice.</p>
+      </div>
+      
+      <div class="faq-item">
+        <h3>What is the best time to start SIP?</h3>
+        <p>The best time to start SIP is now. Time in the market is more important than timing the market. Start early to benefit from compound growth.</p>
+      </div>
+      
+      <div class="faq-item">
+        <h3>Can I pause my SIP temporarily?</h3>
+        <p>Yes, most funds allow you to pause SIP for 3-6 months. Check with your fund house for specific terms.</p>
+      </div>
+      
+      <div class="faq-item">
+        <h3>What is the difference between SIP and lumpsum investment?</h3>
+        <p>SIP involves regular monthly investments, while lumpsum is a one-time investment. SIP reduces market timing risk through rupee cost averaging.</p>
+      </div>
+      
+      <div class="faq-item">
+        <h3>How accurate are SIP calculator results?</h3>
+        <p>SIP calculator provides estimates based on assumed returns. Actual returns may vary due to market fluctuations and fund performance.</p>
       </div>
     </div>
+  </div>
 
-    <!-- Main Results Layout -->
-    <div class="results-main-layout">
-      <!-- Summary Cards Grid -->
-      <div class="summary-cards-grid">
-        <!-- Est. Returns Card -->
-        <div class="summary-card returns-card">
-          <div class="card-icon">
-            <mat-icon>trending_up</mat-icon>
-          </div>
-          <div class="card-content">
-            <h3>Est. Returns</h3>
-            <div class="amount">{{ EST_RETURNS | currency:'INR':'symbol':'1.2-2' }}</div>
-            <p>Projected earnings</p>
-          </div>
-        </div>
-
-        <!-- Invested Amount Card -->
-        <div class="summary-card invested-card">
-          <div class="card-icon">
-            <mat-icon>account_balance_wallet</mat-icon>
-          </div>
-          <div class="card-content">
-            <h3>Invested Amount</h3>
-            <div class="amount">{{ INVESTED_AMOUNT | currency:'INR':'symbol':'1.2-2' }}</div>
-            <p>{{ calculatorMode === 'SIP' ? 'Total invested' : 'Initial investment' }}</p>
-          </div>
-        </div>
-
-        <!-- Total Value Card -->
-        <div class="summary-card total-card">
-          <div class="card-icon">
-            <mat-icon>account_balance</mat-icon>
-          </div>
-          <div class="card-content">
-            <h3>Total Value</h3>
-            <div class="amount">{{ TOTAL_VALUE | currency:'INR':'symbol':'1.2-2' }}</div>
-            <p>Final portfolio value</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Chart Section -->
-      <div class="chart-section">
-        <div class="chart-container">
-          <h3>Investment Breakdown</h3>
-          <div class="chart-wrapper">
-            <canvas baseChart
-                    [data]="chartData"
-                    [type]="chartType"
-                    [options]="chartOptions">
-            </canvas>
-          </div>
-        </div>
+  <!-- Related Calculators Section -->
+  <div class="related-calculators">
+    <div class="content-container">
+      <h2>Related Financial Calculators</h2>
+      <div class="calculator-links">
+        <a href="/calculator/emi-calculator" class="calculator-link">
+          <mat-icon>calculate</mat-icon>
+          <span>EMI Calculator</span>
+          <small>Calculate loan EMIs</small>
+        </a>
+        <a href="/loan-eligibility-calculator/checker" class="calculator-link">
+          <mat-icon>verified_user</mat-icon>
+          <span>Loan Eligibility</span>
+          <small>Check loan approval chances</small>
+        </a>
+        <a href="/blogs/home" class="calculator-link">
+          <mat-icon>article</mat-icon>
+          <span>Financial Blog</span>
+          <small>Investment tips & guides</small>
+        </a>
       </div>
     </div>
   </div>

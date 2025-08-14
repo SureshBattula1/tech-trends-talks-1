@@ -1,8 +1,10 @@
-import { Component, OnInit, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, signal, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgIf, NgOptimizedImage, NgFor } from '@angular/common';
 import { ApiService, Blog } from '../../../services/api.service';
 import { MatChipsModule } from '@angular/material/chips';
+import { MetaTagsService } from '../../../services/meta-tags.service';
+import { StructuredDataService } from '../../../services/structured-data.service';
 
 @Component({
   selector: 'app-blog-details',
@@ -14,6 +16,10 @@ import { MatChipsModule } from '@angular/material/chips';
 export class BlogDetailsComponent implements OnInit {
   blog = signal<Blog | null>(null);
   isLoading = signal(true);
+
+  private metaTagsService = inject(MetaTagsService);
+  private structuredDataService = inject(StructuredDataService);
+  private router = inject(Router);
 
   constructor(
     private route: ActivatedRoute,
@@ -34,6 +40,8 @@ export class BlogDetailsComponent implements OnInit {
       next: (response) => {
         if (response.success) {
           this.blog.set(response.data);
+          // Update meta tags for the blog post
+          this.updateMetaTags(response.data);
         }
         this.isLoading.set(false);
       },
@@ -41,6 +49,16 @@ export class BlogDetailsComponent implements OnInit {
         this.isLoading.set(false);
       }
     });
+  }
+
+  private updateMetaTags(blog: Blog): void {
+    const currentUrl = `${window.location.origin}${this.router.url}`;
+    const metaTags = this.metaTagsService.generateBlogMetaTags(blog, currentUrl);
+    this.metaTagsService.updateMetaTags(metaTags);
+    
+    // Add structured data
+    const structuredData = this.structuredDataService.generateBlogStructuredData(blog, currentUrl);
+    this.structuredDataService.addStructuredData(structuredData);
   }
 
   getImageUrl(image?: string): string {

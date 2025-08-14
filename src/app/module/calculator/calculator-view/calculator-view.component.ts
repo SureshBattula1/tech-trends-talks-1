@@ -13,6 +13,9 @@ import {
 } from '@angular/animations';
 import { LoaderService } from '../../../services/loading-bar/loader.service';
 import autoTable from 'jspdf-autotable';
+import { MetaTagsService, CalculatorType } from '../../../services/meta-tags.service';
+import { StructuredDataService } from '../../../services/structured-data.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -41,6 +44,9 @@ export class CalculatorViewComponent implements OnInit{
   
   
   public loader = inject(LoaderService);
+  private metaTagsService = inject(MetaTagsService);
+  private structuredDataService = inject(StructuredDataService);
+  private router = inject(Router);
   readonly panelOpenState = signal(false);
 
 
@@ -231,6 +237,20 @@ export class CalculatorViewComponent implements OnInit{
 
     // Initial calculation
     this.calculateEMI();
+    
+    // Update meta tags for EMI calculator
+    this.updateMetaTags();
+  }
+
+  private updateMetaTags(): void {
+    const currentUrl = `${window.location.origin}${this.router.url}`;
+    const calculatorType: CalculatorType = 'emi-calculator';
+    const metaTags = this.metaTagsService.generateCalculatorMetaTags(calculatorType, currentUrl);
+    this.metaTagsService.updateMetaTags(metaTags);
+    
+    // Add structured data
+    const structuredData = this.structuredDataService.generateCalculatorStructuredData(calculatorType, currentUrl);
+    this.structuredDataService.addStructuredData(structuredData);
   }
 
   
@@ -1208,5 +1228,46 @@ validateAmount() {
     // Format the display value
     this.interestForm.setValue(this.formatInputValue(this.interestRate), { emitEvent: false });
   }
-  
+
+  // SEO Content Methods
+  scrollToCalculator(): void {
+    const calculatorElement = document.querySelector('.calculator-main');
+    if (calculatorElement) {
+      calculatorElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  downloadGuide(): void {
+    // Create a simple EMI guide content
+    const guideContent = `
+EMI Calculator Guide - Tech Trends Talks
+
+What is EMI?
+EMI (Equated Monthly Installment) is the fixed amount you pay monthly for your loan.
+
+How to Use Our Calculator:
+1. Enter loan amount
+2. Select loan tenure
+3. Input interest rate
+4. Get instant results
+
+Tips for Lower EMI:
+- Choose longer tenure
+- Maintain good credit score
+- Compare lenders
+- Consider prepayment
+
+Visit: https://techtrendstalks.com/calculator/emi-calculator
+    `;
+
+    const blob = new Blob([guideContent], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'EMI-Calculator-Guide.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }
 }

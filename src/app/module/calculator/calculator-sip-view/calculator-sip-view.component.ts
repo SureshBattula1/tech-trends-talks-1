@@ -7,6 +7,9 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { SharedModule } from '../../shared/shared.module';
 import { PriceProgressBarComponent } from '../price-progress-bar/price-progress-bar.component';
+import { MetaTagsService, CalculatorType } from '../../../services/meta-tags.service';
+import { StructuredDataService } from '../../../services/structured-data.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-calculator-sip-view',
@@ -21,6 +24,9 @@ export class CalculatorSipViewComponent implements OnInit{
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
   private cd = inject(ChangeDetectorRef);
+  private metaTagsService = inject(MetaTagsService);
+  private structuredDataService = inject(StructuredDataService);
+  private router = inject(Router);
   
   // Calculator mode toggle
   calculatorMode: 'SIP' | 'LUMPSUM' = 'SIP';
@@ -71,6 +77,20 @@ export class CalculatorSipViewComponent implements OnInit{
   ngOnInit(): void {
     this.initForm();
     this.calculate();
+    
+    // Update meta tags for SIP calculator
+    this.updateMetaTags();
+  }
+
+  private updateMetaTags(): void {
+    const currentUrl = `${window.location.origin}${this.router.url}`;
+    const calculatorType: CalculatorType = 'sip-calculator';
+    const metaTags = this.metaTagsService.generateCalculatorMetaTags(calculatorType, currentUrl);
+    this.metaTagsService.updateMetaTags(metaTags);
+    
+    // Add structured data
+    const structuredData = this.structuredDataService.generateCalculatorStructuredData(calculatorType, currentUrl);
+    this.structuredDataService.addStructuredData(structuredData);
   }
 
   // Toggle between SIP and Lumpsum modes
@@ -278,42 +298,100 @@ export class CalculatorSipViewComponent implements OnInit{
     this.calculate();
   }
 
-  priceProgressChange($event: any , modeType: string = ''){
-    switch(modeType){
+  // Handle price progress bar changes
+  priceProgressChange(value: number, mode: string): void {
+    switch (mode) {
       case 'PRICE':
-        if (this.calculatorMode === 'SIP') {
-          this.monthlyInvestment = $event;
-          this.monthlyInvestmentForm.setValue(this.formatInputValue(this.monthlyInvestment));
-        } else {
-          this.lumpsumAmount = $event;
-          this.lumpsumAmountForm.setValue(this.formatInputValue(this.lumpsumAmount));
-        }
-        this.cd.detectChanges();
+        this.monthlyInvestment = value;
+        this.monthlyInvestmentForm.setValue(this.formatInputValue(value));
         break;
       case 'PERCENTAGE':
-        if (this.calculatorMode === 'SIP') {
-          this.annualInterestRate = $event;
-          this.annualInterestRateForm.setValue(this.annualInterestRate);
-        } else {
-          this.lumpsumAnnualInterestRate = $event;
-          this.lumpsumAnnualInterestRateForm.setValue(this.lumpsumAnnualInterestRate);
-        }
-        this.cd.detectChanges();
+        this.annualInterestRate = value;
+        this.annualInterestRateForm.setValue(value);
         break;
       case 'TENURE':
-        if (this.calculatorMode === 'SIP') {
-          this.investmentPeriod = $event;
-          this.investmentPeriodForm.setValue(this.investmentPeriod);
-        } else {
-          this.lumpsumInvestmentPeriod = $event;
-          this.lumpsumInvestmentPeriodForm.setValue(this.lumpsumInvestmentPeriod);
-        }
-        this.cd.detectChanges();
+        this.investmentPeriod = value;
+        this.investmentPeriodForm.setValue(value);
         break;
-      default:
+      case 'LUMPSUM_PRICE':
+        this.lumpsumAmount = value;
+        this.lumpsumAmountForm.setValue(this.formatInputValue(value));
+        break;
+      case 'LUMPSUM_PERCENTAGE':
+        this.lumpsumAnnualInterestRate = value;
+        this.lumpsumAnnualInterestRateForm.setValue(value);
+        break;
+      case 'LUMPSUM_TENURE':
+        this.lumpsumInvestmentPeriod = value;
+        this.lumpsumInvestmentPeriodForm.setValue(value);
+        break;
     }
-
     this.calculate();
+  }
+
+  // Format currency for display
+  formatCurrency(value: number): string {
+    if (value >= 10000000) {
+      return (value / 10000000).toFixed(2) + ' Cr';
+    } else if (value >= 100000) {
+      return (value / 100000).toFixed(2) + ' L';
+    } else if (value >= 1000) {
+      return (value / 1000).toFixed(2) + ' K';
+    }
+    return value.toFixed(2);
+  }
+
+  // Download PDF report
+  downloadPDF(): void {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    
+    // Add title
+    doc.setFontSize(20);
+    doc.text('SIP Investment Report', pageWidth / 2, 20, { align: 'center' });
+    
+    // Add calculation details
+    doc.setFontSize(12);
+    doc.text(`Investment Mode: ${this.calculatorMode}`, 20, 40);
+    doc.text(`Monthly Investment: ₹${this.formatCurrency(this.monthlyInvestment)}`, 20, 50);
+    doc.text(`Annual Interest Rate: ${this.annualInterestRate}%`, 20, 60);
+    doc.text(`Investment Period: ${this.investmentPeriod} years`, 20, 70);
+    
+    // Add results
+    doc.setFontSize(14);
+    doc.text('Investment Results:', 20, 90);
+    doc.setFontSize(12);
+    doc.text(`Total Invested: ₹${this.formatCurrency(this.INVESTED_AMOUNT)}`, 20, 100);
+    doc.text(`Estimated Returns: ₹${this.formatCurrency(this.EST_RETURNS)}`, 20, 110);
+    doc.text(`Total Value: ₹${this.formatCurrency(this.TOTAL_VALUE)}`, 20, 120);
+    
+    // Add footer
+    doc.setFontSize(10);
+    doc.text('Generated by Tech Trends Talks SIP Calculator', pageWidth / 2, 280, { align: 'center' });
+    
+    // Save the PDF
+    doc.save('sip-investment-report.pdf');
+  }
+
+  // Download Excel report
+  downloadExcel(): void {
+    const worksheet = XLSX.utils.json_to_sheet([
+      {
+        'Investment Mode': this.calculatorMode,
+        'Monthly Investment': this.monthlyInvestment,
+        'Annual Interest Rate': this.annualInterestRate + '%',
+        'Investment Period': this.investmentPeriod + ' years',
+        'Total Invested': this.INVESTED_AMOUNT,
+        'Estimated Returns': this.EST_RETURNS,
+        'Total Value': this.TOTAL_VALUE
+      }
+    ]);
+    
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'SIP Report');
+    
+    // Save the Excel file
+    XLSX.writeFile(workbook, 'sip-investment-report.xlsx');
   }
 
   // Main calculation method that routes to appropriate calculator

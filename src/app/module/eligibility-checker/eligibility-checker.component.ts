@@ -1,10 +1,13 @@
-import { Component, inject, signal, ViewChild } from '@angular/core';
+import { Component, inject, signal, ViewChild, OnInit } from '@angular/core';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { FormControl, Validators } from '@angular/forms';
 import { Observable, startWith, map } from 'rxjs';
 import { ChartConfiguration, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { LoaderService } from '../../services/loading-bar/loader.service';
+import { MetaTagsService, CalculatorType } from '../../services/meta-tags.service';
+import { StructuredDataService } from '../../services/structured-data.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-eligibility-checker',
@@ -19,7 +22,7 @@ import { LoaderService } from '../../services/loading-bar/loader.service';
     ]) 
   ]
 })
-export class EligibilityCheckerComponent {
+export class EligibilityCheckerComponent implements OnInit {
   loanTypes = [ 
     { value: 'home', viewValue: 'Home Loan', interest: 8.5 },
     { value: 'car', viewValue: 'Car Loan', interest: 9.2 },
@@ -39,6 +42,9 @@ export class EligibilityCheckerComponent {
 
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
   public loader = inject(LoaderService);
+  private metaTagsService = inject(MetaTagsService);
+  private structuredDataService = inject(StructuredDataService);
+  private router = inject(Router);
   readonly panelOpenState = signal(false);
   
   loanTypeControl = new FormControl<string>('',{
@@ -93,6 +99,22 @@ export class EligibilityCheckerComponent {
         this.selectedLoanType = null;
       }
     });
+  }
+
+  ngOnInit(): void {
+    // Update meta tags for eligibility checker
+    this.updateMetaTags();
+  }
+
+  private updateMetaTags(): void {
+    const currentUrl = `${window.location.origin}${this.router.url}`;
+    const calculatorType: CalculatorType = 'loan-eligibility';
+    const metaTags = this.metaTagsService.generateCalculatorMetaTags(calculatorType, currentUrl);
+    this.metaTagsService.updateMetaTags(metaTags);
+    
+    // Add structured data
+    const structuredData = this.structuredDataService.generateCalculatorStructuredData(calculatorType, currentUrl);
+    this.structuredDataService.addStructuredData(structuredData);
   }
 
   private _filterLoanTypes(value: string): any[] {
