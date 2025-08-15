@@ -1,6 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%;}
+html, body { height: 100%; overflow: hidden;}
 body { 
     // font-family: Roboto, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;
     // font-family: sans-serif,'Fira Sans', Roboto, sans-serif;
@@ -56,15 +56,50 @@ body {
     -webkit-overflow-scrolling: touch;
 }
 
+app-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    color: #b6e5ff;
+    background: #2b3862;
+}
+
 app-component-sidenav {
     margin-top: 56px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 }
 
-// mat-card.mat-mdc-card.mdc-card{
-//     background: #fff;
-// }
+.component-viewer-nav {
+    position: sticky;
+    top: 0;
+}
+
+.component-viewer-nav .component-viewer-nav-content {    
+    padding: 16px 8px;
+    height: calc(100vh - 75px);
+    overflow: auto;
+    box-sizing: border-box;
+}
+
+.navbar-header-item-selected{
+    background-color: #f0f0f0; 
+    color: #000; 
+    font-weight: bold; 
+}
+
+mat-nav-list a{
+    margin-top: 1rem;
+}
+
+mat-sidenav-content.mat-drawer-content.mat-sidenav-content {
+    overflow-y: auto;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
 
 .flex-row {
   margin-bottom: 0.5rem;

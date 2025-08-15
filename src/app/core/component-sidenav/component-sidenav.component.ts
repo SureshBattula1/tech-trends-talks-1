@@ -7,11 +7,12 @@ import { RouterOutlet } from '@angular/router';
 import { AppService } from '../../services/app/app.service';
 import { LoaderComponent } from '../loader/loader.component';
 import { LoaderService } from '../../services/loading-bar/loader.service';
+import { NavbarComponent } from '../navbar/navbar.component';
 
 @Component({
   selector: 'app-component-sidenav',
   standalone: true,
-  imports: [RouterOutlet,SharedModule,FooterComponent,ComponentNavComponent,ComponentViewerComponent,LoaderComponent],
+  imports: [RouterOutlet, SharedModule, NavbarComponent, FooterComponent, ComponentNavComponent, ComponentViewerComponent, LoaderComponent],
   templateUrl: './component-sidenav.component.html',
   styleUrl: './component-sidenav.component.scss'
 })

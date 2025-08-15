@@ -1,0 +1,26 @@
+.form-card {
+    display: flex;
+    max-width: 350px;
+    margin: 40px auto;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.action-buttons{
+  display: flex;
+  justify-content: space-between;
+}
+
+.app-register-container{
+   height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #e7e9f1;
+}

@@ -11,9 +11,9 @@ import { LoaderComponent } from './core/loader/loader.component';
 @Component({
   selector: 'app-root',
   standalone: true,
- imports: [RouterOutlet, NavbarComponent, ComponentSidenavComponent, PageComingSoonComponent],
-templateUrl: './app.component.html',
-styleUrls: ['./app.component.scss'] 
+  imports: [RouterOutlet, NavbarComponent, ComponentSidenavComponent, PageComingSoonComponent],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'] 
 
 })
 export class AppComponent implements OnInit{

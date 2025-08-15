@@ -1,0 +1,66 @@
+html, body {
+   height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden!important;
+}
+
+.component-sidenav-content {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.component-sidenav {
+    border-radius: 0;
+    border-right: 1px solid #c4c6d0;
+    width: 100%;
+}
+
+.component-sidenav-inner-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+} 
+
+.component-sidenav-body-content {
+    flex: 1 0 100%;
+    width: 100%;
+    min-height: 95vh;
+}
+
+app-component-viewer {
+    font-weight: 400;
+    padding: 0px;
+    min-height: 95vh;
+}
+
+app-footer{
+    margin-top: 0;
+}
+
+.component-viewer-sidenav-container {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    flex: 1;
+    margin-top: 56px;
+    background-color:#edeff7;
+}
+
+.component-sidenav{
+    width: 22%!important;
+}
+
+@media (min-width: 1280px) {
+    .navbar-header, .component-sidenav-content
+    {
+        width: 100%;
+        margin: auto;
+    }
+}
+
+.create-blog-container{
+  width: 100%; 
+}
+

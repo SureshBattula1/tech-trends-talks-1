@@ -1,10 +1,15 @@
 import { Routes } from '@angular/router';
 import { PageNotFoundComponent } from './core/page-not-found/page-not-found.component';
+import { LoginComponent } from './core/login/login.component';
+import { RegisterComponent } from './core/register/register.component';
 
 export const routes: Routes = [
+    { path: 'login', component: LoginComponent },
+    { path: 'register', component: RegisterComponent },
     { path: 'blogs', loadChildren: ()=> import('./module/blog/blog.module').then(m => m.BlogModule) },
+    { path: 'blogs-admin', loadChildren: ()=> import('./module/blog-admin/blog-admin.module').then(m => m.BlogAdminModule) },
     { path: 'calculator', loadChildren: ()=> import('./module/calculator/calculator.module').then(m => m.CalculatorModule) },
     { path: 'loan-eligibility-calculator', loadChildren: () => import('./module/eligibility-checker/eligibility-checker.module').then(m => m.EligibilityCheckerModule) },
-    { path: '', redirectTo:'calculator', pathMatch: 'full' },
-    { path: '**', component: PageNotFoundComponent}
+    { path: '', redirectTo:'blogs-admin', pathMatch: 'full' },
+    { path: '**', component: PageNotFoundComponent }
 ];

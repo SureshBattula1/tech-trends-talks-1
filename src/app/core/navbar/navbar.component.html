@@ -7,9 +7,18 @@
         Tech Trends Talks  
     </h3>
     <div class="app-menu-list" fxShow="true" fxHide.lt-md>
-        <a class="app-menu"  routerLink="/blogs/home" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> Blogs</a>
-        <a class="app-menu"  routerLink="/loan-eligibility-calculator/checker" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> Loan Eligibility</a>
-        <a class="app-menu" routerLink="/calculator/emi-calculator" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> EMI Calculator</a>
-        <a class="app-menu" routerLink="/calculator/sip-calculator" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> SIP Calculator</a>
+
+         @if(module() === '' || module() === 'BLOGS'){
+             <a class="app-menu"  routerLink="/blogs/home" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> Blogs</a>
+             <a class="app-menu"  routerLink="/loan-eligibility-calculator/checker" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> Loan Eligibility</a>
+             <a class="app-menu" routerLink="/calculator/emi-calculator" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> EMI Calculator</a>
+             <a class="app-menu" routerLink="/calculator/sip-calculator" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> SIP Calculator</a>
+             <a class="app-menu" routerLink="/login" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> Login</a>
+        }
+
+
+        @if(module() === 'BLOGS_ADMIN'){
+
+        }
     </div>
 </nav>

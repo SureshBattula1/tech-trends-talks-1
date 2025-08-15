@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, effect, inject, input, OnInit } from '@angular/core';
 import { SharedModule } from '../../module/shared/shared.module';
 import { RouterModule } from '@angular/router';
 import { AppService } from '../../services/app/app.service';
@@ -10,12 +10,19 @@ import { AppService } from '../../services/app/app.service';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
 
- private appService = inject(AppService);
+  moduleName = input<string>('');
+  module = computed(() => this.moduleName());
 
- toggle() {
+  private appService = inject(AppService);
+
+  ngOnInit(): void {
+      console.log('module changed:', this.module());
+  }
+
+  toggle() {
     this.appService.toggleSidenav();
- }
+  }
 
 }
