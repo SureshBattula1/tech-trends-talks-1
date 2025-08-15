@@ -1,0 +1,181 @@
+<div class="grade-calculator-container">
+  <div class="header-section">
+    <div class="header-content">
+      <h1 class="main-title">
+        <span class="icon">🎓</span>
+        Grade Calculator
+      </h1>
+      <p class="subtitle">Calculate grades, GPA, and percentages with our comprehensive grading system</p>
+    </div>
+  </div>
+
+  <div class="calculator-grid">
+    <!-- Calculator Card -->
+    <div class="calculator-card">
+      <div class="card-header">
+        <h2>Grade Calculator</h2>
+        <p>Choose your calculation method and enter your scores</p>
+      </div>
+
+      <div class="system-selector">
+        <div class="selector-tabs">
+          <button 
+            *ngFor="let system of gradingSystems" 
+            [class.active]="selectedSystem === system.value"
+            (click)="selectedSystem = system.value; onSystemChange()"
+            class="system-tab">
+            <span class="tab-icon">{{ system.icon }}</span>
+            <span class="tab-label">{{ system.label }}</span>
+          </button>
+        </div>
+      </div>
+
+      <form [formGroup]="gradeForm" (ngSubmit)="calculateGrade()" class="calculator-form">
+        <!-- Percentage Input -->
+        <div class="form-group" *ngIf="selectedSystem === 'percentage'">
+          <label for="percentage">Percentage Score</label>
+          <div class="input-wrapper">
+            <input 
+              type="number" 
+              id="percentage" 
+              formControlName="percentage" 
+              placeholder="Enter percentage (0-100)"
+              class="form-input"
+              min="0" 
+              max="100" 
+              step="0.01">
+            <span class="input-suffix">%</span>
+          </div>
+          <div class="validation-error" *ngIf="gradeForm.get('percentage')?.invalid && gradeForm.get('percentage')?.touched">
+            <span *ngIf="gradeForm.get('percentage')?.errors?.['required']">Percentage is required</span>
+            <span *ngIf="gradeForm.get('percentage')?.errors?.['min']">Percentage must be at least 0</span>
+            <span *ngIf="gradeForm.get('percentage')?.errors?.['max']">Percentage cannot exceed 100</span>
+          </div>
+        </div>
+
+        <!-- GPA Input -->
+        <div class="form-group" *ngIf="selectedSystem === 'gpa'">
+          <label for="gpa">GPA Score</label>
+          <div class="input-wrapper">
+            <input 
+              type="number" 
+              id="gpa" 
+              formControlName="gpa" 
+              placeholder="Enter GPA (0-4)"
+              class="form-input"
+              min="0" 
+              max="4" 
+              step="0.01">
+            <span class="input-suffix">GPA</span>
+          </div>
+          <div class="validation-error" *ngIf="gradeForm.get('gpa')?.invalid && gradeForm.get('gpa')?.touched">
+            <span *ngIf="gradeForm.get('gpa')?.errors?.['required']">GPA is required</span>
+            <span *ngIf="gradeForm.get('gpa')?.errors?.['min']">GPA must be at least 0</span>
+            <span *ngIf="gradeForm.get('gpa')?.errors?.['max']">GPA cannot exceed 4</span>
+          </div>
+        </div>
+
+        <!-- Letter Grade Input -->
+        <div class="form-group" *ngIf="selectedSystem === 'letter'">
+          <label for="letterGrade">Letter Grade</label>
+          <select id="letterGrade" formControlName="letterGrade" class="form-select">
+            <option value="">Select a letter grade</option>
+            <option *ngFor="let grade of letterGrades" [value]="grade.grade">
+              {{ grade.grade }} ({{ grade.percentage }}% - {{ grade.description }})
+            </option>
+          </select>
+          <div class="validation-error" *ngIf="gradeForm.get('letterGrade')?.invalid && gradeForm.get('letterGrade')?.touched">
+            <span *ngIf="gradeForm.get('letterGrade')?.errors?.['required']">Letter grade is required</span>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-calculate" [disabled]="gradeForm.invalid">
+            <span class="btn-icon">🧮</span>
+            Calculate Grade
+          </button>
+          <button type="button" class="btn-reset" (click)="resetForm()">
+            <span class="btn-icon">🔄</span>
+            Reset
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Results Card -->
+    <div class="results-card" *ngIf="showSummary && calculatedGrade">
+      <div class="card-header">
+        <h2>Grade Results</h2>
+        <p>Your calculated grade information</p>
+      </div>
+
+      <div class="grade-display">
+        <div class="grade-badge" [style.background-color]="calculatedGrade.color">
+          <span class="grade-letter">{{ calculatedGrade.grade }}</span>
+          <span class="grade-description">{{ calculatedGrade.description }}</span>
+        </div>
+
+        <div class="grade-details">
+          <div class="detail-item" *ngIf="selectedSystem !== 'percentage'">
+            <span class="detail-label">Percentage:</span>
+            <span class="detail-value">{{ calculatedGrade.percentage }}%</span>
+          </div>
+          <div class="detail-item" *ngIf="selectedSystem !== 'gpa'">
+            <span class="detail-label">GPA:</span>
+            <span class="detail-value">{{ calculatedGrade.gpa }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Description:</span>
+            <span class="detail-value">{{ calculatedGrade.description }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grade Reference Card -->
+    <div class="reference-card">
+      <div class="card-header">
+        <h2>Grade Reference</h2>
+        <p>Standard grading scale reference</p>
+      </div>
+
+      <div class="grade-scale">
+        <div class="grade-row" *ngFor="let grade of letterGrades">
+          <div class="grade-info">
+            <span class="grade-symbol" [style.color]="grade.color">{{ grade.grade }}</span>
+            <span class="grade-range">{{ grade.percentage }}%</span>
+            <span class="grade-gpa">{{ grade.gpa }}</span>
+          </div>
+          <span class="grade-meaning">{{ grade.description }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features Section -->
+  <div class="features-section">
+    <h2>Why Use Our Grade Calculator?</h2>
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-icon">🎯</div>
+        <h3>Accurate Calculations</h3>
+        <p>Precise grade conversions using standard academic grading scales</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">⚡</div>
+        <h3>Fast & Easy</h3>
+        <p>Instant results with our intuitive and user-friendly interface</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📊</div>
+        <h3>Multiple Systems</h3>
+        <p>Support for percentage, GPA, and letter grade conversions</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🎨</div>
+        <h3>Visual Feedback</h3>
+        <p>Color-coded grades and clear visual representations</p>
+      </div>
+    </div>
+  </div>
+</div>
