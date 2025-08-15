@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal, ViewChild, HostListener } from '@angular/core';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -9,13 +9,14 @@ import { PriceProgressBarComponent } from '../price-progress-bar/price-progress-
 import { ChartConfiguration, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import {
-  trigger, transition, query, style, stagger, animate
+  trigger, transition, query, style, stagger, animate, state
 } from '@angular/animations';
 import { LoaderService } from '../../../services/loading-bar/loader.service';
 import autoTable from 'jspdf-autotable';
 import { MetaTagsService, CalculatorType } from '../../../services/meta-tags.service';
 import { StructuredDataService } from '../../../services/structured-data.service';
 import { Router } from '@angular/router';
+import { Meta } from '@angular/platform-browser';
 
 
 @Component({
@@ -35,6 +36,11 @@ import { Router } from '@angular/router';
           ])
         ], { optional: true })
       ])
+    ]),
+    trigger('pulseAnimation', [
+      state('normal', style({ transform: 'scale(1)' })),
+      state('pulse', style({ transform: 'scale(1.05)' })),
+      transition('normal <=> pulse', animate('0.3s ease-in-out'))
     ])
   ]
 })
@@ -47,6 +53,7 @@ export class CalculatorViewComponent implements OnInit{
   private metaTagsService = inject(MetaTagsService);
   private structuredDataService = inject(StructuredDataService);
   private router = inject(Router);
+  private meta = inject(Meta);
   readonly panelOpenState = signal(false);
 
 
@@ -72,19 +79,98 @@ export class CalculatorViewComponent implements OnInit{
   // Keep this property as it's still used
   selectedLoanTypeIndex = 0;
 
-  // Remove old properties
-  // showAllRows = false;
-  // displayedColumns: string[] = ['id', 'month', 'principal', 'interest', 'emi', 'balance'];
+  // Collapsible loan type display
+  isLoanTypesExpanded: boolean = false;
+  defaultVisibleLoanTypes: number = 8; // 2 rows on desktop, 4 rows on mobile
 
-  // Remove old getter
-  // get filteredSchedule() {
-  //   return this.showAllRows ? this.schedule : this.schedule.slice(0, 1);
-  // }
+  // FAQ functionality
+  activeFaqIndex: number | null = null;
 
-  // Remove old method
-  // toggleRows() {
-  //   this.showAllRows = !this.showAllRows;
-  // }
+  // Calculate default visible loan types based on screen size
+  calculateDefaultVisibleLoanTypes() {
+    if (window.innerWidth <= 768) {
+      // Mobile: 4 rows × 2 columns = 8 loan types
+      this.defaultVisibleLoanTypes = 8;
+    } else if (window.innerWidth <= 1200) {
+      // Tablet: 3 rows × 3 columns = 9 loan types
+      this.defaultVisibleLoanTypes = 9;
+    } else {
+      // Desktop: 2 rows × 4 columns = 8 loan types
+      this.defaultVisibleLoanTypes = 8;
+    }
+    
+    // If currently expanded, reset to collapsed state when screen size changes
+    if (this.isLoanTypesExpanded) {
+      this.isLoanTypesExpanded = false;
+    }
+  }
+
+  // Get grid columns based on screen size
+  getGridColumns() {
+    if (window.innerWidth <= 768) {
+      return 2; // 2 columns on mobile
+    } else if (window.innerWidth <= 1200) {
+      return 3; // 3 columns on tablet
+    } else {
+      return 4; // 4 columns on desktop
+    }
+  }
+
+  // Calculate rows based on visible loan types and columns
+  getVisibleRows() {
+    const columns = this.getGridColumns();
+    return Math.ceil(this.defaultVisibleLoanTypes / columns);
+  }
+
+  // Get loan types for current screen size with proper grid distribution
+  getVisibleLoanTypes() {
+    if (this.isLoanTypesExpanded) {
+      return this.loanTypes; // Show all loan types when expanded
+    }
+    
+    const columns = this.getGridColumns();
+    const rows = this.getVisibleRows();
+    const totalVisible = columns * rows;
+    
+    return this.loanTypes.slice(0, totalVisible);
+  }
+
+  // Check if more button should be shown
+  shouldShowMoreButton(): boolean {
+    return !this.isLoanTypesExpanded && this.loanTypes.length > this.defaultVisibleLoanTypes;
+  }
+
+  // Get total rows needed for all loan types
+  getTotalRows(): number {
+    const columns = this.getGridColumns();
+    return Math.ceil(this.loanTypes.length / columns);
+  }
+
+  // Toggle loan types expansion
+  toggleLoanTypesExpansion() {
+    this.isLoanTypesExpanded = !this.isLoanTypesExpanded;
+    
+    // Force reflow to ensure proper layout
+    setTimeout(() => {
+      // Trigger change detection
+      this.cd.markForCheck();
+    }, 100);
+  }
+
+  getMoreButtonText() {
+    return this.isLoanTypesExpanded ? 'Show Less' : 'Show More';
+  }
+
+  getMoreButtonIcon() {
+    return this.isLoanTypesExpanded ? '▲' : '▼';
+  }
+
+  // Handle window resize
+  @HostListener('window:resize')
+  onResize() {
+    this.calculateDefaultVisibleLoanTypes();
+  }
+
 
   // New methods for enhanced table
   toggleYearExpansion(year: number) {
@@ -121,6 +207,16 @@ export class CalculatorViewComponent implements OnInit{
     this.cd.markForCheck();
   }
 
+  // FAQ toggle functionality
+  toggleFaq(index: number) {
+    if (this.activeFaqIndex === index) {
+      this.activeFaqIndex = null; // Close if already open
+    } else {
+      this.activeFaqIndex = index; // Open the clicked FAQ
+    }
+    this.cd.markForCheck();
+  }
+
   // Custom function to truncate to 2 decimal places without rounding
   truncateToTwoDecimals(value: number): string {
     const truncated = Math.floor(value * 100) / 100;
@@ -142,22 +238,66 @@ export class CalculatorViewComponent implements OnInit{
     }
   }
   
-  loanTypes = [ 
-    { value: 'home', viewValue: 'Home Loan', interest: 8.5, icon: 'home' },
-    { value: 'car', viewValue: 'Car Loan', interest: 9.2, icon: 'directions_car' },
-    { value: 'personal', viewValue: 'Personal Loan', interest: 11.75, icon: 'person' },
-    { value: 'education', viewValue: 'Education Loan', interest: 7.8, icon: 'school' },
-    { value: 'gold', viewValue: 'Gold Loan', interest: 10.5, icon: 'emoji_events' },
-    { value: 'mortgage', viewValue: 'Mortgage Loan', interest: 9.8, icon: 'apartment' },
-    { value: 'twoWheeler', viewValue: 'Two-Wheeler Loan', interest: 10.2, icon: 'two_wheeler' },
-    { value: 'agriculture', viewValue: 'Agriculture Loan', interest: 6.5, icon: 'agriculture' },
-    { value: 'creditCard', viewValue: 'Credit Card Loan', interest: 15.5, icon: 'credit_card' },
-    { value: 'overdraft', viewValue: 'Overdraft Loan', interest: 13.0, icon: 'swap_horiz' },
-    { value: 'consumerDurable', viewValue: 'Consumer Durable Loan', interest: 9.9, icon: 'devices' },
-    { value: 'travel', viewValue: 'Travel Loan', interest: 12.75, icon: 'flight_takeoff' },
-    { value: 'lap', viewValue: 'Loan Against Property', interest: 9.5, icon: 'location_city' },
-    { value: 'business', viewValue: 'Business Loan', interest: 12.0, icon: 'business_center' }
+  // loanTypes = [ 
+  //   { value: 'home', viewValue: 'Home Loan', interest: 8.5, icon: 'home' },
+  //   { value: 'car', viewValue: 'Car Loan', interest: 9.2, icon: 'directions_car' },
+  //   { value: 'personal', viewValue: 'Personal Loan', interest: 11.75, icon: 'person' },
+  //   { value: 'education', viewValue: 'Education Loan', interest: 7.8, icon: 'school' },
+  //   { value: 'gold', viewValue: 'Gold Loan', interest: 10.5, icon: 'emoji_events' },
+  //   { value: 'mortgage', viewValue: 'Mortgage Loan', interest: 9.8, icon: 'apartment' },
+  //   { value: 'twoWheeler', viewValue: 'Two-Wheeler Loan', interest: 10.2, icon: 'two_wheeler' },
+  //   { value: 'agriculture', viewValue: 'Agriculture Loan', interest: 6.5, icon: 'agriculture' },
+  //   { value: 'creditCard', viewValue: 'Credit Card Loan', interest: 15.5, icon: 'credit_card' },
+  //   { value: 'overdraft', viewValue: 'Overdraft Loan', interest: 13.0, icon: 'swap_horiz' },
+  //   { value: 'consumerDurable', viewValue: 'Consumer Durable Loan', interest: 9.9, icon: 'devices' },
+  //   { value: 'travel', viewValue: 'Travel Loan', interest: 12.75, icon: 'flight_takeoff' },
+  //   { value: 'lap', viewValue: 'Loan Against Property', interest: 9.5, icon: 'location_city' },
+  //   { value: 'business', viewValue: 'Business Loan', interest: 12.0, icon: 'business_center' }
+  // ];
+
+  loanTypes = [
+    { value: 'personal', viewValue: 'Personal Loan', interest: 11.75, icon: '💼' },
+    { value: 'home', viewValue: 'Home Loan', interest: 8.5, icon: '🏠' },
+    { value: 'gold', viewValue: 'Gold Loan', interest: 10.5, icon: '🥇' },
+    { value: 'car', viewValue: 'Car Loan', interest: 9.2, icon: '🚗' },
+    { value: 'education', viewValue: 'Education Loan', interest: 7.8, icon: '🎓' },
+    { value: 'twoWheeler', viewValue: 'Two-Wheeler Loan', interest: 10.2, icon: '🏍️' },
+    { value: 'business', viewValue: 'Business Loan', interest: 12.0, icon: '🏢' },
+    { value: 'agriculture', viewValue: 'Agriculture Loan', interest: 6.5, icon: '🌾' },
+    { value: 'homeRenovation', viewValue: 'Home Renovation Loan', interest: 10.5, icon: '🔨' },
+    { value: 'property', viewValue: 'Loan Against Property', interest: 9.5, icon: '🏘️' },
+    { value: 'mortgage', viewValue: 'Mortgage Loan', interest: 9.8, icon: '🔑' },
+    { value: 'wedding', viewValue: 'Wedding Loan', interest: 12.5, icon: '💒' },
+    { value: 'medical', viewValue: 'Medical Loan', interest: 11.0, icon: '🏥' },
+    { value: 'emergency', viewValue: 'Emergency Loan', interest: 14.0, icon: '🚨' },
+    { value: 'payday', viewValue: 'Payday Loan', interest: 18.0, icon: '📅' },
+    { value: 'creditCard', viewValue: 'Credit Card Loan', interest: 15.5, icon: '💳' },
+    { value: 'workingCapital', viewValue: 'Working Capital Loan', interest: 12.8, icon: '💰' },
+    { value: 'msme', viewValue: 'MSME Loan', interest: 11.5, icon: '🏭' },
+    { value: 'homeConstruction', viewValue: 'Home Construction Loan', interest: 9.2, icon: '🏗️' },
+    { value: 'commercialVehicle', viewValue: 'Commercial Vehicle Loan', interest: 11.5, icon: '🚛' },
+    { value: 'consumerDurable', viewValue: 'Consumer Durable Loan', interest: 9.9, icon: '📱' },
+    { value: 'vacation', viewValue: 'Vacation Loan', interest: 13.0, icon: '✈️' },
+    { value: 'travel', viewValue: 'Travel Loan', interest: 12.75, icon: '🌍' },
+    { value: 'startup', viewValue: 'Startup Loan', interest: 13.5, icon: '🚀' },
+    { value: 'equipment', viewValue: 'Equipment Loan', interest: 11.2, icon: '⚙️' },
+    { value: 'inventory', viewValue: 'Inventory Loan', interest: 12.5, icon: '📦' },
+    { value: 'kisanCredit', viewValue: 'Kisan Credit Card Loan', interest: 5.8, icon: '🌱' },
+    { value: 'dairy', viewValue: 'Dairy Loan', interest: 7.2, icon: '🐄' },
+    { value: 'poultry', viewValue: 'Poultry Loan', interest: 7.5, icon: '🐔' },
+    { value: 'fishery', viewValue: 'Fishery Loan', interest: 7.8, icon: '🐟' },
+    { value: 'horticulture', viewValue: 'Horticulture Loan', interest: 8.0, icon: '🌺' },
+    { value: 'tax', viewValue: 'Tax Payment Loan', interest: 12.5, icon: '📊' },
+    { value: 'legal', viewValue: 'Legal Expenses Loan', interest: 13.5, icon: '⚖️' },
+    { value: 'tradeFinance', viewValue: 'Trade Finance Loan', interest: 10.8, icon: '🌐' },
+    { value: 'invoice', viewValue: 'Invoice Financing', interest: 13.2, icon: '📄' },
+    { value: 'rv', viewValue: 'RV Loan', interest: 11.8, icon: '🚐' },
+    { value: 'boat', viewValue: 'Boat Loan', interest: 12.0, icon: '⛵' },
+    { value: 'plotPurchase', viewValue: 'Plot Purchase Loan', interest: 11.0, icon: '📐' },
+    { value: 'overdraft', viewValue: 'Overdraft Loan', interest: 13.0, icon: '📈' }
   ];
+  
+  
 
 
   // Chart properties
@@ -193,6 +333,8 @@ export class CalculatorViewComponent implements OnInit{
   public cd = inject(ChangeDetectorRef);
 
   ngOnInit() {
+    this.onLoanTypeChange(0);
+    this.calculateDefaultVisibleLoanTypes();
     // Initialize form controls with formatted values
     this.amountForm.setValue(this.formatInputValue(this.amount));
     this.interestForm.setValue(this.formatInputValue(this.interestRate));
@@ -248,9 +390,125 @@ export class CalculatorViewComponent implements OnInit{
     const metaTags = this.metaTagsService.generateCalculatorMetaTags(calculatorType, currentUrl);
     this.metaTagsService.updateMetaTags(metaTags);
     
-    // Add structured data
-    const structuredData = this.structuredDataService.generateCalculatorStructuredData(calculatorType, currentUrl);
-    this.structuredDataService.addStructuredData(structuredData);
+    // Add enhanced structured data for EMI calculator
+    const enhancedStructuredData = {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "EMI Calculator - Calculate Monthly Loan Installments",
+      "description": "Free EMI Calculator for all types of loans including home loan, car loan, personal loan, business loan, education loan, gold loan and more. Get complete repayment schedule, interest breakdown, and download detailed reports.",
+      "url": currentUrl,
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR",
+        "description": "Free EMI Calculator Tool"
+      },
+      "featureList": [
+        "35+ Loan Types",
+        "Instant EMI Calculation",
+        "Yearly and Monthly Breakdown",
+        "Excel and PDF Export",
+        "Interactive Charts",
+        "Mobile Responsive"
+      ],
+      "screenshot": `${window.location.origin}/assets/images/calculator.png`,
+      "softwareVersion": "2.0",
+      "author": {
+        "@type": "Organization",
+        "name": "Tech Trends Talks",
+        "url": "https://techtrendstalks.com"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Tech Trends Talks",
+        "url": "https://techtrendstalks.com"
+      },
+      "mainEntity": {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How accurate is the EMI calculator?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Our EMI calculator provides highly accurate results using the standard EMI formula. The calculations include principal, interest, and processing fees to give you the most realistic EMI amount."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What factors affect my EMI amount?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "EMI amount depends on three main factors: Principal amount (loan amount), Interest rate (annual percentage), and Loan tenure (repayment period in years)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I reduce my EMI amount?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, you can reduce EMI by: choosing a longer loan tenure, maintaining a good credit score, negotiating lower interest rates, or making a larger down payment."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I download my EMI calculation report?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "After calculating EMI, use the 'Export to Excel' or 'Export to PDF' buttons to download detailed reports with yearly and monthly breakdowns."
+            }
+          }
+        ]
+      },
+      "potentialAction": {
+        "@type": "UseAction",
+        "target": currentUrl,
+        "description": "Calculate EMI for various loan types"
+      }
+    };
+    
+    // Add the enhanced structured data
+    this.structuredDataService.addStructuredData(enhancedStructuredData);
+    
+    // Add additional meta tags for better SEO
+    const additionalMetaTags = [
+      { name: 'keywords', content: 'EMI Calculator, Loan Calculator, Home Loan EMI, Car Loan EMI, Personal Loan EMI, Business Loan EMI, Education Loan EMI, Gold Loan EMI, Free EMI Calculator, Monthly Installment Calculator, Loan Repayment Calculator, Indian EMI Calculator, Rupee EMI Calculator' },
+      { name: 'author', content: 'Tech Trends Talks' },
+      { name: 'robots', content: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1' },
+      { name: 'googlebot', content: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1' },
+      { name: 'bingbot', content: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1' },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:title', content: 'EMI Calculator - Calculate Monthly Loan Installments | Tech Trends Talks' },
+      { property: 'og:description', content: 'Free EMI Calculator for all types of loans including home loan, car loan, personal loan, business loan, education loan, gold loan and more. Get complete repayment schedule and download reports.' },
+      { property: 'og:url', content: currentUrl },
+      { property: 'og:site_name', content: 'Tech Trends Talks' },
+      { property: 'og:image', content: `${window.location.origin}/assets/images/calculator.png` },
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '630' },
+      { property: 'og:locale', content: 'en_US' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: 'EMI Calculator - Calculate Monthly Loan Installments' },
+      { name: 'twitter:description', content: 'Free EMI Calculator for all types of loans. Get complete repayment schedule, interest breakdown, and download detailed reports in Excel and PDF formats.' },
+      { name: 'twitter:image', content: `${window.location.origin}/assets/images/calculator.png` },
+      { name: 'twitter:site', content: '@techtrendstalks' },
+      { name: 'canonical', content: currentUrl },
+      { name: 'language', content: 'English' },
+      { name: 'geo.region', content: 'IN' },
+      { name: 'geo.placename', content: 'India' },
+      { name: 'geo.position', content: '20.5937;78.9629' },
+      { name: 'ICBM', content: '20.5937, 78.9629' }
+    ];
+    
+    // Update meta tags with additional ones
+    additionalMetaTags.forEach(tag => {
+      if ('property' in tag && tag.property) {
+        this.meta.updateTag({ property: tag.property, content: tag.content });
+      } else if ('name' in tag && tag.name) {
+        this.meta.updateTag({ name: tag.name, content: tag.content });
+      }
+    });
   }
 
   
@@ -1160,9 +1418,11 @@ validateAmount() {
     if (!value || value === 0) return '';
     return new Intl.NumberFormat('en-IN', {
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 2
     }).format(value);
   }
+
+  
 
   // Parse comma-separated input value back to number
   parseInputValue(value: string): number {
