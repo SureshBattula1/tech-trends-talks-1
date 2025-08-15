@@ -1,4 +1,33 @@
-<app-navbar [moduleName]="'BLOGS_ADMIN'"></app-navbar>
+<app-navbar [moduleName]="'BLOGS_ADMIN'">
+    <!-- Profile Icon with Hover Menu -->
+    <div
+        class="profile-container"
+        [matMenuTriggerFor]="profileMenu"
+        matTooltip="Profile Settings"
+        (mouseenter)="menuTrigger.openMenu()"
+        #menuTrigger="matMenuTrigger"
+        >
+        <button mat-icon-button>
+            <mat-icon>account_circle</mat-icon>
+        </button>
+    </div>
+
+    <mat-menu #profileMenu="matMenu" class="app-profile-menu-list">
+        <button mat-menu-item>
+            <mat-icon>settings</mat-icon>
+            <span>Settings</span>
+        </button>
+        <button mat-menu-item>
+            <mat-icon>person</mat-icon>
+            <span>Profile</span>
+        </button>
+        <button mat-menu-item>
+            <mat-icon>logout</mat-icon>
+            <span>Logout</span>
+        </button>
+    </mat-menu>
+
+</app-navbar>
 <mat-sidenav-container class="component-viewer-sidenav-container">
     <mat-sidenav class="component-sidenav" [opened]="isVisible()" [mode]="'side'">
         <div class="component-viewer-nav">

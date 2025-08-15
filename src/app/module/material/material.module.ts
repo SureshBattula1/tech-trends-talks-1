@@ -28,7 +28,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {MatDividerModule} from '@angular/material/divider';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTabsModule } from '@angular/material/tabs';
-
+import { MatMenuModule } from '@angular/material/menu';
 
 
 
@@ -59,7 +59,8 @@ const materialModules: any[] = [
   MatDividerModule,
   MatGridListModule,
   MatTabsModule,
-  MatCheckboxModule
+  MatCheckboxModule,
+  MatMenuModule
   
 ]
 

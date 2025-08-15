@@ -10,14 +10,9 @@
     width: 100%;
 }
 
-.component-sidenav-inner-content {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-} 
 
 .component-sidenav-body-content {
-    // display: flex;
+    display: flex;
     flex: 1 0 100%;
     width: 100%;
     min-height: 95vh;
