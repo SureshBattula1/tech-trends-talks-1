@@ -2,7 +2,6 @@ import { Injectable } from "@angular/core";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import { filter, map, Observable } from "rxjs";
 
-// breadcrumb.service.ts
 @Injectable({ providedIn: 'root' })
 export class BreadcrumbService {
   constructor(private router: Router) {}
