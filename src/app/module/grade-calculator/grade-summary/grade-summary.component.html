@@ -1,0 +1,56 @@
+<div class="grade-summary" *ngIf="gradeData">
+  <div class="summary-header">
+    <h3>Grade Summary</h3>
+    <div class="grade-badge" [class]="getGradeClass(gradeData.grade)">
+      {{ gradeData.grade }}
+    </div>
+  </div>
+
+  <div class="summary-content">
+    <div class="summary-grid">
+      <div class="summary-item">
+        <span class="item-label">Grade</span>
+        <span class="item-value grade-value">{{ gradeData.grade }}</span>
+      </div>
+      
+      <div class="summary-item">
+        <span class="item-label">Percentage</span>
+        <span class="item-value percentage-value">{{ gradeData.percentage }}%</span>
+      </div>
+      
+      <div class="summary-item">
+        <span class="item-label">GPA</span>
+        <span class="item-value gpa-value">{{ gradeData.gpa }}</span>
+      </div>
+      
+      <div class="summary-item">
+        <span class="item-label">Description</span>
+        <span class="item-value description-value">{{ gradeData.description }}</span>
+      </div>
+    </div>
+
+    <div class="performance-message" [class]="getGradeClass(gradeData.grade)">
+      <div class="message-icon">
+        <span *ngIf="gradeData.grade.includes('A')">🌟</span>
+        <span *ngIf="gradeData.grade.includes('B')">👍</span>
+        <span *ngIf="gradeData.grade.includes('C')">📚</span>
+        <span *ngIf="gradeData.grade.includes('D')">⚠️</span>
+        <span *ngIf="gradeData.grade.includes('F')">🚨</span>
+      </div>
+      <p>{{ getPerformanceMessage(gradeData.grade) }}</p>
+    </div>
+
+    <div class="grade-chart">
+      <div class="chart-bar">
+        <div class="bar-fill" 
+             [style.width.%]="gradeData.percentage"
+             [style.background-color]="gradeData.color"></div>
+      </div>
+      <div class="chart-labels">
+        <span>0%</span>
+        <span>50%</span>
+        <span>100%</span>
+      </div>
+    </div>
+  </div>
+</div>

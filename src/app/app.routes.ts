@@ -10,6 +10,7 @@ export const routes: Routes = [
     { path: 'blogs-admin', loadChildren: ()=> import('./module/blog-admin/blog-admin.module').then(m => m.BlogAdminModule) },
     { path: 'calculator', loadChildren: ()=> import('./module/calculator/calculator.module').then(m => m.CalculatorModule) },
     { path: 'loan-eligibility-calculator', loadChildren: () => import('./module/eligibility-checker/eligibility-checker.module').then(m => m.EligibilityCheckerModule) },
-    { path: '', redirectTo:'blogs-admin', pathMatch: 'full' },
-    { path: '**', component: PageNotFoundComponent }
+    { path: 'grade-calculator', loadChildren: () => import('./module/grade-calculator/grade-calculator.module').then(m => m.GradeCalculatorModule) },
+    { path: '', redirectTo:'calculator', pathMatch: 'full' },
+    { path: '**', component: PageNotFoundComponent}
 ];

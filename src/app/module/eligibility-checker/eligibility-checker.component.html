@@ -1,136 +1,322 @@
 <div class="eligibility-checker-container" [@fadeInAnimation]>
-  <!-- Header Section -->
-  <div class="eligibility-header">
-    <div class="header-content">
-      <h1>Loan Eligibility Calculator - Check Your Loan Approval Chances Instantly</h1>
-      <p>Use our free loan eligibility calculator to instantly check if you qualify for home, car, personal, or business loans. Get accurate EMI calculations, affordability analysis, and personalized loan recommendations based on your income and expenses.</p>
+  <!-- Breadcrumb Navigation for SEO -->
+  <!-- SEO Breadcrumb Navigation - Hidden for users but accessible to search engines -->
+  <nav class="breadcrumb-nav seo-only" aria-label="Breadcrumb" aria-hidden="true">
+    <ol class="breadcrumb-list">
+      <li class="breadcrumb-item">
+        <a href="/" class="breadcrumb-link">Home</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="/calculators" class="breadcrumb-link">Calculators</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        Loan Eligibility Checker
+      </li>
+    </ol>
+  </nav>
+
+  <!-- Hero Section with Glassmorphism -->
+  <div class="hero-section">
+    <div class="hero-background">
+      <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+      </div>
+    </div>
+    
+    <div class="hero-content">  
+      <h1 class="hero-title">
+        <span class="title-line">Loan Eligibility</span>
+        <span class="title-line highlight">Calculator</span>
+      </h1>
       
-      <!-- SEO Keywords Section -->
-      <div class="seo-keywords">
-        <span class="keyword-tag">Loan Eligibility Calculator</span>
-        <span class="keyword-tag">Loan Approval Checker</span>
-        <span class="keyword-tag">EMI Calculator</span>
-        <span class="keyword-tag">Loan Affordability</span>
-        <span class="keyword-tag">Home Loan Eligibility</span>
-        <span class="keyword-tag">Personal Loan Checker</span>
+      <p class="hero-description">
+        Instantly check your loan approval chances with our eligibility calculator. 
+        Get personalized insights for home, car, personal and business loans etc..
+      </p>
+      
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-number">99.8%</div>
+          <div class="stat-label">Accuracy Rate</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">25K+</div>
+          <div class="stat-label">Users Trust</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">1min</div>
+          <div class="stat-label">Quick Results</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Main Calculator Form -->
-  <div class="eligibility-main">
-    <div class="form-container">
-      <!-- <div class="moving-note-wrapper"> -->
-        <!-- <p class="moving-note-text"> -->
-          <marquee> ⚠️ This tool provides a highly reliable estimate of your loan eligibility based on the details you enter. While it's not definitive, it aims to offer the most accurate results possible. </marquee>
-        <!-- </p> -->
-        
-      <!-- </div> -->
+  <!-- Main Calculator Section -->
+  <div class="calculator-section">
+    <div class="calculator-container">
 
-      <form class="eligibility-form" (ngSubmit)="onSubmit(eligibilityForm)" #eligibilityForm="ngForm">
-        <!-- Row 1: Loan Type -->
-        <div class="loan_type_row justify-end">
-          <div class="refers-icon">
-            <img src="assets/icons/refers_right.png" alt="Loan Type Icon" loading="lazy" />
-          </div>
+      <!-- Calculator Form -->
+      <div class="calculator-form">
+    
 
-          <div class="form-group">
-            <label for="loanType" class="label-with-icon">
-              Loan Type:
-              <img src="assets/icons/loan_type.png" alt="Loan Type Icon" loading="lazy" />
-            </label>
-            <input
-              type="text"
-              id="loanType"
-              [formControl]="loanTypeControl"
-              [matAutocomplete]="auto"
-              placeholder="Select a loan type"
-              required
-              class="input-field"
-              aria-required="true"
-            />
-            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onLoanTypeSelected($event)">
-              <mat-option *ngFor="let option of filteredLoanTypes | async" [value]="option.viewValue">
-                {{ option.viewValue }}
-              </mat-option>
-            </mat-autocomplete>
-            <div class="error-message" *ngIf="loanTypeControl.touched && loanTypeControl.hasError('required')">
-              Loan type is required.
+        <form class="eligibility-form" (ngSubmit)="onSubmit(eligibilityForm)" #eligibilityForm="ngForm">
+          <!-- Loan Type Selection -->
+          <div class="form-step active" [@slideInAnimation]>
+            <div class="step-header">
+              <div class="step-number">1</div>
+              <div class="step-info">
+                <h3>Choose Loan Type</h3>
+                <p>Select the type of loan you're interested in from our comprehensive list</p>
+              </div>
+            </div>
+            
+            <div class="loan-type-grid" [class.expanded]="isLoanTypesExpanded">
+              <div class="loan-type-card" 
+                   *ngFor="let loanType of getVisibleLoanTypes()" 
+                   [class.selected]="selectedLoanType?.value === loanType.value"
+                   (click)="selectLoanType(loanType.value)">
+                <div class="card-icon">{{ loanType.icon }}</div>
+                <div class="card-content">
+                  <h4>{{ loanType.label }}</h4>
+                  <div class="interest-rate">{{ loanType.interest }}% p.a.</div>
+                </div>
+                <div class="selection-indicator">
+                  <div class="checkmark"></div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- More/Less Button -->
+            <div class="loan-types-more-section" *ngIf="shouldShowMoreButton() || isLoanTypesExpanded">
+              <button class="more-btn" (click)="toggleLoanTypesExpansion()" [@pulseAnimation]>
+                <span class="more-text">{{ getMoreButtonText() }}</span>
+                <span class="more-icon" [class.expanded]="isLoanTypesExpanded">{{ getMoreButtonIcon() }}</span>
+              </button>
             </div>
           </div>
-        </div>
-      
-        <!-- Row 2: Monthly Salary + Loan Amount -->
-        <div class="form-row">
-          <div class="form-group half-width">
-            <label for="monthlySalary" class="label-with-icon">Monthly Salary (₹):
-              <img src="assets/icons/monthly_loan.png" alt="Monthly Salary Icon" loading="lazy" />
-            </label>
-            <input
-              type="number"
-              id="monthlySalary"
-              name="monthlySalary"
-              [(ngModel)]="monthlySalary"
-              required
-              min="0"
-              class="input-field"
-            />
+
+          <!-- Financial Details -->
+          <div class="form-step" [@slideInAnimation]>
+            <div class="step-header">
+              <div class="step-number">2</div>
+              <div class="step-info">
+                <h3>Financial Information</h3>
+                <p>Provide your income, loan details, and existing financial obligations</p>
+              </div>
+            </div>
+
+            <!-- Selected Loan Type Display -->
+            <div class="selected-loan-display" *ngIf="selectedLoanType">
+              <div class="selected-loan-card">
+                <div class="selected-loan-icon">{{ selectedLoanType.icon }}</div>
+                <div class="selected-loan-info">
+                  <h4>{{ selectedLoanType.label }}</h4>
+                  <p>{{ selectedLoanType.description }}</p>
+                  <span class="selected-interest-rate">{{ selectedLoanType.interest }}% p.a.</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-grid">
+              <div class="input-group">
+                <label class="input-label">
+                  <span class="label-icon">💰</span>
+                  Monthly Income
+                </label>
+                <div class="input-wrapper">
+                  <span class="currency-symbol">₹</span>
+                  <input type="text" 
+                         class="modern-input" 
+                         placeholder="Enter your monthly income"
+                         [(ngModel)]="monthlySalaryFormatted"
+                         name="monthlySalary"
+                         (input)="formatNumber('monthlySalary')"
+                         (blur)="onInputBlur('monthlySalary')"
+                         required>
+                </div>
+                <div class="validation-message" *ngIf="monthlySalaryError">
+                  {{ monthlySalaryError }}
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label class="input-label">
+                  <span class="label-icon">🏦</span>
+                  Loan Amount
+                </label>
+                <div class="input-wrapper">
+                  <span class="currency-symbol">₹</span>
+                  <input type="text" 
+                         class="modern-input" 
+                         placeholder="Enter loan amount needed"
+                         [(ngModel)]="loanAmountFormatted"
+                         name="loanAmount"
+                         (input)="formatNumber('loanAmount')"
+                         (blur)="onInputBlur('loanAmount')"
+                         required>
+                </div>
+                <div class="validation-message" *ngIf="loanAmountError">
+                  {{ loanAmountError }}
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label class="input-label">
+                  <span class="label-icon">📅</span>
+                  Loan Tenure
+                </label>
+                <div class="tenure-input-wrapper">
+                  <input type="number" 
+                         class="modern-input tenure-input" 
+                         [placeholder]="tenurePlaceholder"
+                         [(ngModel)]="tenureValue"
+                         name="tenureValue"
+                         (input)="updateTenureMonths()"
+                         [min]="1"
+                         [max]="tenureUnit === 'months' ? 360 : 30"
+                         required>
+                  <div class="tenure-buttons">
+                    <button type="button" 
+                            class="tenure-btn" 
+                            [class.active]="tenureUnit === 'months'"
+                            (click)="setTenureUnit('months')">
+                      M
+                    </button>
+                    <button type="button" 
+                            class="tenure-btn" 
+                            [class.active]="tenureUnit === 'years'"
+                            (click)="setTenureUnit('years')">
+                      Y
+                    </button>
+                  </div>
+                </div>
+                <div class="validation-message" *ngIf="tenureError">
+                  {{ tenureError }}
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label class="input-label">
+                  <span class="label-icon">💸</span>
+                  Existing EMIs
+                </label>
+                <div class="input-wrapper">
+                  <span class="currency-symbol">₹</span>
+                  <input type="text" 
+                         class="modern-input" 
+                         placeholder="Enter existing monthly EMIs"
+                         [(ngModel)]="expensesFormatted"
+                         name="expenses"
+                         (input)="formatNumber('expenses')"
+                         (blur)="onInputBlur('expenses')"
+                         min="0">
+                </div>
+                <div class="validation-message" *ngIf="expensesError">
+                  {{ expensesError }}
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label class="input-label">
+                  <span class="label-icon">📊</span>
+                  Credit Score
+                </label>
+                <div class="input-wrapper">
+                  <input type="number" 
+                         class="modern-input" 
+                         placeholder="Enter your credit score"
+                         [(ngModel)]="creditScore"
+                         name="creditScore"
+                         min="300" max="900">
+                  <span class="unit">/900</span>
+                </div>
+                <div class="credit-score-indicator">
+                  <div class="score-bar">
+                    <div class="score-fill" [style.width.%]="(creditScore / 900) * 100"></div>
+                  </div>
+                  <span class="score-label">{{ getCreditScoreLabel(creditScore) }}</span>
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label class="input-label">
+                  <span class="label-icon">🏢</span>
+                  Employment Type
+                </label>
+                <div class="input-wrapper">
+                  <select class="modern-input" [(ngModel)]="employmentType" name="employmentType">
+                    <option value="">Select employment type</option>
+                    <option value="salaried">Salaried</option>
+                    <option value="self-employed">Self-Employed</option>
+                    <option value="business-owner">Business Owner</option>
+                    <option value="freelancer">Freelancer</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Loan Type Specific Validations -->
+            <div class="loan-type-validations" *ngIf="selectedLoanType && validationMessages.length > 0">
+              <div class="validation-header">
+                <span class="validation-icon">ℹ️</span>
+                <span>Loan Type Specific Requirements</span>
+              </div>
+              <div class="validation-list">
+                <div class="validation-item" *ngFor="let message of validationMessages">
+                  {{ message }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Helpful Tips Section -->
+            <div class="helpful-tips-section" *ngIf="helpfulTips.length > 0">
+              <div class="tips-header">
+                <span class="tips-icon">💡</span>
+                <span>Helpful Tips & Guidance</span>
+              </div>
+              <div class="tips-list">
+                <div class="tip-item" *ngFor="let tip of helpfulTips">
+                  <span class="tip-bullet">•</span>
+                  {{ tip }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Alternative Loan Suggestions -->
+            <div class="alternative-suggestions" *ngIf="selectedLoanType && getAlternativeLoanSuggestions().length > 0">
+              <div class="suggestions-header">
+                <span class="suggestions-icon">🔄</span>
+                <span>Alternative Loan Options</span>
+              </div>
+              <p class="suggestions-subtitle">Based on your profile, you might also consider these loan types:</p>
+              <div class="suggestions-grid">
+                <div class="suggestion-card" 
+                     *ngFor="let loan of getAlternativeLoanSuggestions()"
+                     (click)="selectLoanType(loan.value)">
+                  <div class="suggestion-icon">{{ loan.icon }}</div>
+                  <div class="suggestion-content">
+                    <h4>{{ loan.label }}</h4>
+                    <p>{{ loan.description }}</p>
+                    <span class="suggestion-interest">{{ loan.interest }}% p.a.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="form-group half-width">
-            <label for="loanAmount" class="label-with-icon">Loan Amount (₹):
-              <img src="assets/icons/loan_amount.png" alt="Loan Amount Icon" loading="lazy" />
-            </label>
-            <input
-              type="number"
-              id="loanAmount"
-              name="loanAmount"
-              [(ngModel)]="loanAmount"
-              required
-              min="0"
-              class="input-field"
-            />
+
+          <!-- Calculate Button -->
+          <div class="form-actions">
+            <button type="submit" class="calculate-btn" [@pulseAnimation] [disabled]="!isFormValid()">
+              <span class="btn-icon">✨</span>
+              <span class="btn-text">Calculate Eligibility</span>
+              <div class="btn-shine"></div>
+            </button>
           </div>
-        </div>
-      
-        <!-- Row 3: Loan Tenure + Expenses -->
-        <div class="form-row">
-          <div class="form-group half-width">
-            <label for="tenureMonths" class="label-with-icon">Loan Tenure (months):
-              <img src="assets/icons/days.png" alt="Loan Tenure Icon" loading="lazy" />
-            </label>
-            <input
-              type="number"
-              id="tenureMonths"
-              name="tenureMonths"
-              [(ngModel)]="tenureMonths"
-              required
-              min="1"
-              class="input-field"
-            />
-          </div>
-          <div class="form-group half-width">
-            <label for="expenses" class="label-with-icon">Existing EMIs (₹):
-              <img src="assets/icons/emis.png" alt="Existing EMI Icon" loading="lazy" />
-            </label>
-            <input
-              type="number"
-              id="expenses"
-              name="expenses"
-              [(ngModel)]="expenses"
-              min="0"
-              class="input-field"
-            />
-          </div>
-        </div>
-      
-        <!-- Submit Button -->
-        <div class="submit-section">
-          <button type="submit" [disabled]="!eligibilityForm.form.valid" class="submit-button">
-            <mat-icon>verified_user</mat-icon>
-            Check Loan Eligibility
-          </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -168,6 +354,21 @@
             <small>Affordability indicator</small>
           </div>
         </div>
+
+        <!-- Eligibility Score Card -->
+        <div class="result-card eligibility-score-card">
+          <div class="result-icon">🎯</div>
+          <div class="result-content">
+            <h4>Eligibility Score</h4>
+            <div class="score-display">
+              <div class="score-circle" [style.background]="getEligibilityColor(eligibilityScore)">
+                {{ eligibilityScore }}
+              </div>
+              <span class="score-label">{{ getEligibilityCategory(eligibilityScore) }}</span>
+            </div>
+            <small>Overall eligibility rating</small>
+          </div>
+        </div>
       </div>
 
       <!-- Chart Section -->
@@ -180,7 +381,7 @@
       </div>
 
       <!-- Download Section -->
-      <div class="download-section" style="display: none;">
+      <div class="download-section">
         <button class="download-btn" (click)="downloadPDF()">
           <mat-icon>download</mat-icon>
           Download PDF Report
@@ -190,158 +391,221 @@
           Download Excel
         </button>
       </div>
+
+      <!-- Loan Recommendations Section -->
+      <div class="recommendations-section" *ngIf="getLoanTypeRecommendations().length > 0">
+        <h4>🎯 Recommended Loan Types for Your Profile</h4>
+        <p class="recommendations-subtitle">Based on your income level and financial profile, here are some loan types that might be ideal for you:</p>
+        <div class="recommendations-grid">
+          <div class="recommendation-card" 
+               *ngFor="let loan of getLoanTypeRecommendations()"
+               (click)="selectLoanType(loan.value)">
+            <div class="recommendation-icon">{{ loan.icon }}</div>
+            <div class="recommendation-content">
+              <h5>{{ loan.label }}</h5>
+              <p>{{ loan.description }}</p>
+              <div class="recommendation-details">
+                <span class="interest-rate">{{ loan.interest }}% p.a.</span>
+                <span class="min-amount">Min: ₹{{ loan.minAmount | number }}</span>
+              </div>
+            </div>
+            <div class="recommendation-badge">Recommended</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Educational Content Section -->
-  <div class="educational-content">
-    <div class="content-container">
-      <h2>What is Loan Eligibility Calculator?</h2>
-      <p>A loan eligibility calculator is a financial tool that helps borrowers determine their chances of loan approval before applying. It analyzes your income, expenses, and loan requirements to provide an accurate assessment of your borrowing capacity and affordability.</p>
+  <!-- How Eligibility Checker Works Section -->
+  <div class="how-it-works-section">
+    <div class="section-container">
+      <div class="section-header">
+        <h2>🔍 How Loan Eligibility Checker Works</h2>
+        <p>Understanding the science behind our intelligent loan eligibility assessment</p>
+      </div>
       
-      <h3>How Loan Eligibility Works</h3>
-      <p>The eligibility calculator uses multiple factors to determine your loan approval chances. It considers your monthly income, existing financial obligations, loan amount, and tenure to calculate the EMI and assess whether you can comfortably afford the loan payments.</p>
-      
-      <h3>Key Factors Affecting Loan Eligibility</h3>
-      <ul>
-        <li><strong>Monthly Income:</strong> Higher income increases borrowing capacity</li>
-        <li><strong>Existing EMIs:</strong> Lower existing obligations improve eligibility</li>
-        <li><strong>Loan Amount:</strong> Smaller loans are easier to approve</li>
-        <li><strong>Loan Tenure:</strong> Longer tenure reduces monthly EMI burden</li>
-        <li><strong>Credit Score:</strong> Better credit history improves approval chances</li>
-        <li><strong>Employment Stability:</strong> Stable job increases lender confidence</li>
-      </ul>
+      <div class="works-grid">
+        <div class="work-card">
+          <div class="card-number">01</div>
+          <div class="card-icon">📊</div>
+          <h3>Income Analysis</h3>
+          <p>We analyze your monthly income, existing EMIs, and financial obligations to determine your disposable income.</p>
+          <div class="card-details">
+            <span class="detail-item">• Monthly Salary Assessment</span>
+            <span class="detail-item">• Existing EMI Deduction</span>
+            <span class="detail-item">• Disposable Income Calculation</span>
+          </div>
+        </div>
 
-      <h3>When to Use Loan Eligibility Calculator</h3>
-      <ul>
-        <li>Before applying for any loan</li>
-        <li>To understand your borrowing capacity</li>
-        <li>To plan loan amount and tenure</li>
-        <li>To compare different loan options</li>
-        <li>To improve your financial planning</li>
-      </ul>
+        <div class="work-card">
+          <div class="card-number">02</div>
+          <div class="card-icon">🧮</div>
+          <h3>EMI Calculation</h3>
+          <p>Using advanced mathematical formulas, we calculate your monthly EMI based on loan amount, tenure, and interest rate.</p>
+          <div class="card-details">
+            <span class="detail-item">• Standard EMI Formula</span>
+            <span class="detail-item">• Interest Rate Application</span>
+            <span class="detail-item">• Tenure Optimization</span>
+          </div>
+        </div>
+
+        <div class="work-card">
+          <div class="card-number">03</div>
+          <div class="card-icon">⚖️</div>
+          <h3>Affordability Check</h3>
+          <p>We verify if your EMI is within the safe limit (typically 50% of disposable income) to ensure loan sustainability.</p>
+          <div class="card-details">
+            <span class="detail-item">• EMI to Income Ratio</span>
+            <span class="detail-item">• Risk Assessment</span>
+            <span class="detail-item">• Affordability Validation</span>
+          </div>
+        </div>
+
+        <div class="work-card">
+          <div class="card-number">04</div>
+          <div class="card-icon">🎯</div>
+          <h3>Final Assessment</h3>
+          <p>Combining all factors, we provide a comprehensive eligibility score and personalized recommendations.</p>
+          <div class="card-details">
+            <span class="detail-item">• Eligibility Score</span>
+            <span class="detail-item">• Risk Level</span>
+            <span class="detail-item">• Improvement Suggestions</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Technical Formula Section -->
+      <div class="formula-section">
+        <h3>🧮 Technical Calculation Details</h3>
+        <div class="formula-container">
+          <div class="formula-card">
+            <h4>EMI Calculation Formula</h4>
+            <div class="formula-display">
+              EMI = [P × r × (1 + r)ⁿ] / [(1 + r)ⁿ - 1]
+            </div>
+            <div class="formula-variables">
+              <div class="variable">
+                <strong>P</strong> = Principal Loan Amount
+              </div>
+              <div class="variable">
+                <strong>r</strong> = Monthly Interest Rate (Annual Rate ÷ 12 ÷ 100)
+              </div>
+              <div class="variable">
+                <strong>n</strong> = Total Number of Months
+              </div>
+            </div>
+          </div>
+          
+          <div class="formula-card">
+            <h4>Affordability Check</h4>
+            <div class="formula-display">
+              Affordability Ratio = (EMI ÷ Disposable Income) × 100
+            </div>
+            <div class="formula-variables">
+              <div class="variable">
+                <strong>Disposable Income</strong> = Monthly Salary - Existing EMIs
+              </div>
+              <div class="variable">
+                <strong>Safe Limit</strong> = 50% of Disposable Income
+              </div>
+              <div class="variable">
+                <strong>Result</strong> = Ratio ≤ 50% (Eligible)
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Technical Details Section -->
-  <div class="technical-details">
-    <div class="content-container">
-      <h2>🧮 Technical Calculation Details</h2>
-      
-      <section class="card-info">
-        <h3>Key Loan Repayment Metrics</h3>
-        <p>We use the standard EMI formula:</p>
-        <div class="formula">
-          EMI = [ P × r × (1 + r)<sup>n</sup> ] / [ (1 + r)<sup>n</sup> − 1 ]
-        </div>
-        <ul class="variables">
-          <li><strong>P</strong> = Loan Amount</li>
-          <li><strong>r</strong> = Monthly Interest Rate (Annual Rate ÷ 12 ÷ 100)</li>
-          <li><strong>n</strong> = Tenure in Months</li>
-        </ul>
-
-        <div class="example">
-          <h4>🔹 Example:</h4>
-          <p>Loan Amount: ₹5,00,000<br>
-            Interest Rate: 10% annual<br>
-            Tenure: 5 years = 60 months<br>
-            Monthly Rate = 10 ÷ 12 ÷ 100 = <strong>0.00833</strong>
-          </p>
-        </div>
-      </section>
-
-      <section class="card-info">
-        <h3>💰 Income Capacity Analysis</h3>
-        <p>We deduct monthly expenses from your salary to find your net available income:</p>
-        <div class="formula">
-          Adjusted Income = Monthly Salary − Existing EMIs
-        </div>
-        <div class="example">
-          <h4>🔸 Example:</h4>
-          <p>Monthly Salary: ₹60,000<br>
-            Existing EMIs: ₹15,000<br>
-            Adjusted Income = ₹60,000 − ₹15,000 = <strong>₹45,000</strong>
-          </p>
-        </div>
-      </section>
-
-      <section class="card-info">
-        <h3>📌 Affordability Threshold Check</h3>
-        <p>We check if EMI is less than or equal to 50% of your adjusted income:</p>
-        <div class="formula">
-          Ratio = ( EMI / Adjusted Income ) × 100
-        </div>
-        <p>If <strong>Ratio ≤ 50%</strong>, you're eligible.</p>
-
-        <div class="example">
-          <h4>🔹 Example:</h4>
-          <p>EMI: ₹20,000<br>
-            Adjusted Income: ₹45,000<br>
-            Ratio = ( ₹20,000 / ₹45,000 ) × 100 = <strong>44.4%</strong><br>
-            ➤ You are eligible 🎉
-          </p>
-        </div>
-      </section>
-    </div>
+  <!-- SEO Keywords Section - Hidden for users but accessible to search engines -->
+  <div class="seo-keywords">
+    <span class="keyword-tag">Loan Eligibility Calculator</span>
+    <span class="keyword-tag">Loan Approval Checker</span>
+    <span class="keyword-tag">EMI Calculator</span>
+    <span class="keyword-tag">Loan Affordability</span>
+    <span class="keyword-tag">Home Loan Eligibility</span>
+    <span class="keyword-tag">Personal Loan Checker</span>
+    <span class="keyword-tag">Free Loan Eligibility Calculator</span>
+    <span class="keyword-tag">Check Loan Approval Chances</span>
+    <span class="keyword-tag">Loan Qualification Calculator</span>
+    <span class="keyword-tag">Home Loan Eligibility Checker</span>
+    <span class="keyword-tag">Car Loan Eligibility Calculator</span>
+    <span class="keyword-tag">Personal Loan Eligibility Check</span>
+    <span class="keyword-tag">Business Loan Eligibility</span>
+    <span class="keyword-tag">Loan Affordability Calculator</span>
+    <span class="keyword-tag">Income Based Loan Eligibility</span>
+    <span class="keyword-tag">Loan Approval Probability</span>
   </div>
 
-  <!-- FAQ Section -->
+  <!-- FAQ Section for SEO and User Experience -->
   <div class="faq-section">
-    <div class="content-container">
-      <h2>Frequently Asked Questions</h2>
-      
-      <div class="faq-item">
-        <h3>What is the maximum EMI to income ratio for loan approval?</h3>
-        <p>Most lenders prefer an EMI to income ratio of 50% or less. This ensures you have sufficient disposable income to meet other financial obligations and maintain a comfortable lifestyle.</p>
+    <div class="section-container">
+      <div class="section-header">
+        <h2>❓ Frequently Asked Questions</h2>
+        <p>Common questions about loan eligibility and our calculator</p>
       </div>
       
-      <div class="faq-item">
-        <h3>How does existing EMIs affect my loan eligibility?</h3>
-        <p>Existing EMIs reduce your disposable income, which decreases your loan eligibility. Lenders consider your total debt burden when assessing your ability to take on additional loans.</p>
-      </div>
-      
-      <div class="faq-item">
-        <h3>Can I improve my loan eligibility?</h3>
-        <p>Yes, you can improve eligibility by increasing your income, reducing existing EMIs, choosing a longer loan tenure, or applying for a smaller loan amount.</p>
-      </div>
-      
-      <div class="faq-item">
-        <h3>What documents do I need for loan application?</h3>
-        <p>Typically you'll need income proof, bank statements, identity documents, address proof, and employment details. Requirements may vary by lender and loan type.</p>
-      </div>
-      
-      <div class="faq-item">
-        <h3>How accurate is the eligibility calculator?</h3>
-        <p>Our calculator provides a reliable estimate based on standard lending criteria. However, actual approval depends on additional factors like credit score, employment history, and lender policies.</p>
-      </div>
-      
-      <div class="faq-item">
-        <h3>What if my eligibility ratio is above 50%?</h3>
-        <p>If your ratio exceeds 50%, consider reducing the loan amount, extending the tenure, or improving your income. You may also explore co-applicant options to enhance eligibility.</p>
-      </div>
-    </div>
-  </div>
+      <div class="faq-grid">
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>How to check loan eligibility?</h3>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>To check loan eligibility, enter your monthly income, desired loan amount, tenure, existing EMIs, and select loan type. Our calculator will instantly show your eligibility status and EMI.</p>
+          </div>
+        </div>
 
-  <!-- Related Calculators Section -->
-  <div class="related-calculators">
-    <div class="content-container">
-      <h2>Related Financial Calculators</h2>
-      <div class="calculator-links">
-        <a href="/calculator/emi-calculator" class="calculator-link">
-          <mat-icon>calculate</mat-icon>
-          <span>EMI Calculator</span>
-          <small>Calculate loan EMIs</small>
-        </a>
-        <a href="/calculator/sip-calculator" class="calculator-link">
-          <mat-icon>trending_up</mat-icon>
-          <span>SIP Calculator</span>
-          <small>Investment planning</small>
-        </a>
-        <a href="/blogs/home" class="calculator-link">
-          <mat-icon>article</mat-icon>
-          <span>Financial Blog</span>
-          <small>Loan tips & guides</small>
-        </a>
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>What is the minimum salary required for loan eligibility?</h3>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>The minimum salary requirement varies by loan type. Generally, ₹5,000 monthly income is required for basic eligibility, but specific loan types may have higher requirements.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>How is loan eligibility calculated?</h3>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>Loan eligibility is calculated based on your monthly income, existing EMIs, loan amount, tenure, and interest rate. We use the EMI formula and check if the EMI ratio is within acceptable limits.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>What is a good EMI to income ratio?</h3>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>A good EMI to income ratio is below 50%. Below 40% is excellent, 40-50% is good, and 50-60% is moderate. Above 60% may strain your finances.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>Can I get a loan with low credit score?</h3>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>Yes, you can get loans with a low credit score, but you may face higher interest rates or need to provide additional security. Consider secured loans like gold loans for better approval chances.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <h3>What documents are required for loan application?</h3>
+            <span class="faq-toggle">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>Common documents include ID proof, address proof, income proof, bank statements, and employment details. Requirements vary by loan type and lender.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>

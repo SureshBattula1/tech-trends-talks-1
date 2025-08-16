@@ -1,0 +1,253 @@
+.grade-summary {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  margin: 1rem 0;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f1f3f4;
+  
+  h3 {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  .grade-badge {
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    min-width: 80px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    
+    &.excellent {
+      background: linear-gradient(135deg, #28a745, #20c997);
+    }
+    
+    &.good {
+      background: linear-gradient(135deg, #17a2b8, #6f42c1);
+    }
+    
+    &.average {
+      background: linear-gradient(135deg, #ffc107, #fd7e14);
+    }
+    
+    &.below-average {
+      background: linear-gradient(135deg, #fd7e14, #e83e8c);
+    }
+    
+    &.failing {
+      background: linear-gradient(135deg, #dc3545, #6f42c1);
+    }
+    
+    &.unknown {
+      background: linear-gradient(135deg, #6c757d, #495057);
+    }
+  }
+}
+
+.summary-content {
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    
+    .summary-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      
+      .item-label {
+        font-size: 0.875rem;
+        color: #6c757d;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      
+      .item-value {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2c3e50;
+        
+        &.grade-value {
+          color: #667eea;
+        }
+        
+        &.percentage-value {
+          color: #28a745;
+        }
+        
+        &.gpa-value {
+          color: #764ba2;
+        }
+        
+        &.description-value {
+          color: #6c757d;
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+  
+  .performance-message {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    border-left: 4px solid;
+    
+    &.excellent {
+      border-left-color: #28a745;
+      background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    }
+    
+    &.good {
+      border-left-color: #17a2b8;
+      background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+    }
+    
+    &.average {
+      border-left-color: #ffc107;
+      background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    }
+    
+    &.below-average {
+      border-left-color: #fd7e14;
+      background: linear-gradient(135deg, #ffe8d1, #ffd8a8);
+    }
+    
+    &.failing {
+      border-left-color: #dc3545;
+      background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    }
+    
+    .message-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    
+    p {
+      margin: 0;
+      color: #2c3e50;
+      font-weight: 500;
+      line-height: 1.6;
+    }
+  }
+  
+  .grade-chart {
+    .chart-bar {
+      height: 12px;
+      background: #e9ecef;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+      position: relative;
+      
+      .bar-fill {
+        height: 100%;
+        border-radius: 6px;
+        transition: width 1s ease-in-out;
+        position: relative;
+        
+        &::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+          animation: shimmer 2s infinite;
+        }
+      }
+    }
+    
+    .chart-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: #6c757d;
+      font-weight: 500;
+    }
+  }
+}
+
+// Animations
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .grade-summary {
+    padding: 1.5rem;
+  }
+  
+  .summary-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+    
+    .grade-badge {
+      font-size: 1.25rem;
+      padding: 0.5rem 1rem;
+    }
+  }
+  
+  .summary-content {
+    .summary-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    
+    .performance-message {
+      flex-direction: column;
+      text-align: center;
+      
+      .message-icon {
+        align-self: center;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .grade-summary {
+    padding: 1rem;
+  }
+  
+  .summary-header h3 {
+    font-size: 1.25rem;
+  }
+  
+  .summary-content .summary-grid .summary-item .item-value {
+    font-size: 1.1rem;
+  }
+}

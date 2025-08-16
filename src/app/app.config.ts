@@ -5,6 +5,7 @@ import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideClientHydration } from '@angular/platform-browser';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { registerLocaleData } from '@angular/common';
 import localeIndia from '@angular/common/locales/en-IN';
@@ -17,7 +18,7 @@ export const appConfig: ApplicationConfig = {
       provideZoneChangeDetection({ eventCoalescing: true }),
       provideRouter(routes), 
       provideAnimationsAsync(), 
-      provideAnimationsAsync(),  
+      provideAnimations(),  
       provideHttpClient(withInterceptorsFromDi(),), 
       provideClientHydration(),
       { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },

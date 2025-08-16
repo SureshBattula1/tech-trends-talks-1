@@ -612,9 +612,17 @@
   }
 }
 
-
-/* SEO Keywords Section */
+/* SEO Keywords Section - Hidden for users but accessible to search engines */
 .seo-keywords {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  /* Keep original styling for when needed but hidden */
   display: flex;
   flex-wrap: wrap;
   gap: 0.8rem;

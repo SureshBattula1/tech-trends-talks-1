@@ -1,0 +1,105 @@
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Grade Calculator - SGPA & CGPA Calculator",
+  "description": "Free online Grade Calculator to calculate SGPA and CGPA. Convert marks to grades, calculate semester GPA, and cumulative GPA with our professional grade calculator tool.",
+  "url": "https://techtrendstalks.com/calculator/grade-calculator",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Web Browser",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "description": "Free online grade calculator tool"
+  },
+  "featureList": [
+    "SGPA Calculator",
+    "CGPA Calculator", 
+    "Grade Converter",
+    "Performance Analysis",
+    "Mobile Responsive",
+    "Print Results"
+  ],
+  "screenshot": "https://techtrendstalks.com/assets/images/grade-calculator-screenshot.png",
+  "softwareVersion": "1.0.0",
+  "author": {
+    "@type": "Organization",
+    "name": "Tech Trends Talks",
+    "url": "https://techtrendstalks.com"
+  },
+  "creator": {
+    "@type": "Organization",
+    "name": "Tech Trends Talks",
+    "url": "https://techtrendstalks.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Tech Trends Talks",
+    "url": "https://techtrendstalks.com"
+  },
+  "mainEntity": {
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is SGPA?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "SGPA (Semester Grade Point Average) is the average of grade points earned in all courses taken during a specific semester. It's calculated using the formula: SGPA = (Σ Ci × Pi) / (Σ Ci) where Ci is credits and Pi is grade points."
+        }
+      },
+      {
+        "@type": "Question", 
+        "name": "What is CGPA?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "CGPA (Cumulative Grade Point Average) is the average of SGPA across all semesters. It's calculated using: CGPA = (Σ SGPAi × Ni) / (Σ Ni) where SGPAi is the SGPA of the i-th semester and Ni is the number of credits."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I convert CGPA to percentage?",
+        "acceptedAnswer": {
+          "@type": "Answer", 
+          "text": "You can convert CGPA to percentage by multiplying the CGPA by 10. For example, if your CGPA is 8.5, your percentage would be 8.5 × 10 = 85%."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What grading system does this calculator use?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "This calculator uses the standard 10-point grading scale: S (91-100%), A+ (86-90%), A (75-85%), B (66-74%), C (55-65%), D (50-54%), and F (0-49%)."
+        }
+      }
+    ]
+  },
+  "about": [
+    {
+      "@type": "Thing",
+      "name": "Grade Point Average",
+      "description": "A standardized way of measuring academic achievement"
+    },
+    {
+      "@type": "Thing", 
+      "name": "Academic Performance",
+      "description": "Measurement of student achievement in educational courses"
+    },
+    {
+      "@type": "Thing",
+      "name": "Educational Tools",
+      "description": "Software and applications designed to help with educational tasks"
+    }
+  ],
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "Students",
+    "educationalLevel": "Higher Education"
+  },
+  "keywords": "grade calculator, SGPA calculator, CGPA calculator, GPA calculator, marks to grade converter, semester grade point average, cumulative grade point average, academic performance calculator, student grade tool",
+  "inLanguage": "en-US",
+  "dateCreated": "2024-01-01",
+  "dateModified": "2024-01-01",
+  "datePublished": "2024-01-01"
+}
