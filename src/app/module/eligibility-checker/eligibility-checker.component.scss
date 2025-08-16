@@ -17,6 +17,35 @@
   top: 0;
   z-index: 100;
 
+  // SEO-only breadcrumb - hidden for users but accessible to search engines
+  &.seo-only {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+    visibility: hidden;
+    
+    // Ensure it's still accessible to screen readers and search engines
+    &:focus-within {
+      position: static;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      clip: auto;
+      white-space: normal;
+      opacity: 1;
+      pointer-events: auto;
+      user-select: auto;
+      visibility: visible;
+    }
+  }
+
   .breadcrumb-list {
     display: flex;
     align-items: center;
@@ -2117,4 +2146,44 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* SEO Utility Classes */
+.seo-only {
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  user-select: none !important;
+  visibility: hidden !important;
+  
+  // Ensure it's still accessible to screen readers and search engines
+  &:focus-within {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: normal !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    user-select: auto !important;
+    visibility: visible !important;
+  }
+}
+
+// Alternative SEO hiding method for better compatibility
+.seo-hidden {
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
 }

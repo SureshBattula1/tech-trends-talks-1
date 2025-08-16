@@ -249,7 +249,7 @@
           <button 
             mat-raised-button 
             color="primary" 
-            (click)="calculateEMI()"
+            (click)="calculateLoanEMI()"
             class="calculate-btn">
             <mat-icon>calculate</mat-icon>
             Calculate EMI
@@ -515,198 +515,50 @@
       </section>
 
       <!-- Types of Loans Section -->
-      <section class="seo-section">
-        <h2>Types of Loans You Can Calculate</h2>
+      <section class="seo-section" id="loan-types-section" itemscope itemtype="https://schema.org/ItemList">
+        <h2 itemprop="name">Types of Loans You Can Calculate</h2>
+        <meta itemprop="description" content="Comprehensive list of 35+ loan types for EMI calculation including home loans, car loans, personal loans, business loans, education loans, and more." />
+        <meta itemprop="numberOfItems" content="35" />
+        
         <div class="loan-types-grid">
-          <div class="loan-type-item">
-            <h3>🏠 Home Loan EMI Calculator</h3>
-            <p>Calculate monthly EMI for home loans with competitive interest rates starting from 8.5% p.a. Our calculator considers processing fees and helps you plan your home purchase budget.</p>
+          <div class="loan-type-item" 
+               *ngFor="let loanType of getVisibleLoanTypesForSEO(); trackBy: trackByLoanType; let i = index"
+               itemprop="itemListElement" 
+               itemscope 
+               itemtype="https://schema.org/ListItem"
+               [attr.data-loan-type]="loanType.title">
+            <meta itemprop="position" [content]="i + 1" />
+            <h3 itemprop="name">{{ loanType.title }}</h3>
+            <p itemprop="description">{{ loanType.description }}</p>
+            
+            <!-- Hidden SEO content for better indexing -->
+            <div class="seo-meta" aria-hidden="true" style="display: none;">
+              <span>EMI Calculator for {{ loanType.title }}</span>
+              <span>Calculate monthly installments for {{ loanType.title.toLowerCase() }}</span>
+              <span>Free {{ loanType.title }} EMI calculation tool</span>
+              <span>Get complete repayment schedule for {{ loanType.title.toLowerCase() }}</span>
+            </div>
           </div>
-          
-          <div class="loan-type-item">
-            <h3>🚗 Car Loan EMI Calculator</h3>
-            <p>Plan your car purchase with our car loan EMI calculator. Get instant EMI calculations for new and used car loans with interest rates from 9.2% p.a.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>👤 Personal Loan EMI Calculator</h3>
-            <p>Calculate EMI for personal loans used for medical emergencies, education, travel, or any personal needs. Interest rates typically range from 11.75% p.a.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🎓 Education Loan EMI Calculator</h3>
-            <p>Plan your education financing with our education loan calculator. Calculate EMI for domestic and international education loans with rates from 7.8% p.a.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🥇 Gold Loan EMI Calculator</h3>
-            <p>Calculate EMI for gold loans with competitive interest rates starting from 10.5% p.a. Quick disbursal and minimal documentation required.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🏢 Business Loan EMI Calculator</h3>
-            <p>Plan your business expansion with our business loan EMI calculator. Calculate EMI for working capital, equipment financing, and business expansion loans.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🏍️ Two Wheeler Loan EMI Calculator</h3>
-            <p>Calculate EMI for two-wheeler loans with competitive interest rates from 10.2% p.a. Quick approval and minimal documentation for bike and scooter financing.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🌾 Agriculture Loan EMI Calculator</h3>
-            <p>Plan your agricultural investments with our agriculture loan calculator. Calculate EMI for farming equipment, crop loans, and agricultural development with rates from 6.5% p.a.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🔨 Home Renovation Loan EMI Calculator</h3>
-            <p>Calculate EMI for home renovation and improvement loans. Interest rates start from 10.5% p.a. for upgrading your existing home.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🏢 Property Loan EMI Calculator</h3>
-            <p>Calculate EMI for loans against property with competitive rates from 9.5% p.a. Use your property as collateral for business or personal needs.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🏢 Mortgage Loan EMI Calculator</h3>
-            <p>Calculate EMI for mortgage loans with rates from 9.8% p.a. Secure financing using your property as security for various financial needs.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>💒 Wedding Loan EMI Calculator</h3>
-            <p>Plan your dream wedding with our wedding loan calculator. Calculate EMI for wedding expenses with interest rates from 12.5% p.a.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🏥 Medical Loan EMI Calculator</h3>
-            <p>Calculate EMI for medical loans and healthcare financing. Interest rates start from 11.0% p.a. for medical emergencies and treatments.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🚨 Emergency Loan EMI Calculator</h3>
-            <p>Calculate EMI for emergency loans with quick disbursal. Interest rates from 14.0% p.a. for urgent financial needs and emergencies.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>💰 Payday Loan EMI Calculator</h3>
-            <p>Calculate EMI for short-term payday loans with rates from 18.0% p.a. Quick cash for immediate financial needs.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>💳 Credit Card Loan EMI Calculator</h3>
-            <p>Convert credit card outstanding to EMI with rates from 15.5% p.a. Manage your credit card debt with structured repayment.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>💼 Working Capital Loan EMI Calculator</h3>
-            <p>Calculate EMI for working capital loans with rates from 12.8% p.a. Finance your business operations and working capital needs.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🏭 MSME Loan EMI Calculator</h3>
-            <p>Calculate EMI for MSME loans with rates from 11.5% p.a. Support for micro, small, and medium enterprises.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🏗️ Home Construction Loan EMI Calculator</h3>
-            <p>Calculate EMI for home construction loans with rates from 9.2% p.a. Build your dream home with structured financing.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🚛 Commercial Vehicle Loan EMI Calculator</h3>
-            <p>Calculate EMI for commercial vehicle loans with rates from 11.5% p.a. Finance trucks, buses, and commercial vehicles.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>📱 Consumer Durable Loan EMI Calculator</h3>
-            <p>Calculate EMI for consumer durable loans with rates from 9.9% p.a. Finance electronics, appliances, and consumer goods.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>✈️ Vacation Loan EMI Calculator</h3>
-            <p>Calculate EMI for vacation and travel loans with rates from 13.0% p.a. Plan your dream vacation with easy financing.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>💡 Startup Loan EMI Calculator</h3>
-            <p>Calculate EMI for startup loans with rates from 13.5% p.a. Finance your business idea and entrepreneurial journey.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>⚙️ Equipment Loan EMI Calculator</h3>
-            <p>Calculate EMI for equipment financing with rates from 11.2% p.a. Finance machinery and equipment for business growth.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>📦 Inventory Loan EMI Calculator</h3>
-            <p>Calculate EMI for inventory financing with rates from 12.5% p.a. Finance stock and inventory for your business.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🌱 Kisan Credit Card Loan EMI Calculator</h3>
-            <p>Calculate EMI for Kisan Credit Card loans with rates from 5.8% p.a. Special financing for farmers and agricultural activities.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🐄 Dairy Loan EMI Calculator</h3>
-            <p>Calculate EMI for dairy farming loans with rates from 7.2% p.a. Finance dairy business and cattle farming.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🥚 Poultry Loan EMI Calculator</h3>
-            <p>Calculate EMI for poultry farming loans with rates from 7.5% p.a. Finance poultry business and bird farming.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🐟 Fishery Loan EMI Calculator</h3>
-            <p>Calculate EMI for fishery loans with rates from 7.8% p.a. Finance fish farming and aquaculture business.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🌺 Horticulture Loan EMI Calculator</h3>
-            <p>Calculate EMI for horticulture loans with rates from 8.0% p.a. Finance flower farming and horticultural activities.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>📊 Tax Payment Loan EMI Calculator</h3>
-            <p>Calculate EMI for tax payment loans with rates from 12.5% p.a. Finance tax payments and avoid penalties.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>⚖️ Legal Expenses Loan EMI Calculator</h3>
-            <p>Calculate EMI for legal expense loans with rates from 13.5% p.a. Finance legal proceedings and court cases.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🌍 Trade Finance Loan EMI Calculator</h3>
-            <p>Calculate EMI for trade finance loans with rates from 10.8% p.a. Finance international trade and import-export business.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>📄 Invoice Financing EMI Calculator</h3>
-            <p>Calculate EMI for invoice financing with rates from 13.2% p.a. Convert your invoices to immediate cash flow.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🚐 RV Loan EMI Calculator</h3>
-            <p>Calculate EMI for RV and motorhome loans with rates from 11.8% p.a. Finance your recreational vehicle purchase.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>⛵ Boat Loan EMI Calculator</h3>
-            <p>Calculate EMI for boat and marine loans with rates from 12.0% p.a. Finance your boat purchase and marine adventures.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>🏞️ Plot Purchase Loan EMI Calculator</h3>
-            <p>Calculate EMI for plot purchase loans with rates from 11.0% p.a. Finance land and plot purchases for future development.</p>
-          </div>
-          
-          <div class="loan-type-item">
-            <h3>💱 Overdraft Loan EMI Calculator</h3>
-            <p>Calculate EMI for overdraft loans with rates from 13.0% p.a. Flexible credit facility for business and personal needs.</p>
-          </div>
+        </div>
+        
+        <!-- Show More/Less Button for SEO Loan Types -->
+        <div class="seo-loan-types-more-section" *ngIf="shouldShowMoreButtonForSEO() || isSEOLoanTypesExpanded">
+          <button class="more-btn seo-more-btn" 
+                  (click)="toggleSEOLoanTypesExpansion()" 
+                  [@pulseAnimation]
+                  [attr.aria-expanded]="isSEOLoanTypesExpanded"
+                  [attr.aria-controls]="'loan-types-grid'"
+                  aria-label="Toggle visibility of all loan types">
+            <mat-icon class="arrow-icon" [@arrowAnimation]="isSEOLoanTypesExpanded ? 'expanded' : 'collapsed'">
+              {{ isSEOLoanTypesExpanded ? 'expand_less' : 'expand_more' }}
+            </mat-icon>
+          </button>
+        </div>
+        
+        <!-- SEO Content Summary -->
+        <div class="seo-summary" aria-hidden="true" style="display: none;">
+          <p>Our EMI calculator supports 35+ loan types including personal loans, home loans, car loans, business loans, education loans, gold loans, agriculture loans, and many more specialized financing options. Each loan type has been carefully researched with realistic interest rates and terms to provide accurate EMI calculations for Indian borrowers.</p>
+          <p>Calculate EMI for loans ranging from ₹10,000 to ₹10,00,00,000 with tenure from 1 to 50 years and interest rates from 5.8% to 18% p.a. Our comprehensive calculator provides instant results with detailed breakdowns, visual charts, and professional reports suitable for loan applications and financial planning.</p>
         </div>
       </section>
 

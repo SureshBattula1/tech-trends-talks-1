@@ -81,6 +81,7 @@
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   border-radius: 16px;
   border: 1px solid rgba(226, 232, 240, 0.8);
+  text-align: center;
 
   .step-number {
     width: 50px;
@@ -1842,6 +1843,103 @@
   margin: 20px 0;
 }
 
+/* SEO Loan Types More Section */
+.seo-loan-types-more-section {
+  text-align: center;
+  margin-top: 32px;
+  margin-bottom: 32px;
+}
+
+.seo-more-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.95);
+  }
+
+  .arrow-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    color: white;
+    transition: all 0.3s ease;
+  }
+
+  // Add a subtle glow effect
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 50%;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+
+  // Add a subtle pulse animation on hover
+  &:hover .arrow-icon {
+    animation: subtlePulse 2s infinite;
+  }
+}
+
+// Keyframe animation for subtle pulse
+@keyframes subtlePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+// SEO Meta Content Styling
+.seo-meta {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.seo-summary {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
 .loan-type-item {
   background: #f8fafc;
   border: 1px solid #e5e7eb;
@@ -2417,6 +2515,24 @@
     grid-template-columns: 1fr;
   }
 
+  .seo-loan-types-more-section {
+    margin-top: 24px;
+    margin-bottom: 24px;
+  }
+
+  .seo-more-btn {
+    padding: 14px;
+    width: 56px;
+    height: 56px;
+    
+    .arrow-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
+    }
+  }
+
   .faq-grid {
     grid-template-columns: 1fr;
   }
@@ -2490,5 +2606,18 @@
 
   .seo-content-section {
     padding: 25px 15px;
+  }
+
+  .seo-more-btn {
+    padding: 12px;
+    width: 52px;
+    height: 52px;
+    
+    .arrow-icon {
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+    }
   }
 }
