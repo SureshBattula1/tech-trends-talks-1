@@ -1,1 +1,240 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading dashboard data...</p>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!isLoading" class="dashboard-content">
+    
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <!-- Total Blogs -->
+      <mat-card class="stat-card total-blogs">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>article</mat-icon>
+          </div>
+          <div class="stat-content">
+            <h3>{{ dashboardStats.totalBlogs }}</h3>
+            <p>Total Blogs</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Published Blogs -->
+      <mat-card class="stat-card published-blogs">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>publish</mat-icon>
+          </div>
+          <div class="stat-content">
+            <h3>{{ dashboardStats.publishedBlogs }}</h3>
+            <p>Published</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Draft Blogs -->
+      <mat-card class="stat-card draft-blogs">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>edit</mat-icon>
+          </div>
+          <div class="stat-content">
+            <h3>{{ dashboardStats.draftBlogs }}</h3>
+            <p>Drafts</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Featured Blogs -->
+      <mat-card class="stat-card featured-blogs">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>star</mat-icon>
+          </div>
+          <div class="stat-content">
+            <h3>{{ dashboardStats.featuredBlogs }}</h3>
+            <p>Featured</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Total Categories -->
+      <mat-card class="stat-card total-categories">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>category</mat-icon>
+          </div>
+          <div class="stat-content">
+            <h3>{{ dashboardStats.totalCategories }}</h3>
+            <p>Categories</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Total Subcategories -->
+      <mat-card class="stat-card total-subcategories">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>subdirectory_arrow_right</mat-icon>
+          </div>
+          <div class="stat-content">
+            <h3>{{ dashboardStats.totalSubcategories }}</h3>
+            <p>Subcategories</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Total Views -->
+      <mat-card class="stat-card total-views">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>visibility</mat-icon>
+          </div>
+          <div class="stat-content">
+            <h3>{{ dashboardStats.totalViews.toLocaleString() }}</h3>
+            <p>Total Views</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Data Tables Section -->
+    <div class="tables-section">
+      
+      <!-- Categories Statistics -->
+      <mat-card class="table-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>category</mat-icon>
+            Categories Overview
+          </mat-card-title>
+          <mat-card-subtitle>Blog count and subcategory distribution by category</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="table-container">
+            <table mat-table [dataSource]="categoryStats" class="dashboard-table">
+              <!-- Category Name -->
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>Category Name</th>
+                <td mat-cell *matCellDef="let element">
+                  <div class="category-info">
+                    <span class="category-name">{{ element.category.name }}</span>
+                    <span class="category-slug">/{{ element.category.slug }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Blog Count -->
+              <ng-container matColumnDef="blogCount">
+                <th mat-header-cell *matHeaderCellDef>Blogs</th>
+                <td mat-cell *matCellDef="let element">
+                  <span class="count-badge">{{ element.blogCount }}</span>
+                </td>
+              </ng-container>
+
+              <!-- Subcategory Count -->
+              <ng-container matColumnDef="subcategoryCount">
+                <th mat-header-cell *matHeaderCellDef>Subcategories</th>
+                <td mat-cell *matCellDef="let element">
+                  <span class="count-badge">{{ element.subcategoryCount }}</span>
+                </td>
+              </ng-container>
+
+              <!-- Total Views -->
+              <ng-container matColumnDef="totalViews">
+                <th mat-header-cell *matHeaderCellDef>Total Views</th>
+                <td mat-cell *matCellDef="let element">
+                  <span class="views-count">{{ element.totalViews.toLocaleString() }}</span>
+                </td>
+              </ng-container>
+
+              <!-- Status -->
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let element">
+                  <mat-chip [color]="element.category.is_active ? 'accent' : 'warn'" selected>
+                    {{ element.category.is_active ? 'Active' : 'Inactive' }}
+                  </mat-chip>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="categoryColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: categoryColumns;"></tr>
+            </table>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Subcategories Statistics -->
+      <mat-card class="table-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>subdirectory_arrow_right</mat-icon>
+            Subcategories Overview
+          </mat-card-title>
+          <mat-card-subtitle>Blog count and performance by subcategory</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="table-container">
+            <table mat-table [dataSource]="subcategoryStats" class="dashboard-table">
+              <!-- Subcategory Name -->
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>Subcategory Name</th>
+                <td mat-cell *matCellDef="let element">
+                  <div class="subcategory-info">
+                    <span class="subcategory-name">{{ element.subcategory.name }}</span>
+                    <span class="subcategory-slug">/{{ element.subcategory.slug }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Category -->
+              <ng-container matColumnDef="category">
+                <th mat-header-cell *matHeaderCellDef>Parent Category</th>
+                <td mat-cell *matCellDef="let element">
+                  <span class="parent-category">{{ getCategoryName(element.subcategory.category_id) }}</span>
+                </td>
+              </ng-container>
+
+              <!-- Blog Count -->
+              <ng-container matColumnDef="blogCount">
+                <th mat-header-cell *matHeaderCellDef>Blogs</th>
+                <td mat-cell *matCellDef="let element">
+                  <span class="count-badge">{{ element.blogCount }}</span>
+                </td>
+              </ng-container>
+
+              <!-- Total Views -->
+              <ng-container matColumnDef="totalViews">
+                <th mat-header-cell *matHeaderCellDef>Total Views</th>
+                <td mat-cell *matCellDef="let element">
+                  <span class="views-count">{{ element.totalViews.toLocaleString() }}</span>
+                </td>
+              </ng-container>
+
+              <!-- Status -->
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let element">
+                  <mat-chip [color]="element.subcategory.is_active ? 'accent' : 'warn'" selected>
+                    {{ element.subcategory.is_active ? 'Active' : 'Inactive' }}
+                  </mat-chip>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="subcategoryColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: subcategoryColumns;"></tr>
+            </table>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+
+    
+  </div>
+</div>

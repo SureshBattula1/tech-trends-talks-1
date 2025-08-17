@@ -1,0 +1,461 @@
+<div class="blogs-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <button mat-raised-button 
+            color="primary" 
+            (click)="openCreateDialog()"
+            class="create-btn">
+      <mat-icon>add</mat-icon>
+      Create Blog
+    </button>
+    <button mat-raised-button 
+            color="accent" 
+            (click)="testUploadEndpoint()"
+            class="test-btn"
+            style="margin-left: 10px;">
+      <mat-icon>bug_report</mat-icon>
+      Test Upload
+    </button>
+  </div>
+
+  <!-- Data Table -->
+  <mat-card class="table-card">
+    <mat-card-content>
+
+      <!-- Pagination -->
+      <mat-paginator 
+        [length]="blogs.length"
+        [pageSize]="10"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+        class="pagination">
+      </mat-paginator>
+      
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" class="blogs-table">
+          
+          <!-- Title Column -->
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef>Title</th>
+            <td mat-cell *matCellDef="let blog">
+              <div class="blog-title">
+                <span class="title-text">{{ blog.title }}</span>
+                <span class="slug-text">/{{ blog.slug }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Category Column -->
+          <ng-container matColumnDef="category">
+            <th mat-header-cell *matHeaderCellDef>Category</th>
+            <td mat-cell *matCellDef="let blog">
+              <span class="category-badge">{{ getCategoryName(blog.category_id) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Subcategory Column -->
+          <ng-container matColumnDef="subcategory">
+            <th mat-header-cell *matHeaderCellDef>Subcategory</th>
+            <td mat-cell *matCellDef="let blog">
+              <span class="subcategory-badge">{{ getSubcategoryName(blog.subcategory_id) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Author Column -->
+          <ng-container matColumnDef="author">
+            <th mat-header-cell *matHeaderCellDef>Author</th>
+            <td mat-cell *matCellDef="let blog">
+              <span class="author-text">{{ blog.author }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let blog">
+              <button mat-chip 
+                      [color]="blog.is_published ? 'accent' : 'warn'" 
+                      selected
+                      (click)="toggleBlogStatus(blog)"
+                      class="status-chip">
+                {{ blog.is_published ? 'Published' : 'Draft' }}
+              </button>
+            </td>
+          </ng-container>
+
+          <!-- Featured Column -->
+          <ng-container matColumnDef="featured">
+            <th mat-header-cell *matHeaderCellDef>Featured</th>
+            <td mat-cell *matCellDef="let blog">
+              <button mat-chip 
+                      [color]="blog.is_featured ? 'primary' : 'default'" 
+                      selected
+                      (click)="toggleBlogFeatured(blog)"
+                      class="featured-chip">
+                {{ blog.is_featured ? 'Featured' : 'Not Featured' }}
+              </button>
+            </td>
+          </ng-container>
+
+          <!-- Views Column -->
+          <ng-container matColumnDef="views">
+            <th mat-header-cell *matHeaderCellDef>Views</th>
+            <td mat-cell *matCellDef="let blog">
+              <span class="views-text">{{ blog.views || 0 }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Created Date Column -->
+          <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef>Created</th>
+            <td mat-cell *matCellDef="let blog">
+              <span class="date-text">{{ formatDate(blog.created_at) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let blog">
+              <div class="action-buttons">
+                <button mat-icon-button 
+                        (click)="openEditDialog(blog)"
+                        matTooltip="Edit Blog"
+                        class="edit-btn">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button 
+                        (click)="openDeleteDialog(blog)"
+                        matTooltip="Delete Blog"
+                        class="delete-btn">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+              [class.selected-row]="selectedBlog?.id === row.id"></tr>
+        </table>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="loading-overlay">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Loading blogs...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!isLoading && blogs.length === 0" class="empty-state">
+          <mat-icon>article</mat-icon>
+          <h3>No blogs found</h3>
+          <p>Create your first blog to get started</p>
+          <button mat-raised-button 
+                  color="primary" 
+                  (click)="openCreateDialog()">
+            <mat-icon>add</mat-icon>
+            Create Blog
+          </button>
+        </div>
+      </div>
+
+      
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Create Blog Dialog -->
+  <div class="dialog-overlay" *ngIf="showCreateDialog" (click)="closeCreateDialog()">
+    <div class="dialog-content" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <h2>Create New Blog</h2>
+        <button mat-icon-button (click)="closeCreateDialog()" class="close-btn">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      
+      <form [formGroup]="blogForm" (ngSubmit)="createBlog()" class="dialog-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Blog Title</mat-label>
+          <input matInput formControlName="title" placeholder="Enter blog title">
+          <mat-error *ngIf="blogForm.get('title')?.hasError('required')">
+            Blog title is required
+          </mat-error>
+          <mat-error *ngIf="blogForm.get('title')?.hasError('minlength')">
+            Blog title must be at least 5 characters
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Excerpt</mat-label>
+          <textarea matInput formControlName="excerpt" 
+                    rows="3" 
+                    placeholder="Enter blog excerpt"></textarea>
+          <mat-error *ngIf="blogForm.get('excerpt')?.hasError('required')">
+            Excerpt is required
+          </mat-error>
+          <mat-error *ngIf="blogForm.get('excerpt')?.hasError('minlength')">
+            Excerpt must be at least 10 characters
+          </mat-error>
+        </mat-form-field>
+
+        <div class="content-editor-container">
+          <label class="editor-label">Content</label>
+          <div class="editor-container">
+            <ngx-editor-menu [editor]="editor" [toolbar]="toolbar" [customMenuRef]="customMenu"></ngx-editor-menu>
+            <ngx-editor [editor]="editor" formControlName="content"></ngx-editor>
+            <input type="file" #imageInput (change)="onFileSelected($event)" style="display: none;">
+
+            <!-- Create template reference for custom menu -->
+            <ng-template #customMenu>
+              <div class="custom-toolbar">
+                <button type="button" (click)="onImageButtonClick()" matTooltip="Upload Image">
+                  <mat-icon>image</mat-icon>
+                </button>
+              </div>
+            </ng-template>
+          </div>
+          <div class="editor-errors" *ngIf="blogForm.get('content')?.touched && blogForm.get('content')?.errors">
+            <mat-error *ngIf="blogForm.get('content')?.hasError('required')">
+              Content is required
+            </mat-error>
+            <mat-error *ngIf="blogForm.get('content')?.hasError('minlength')">
+              Content must be at least 50 characters
+            </mat-error>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Category</mat-label>
+            <mat-select formControlName="category_id">
+              <mat-option *ngFor="let category of categories" [value]="category.id">
+                {{ category.name }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="blogForm.get('category_id')?.hasError('required')">
+              Category is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Subcategory (Optional)</mat-label>
+            <mat-select formControlName="subcategory_id">
+              <mat-option [value]="">None</mat-option>
+              <mat-option *ngFor="let subcategory of subcategories" [value]="subcategory.id">
+                {{ subcategory.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Author</mat-label>
+            <input matInput formControlName="author" placeholder="Enter author name">
+            <mat-error *ngIf="blogForm.get('author')?.hasError('required')">
+              Author is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Tags (comma separated)</mat-label>
+            <input matInput formControlName="tags" placeholder="Enter tags">
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-checkbox formControlName="is_published" color="primary">
+            Publish Blog
+          </mat-checkbox>
+
+          <mat-checkbox formControlName="is_featured" color="primary">
+            Feature Blog
+          </mat-checkbox>
+        </div>
+
+        <div class="dialog-actions">
+          <button type="button" 
+                  mat-stroked-button 
+                  (click)="closeCreateDialog()"
+                  [disabled]="isCreating">
+            Cancel
+          </button>
+          <button type="submit" 
+                  mat-raised-button 
+                  color="primary"
+                  [disabled]="!blogForm.valid || isCreating">
+            <mat-spinner *ngIf="isCreating" diameter="20"></mat-spinner>
+            <mat-icon *ngIf="!isCreating">add</mat-icon>
+            {{ isCreating ? 'Creating...' : 'Create Blog' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Blog Dialog -->
+  <div class="dialog-overlay" *ngIf="showEditDialog" (click)="closeEditDialog()">
+    <div class="dialog-content" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <h2>Edit Blog</h2>
+        <button mat-icon-button (click)="closeEditDialog()" class="close-btn">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      
+      <form [formGroup]="editForm" (ngSubmit)="updateBlog()" class="dialog-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Blog Title</mat-label>
+          <input matInput formControlName="title" placeholder="Enter blog title">
+          <mat-error *ngIf="editForm.get('title')?.hasError('required')">
+            Blog title is required
+          </mat-error>
+          <mat-error *ngIf="editForm.get('title')?.hasError('minlength')">
+            Blog title must be at least 5 characters
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Excerpt</mat-label>
+          <textarea matInput formControlName="excerpt" 
+                    rows="3" 
+                    placeholder="Enter blog excerpt"></textarea>
+          <mat-error *ngIf="editForm.get('excerpt')?.hasError('required')">
+            Excerpt is required
+          </mat-error>
+          <mat-error *ngIf="editForm.get('excerpt')?.hasError('minlength')">
+            Excerpt must be at least 10 characters
+          </mat-error>
+        </mat-form-field>
+
+        <div class="content-editor-container">
+          <label class="editor-label">Content</label>
+          <div class="editor-container">
+            <ngx-editor-menu [editor]="editor" [toolbar]="toolbar" [customMenuRef]="customMenuEdit"></ngx-editor-menu>
+            <ngx-editor [editor]="editor" formControlName="content"></ngx-editor>
+            <input type="file" #imageInput (change)="onFileSelected($event)" style="display: none;">
+
+            <!-- Create template reference for custom menu in edit dialog -->
+            <ng-template #customMenuEdit>
+              <div class="custom-toolbar">
+                <button type="button" (click)="onImageButtonClick()" matTooltip="Upload Image">
+                  <mat-icon>image</mat-icon>
+                </button>
+              </div>
+            </ng-template>
+          </div>
+          <div class="editor-errors" *ngIf="editForm.get('content')?.touched && editForm.get('content')?.errors">
+            <mat-error *ngIf="editForm.get('content')?.hasError('required')">
+              Content is required
+            </mat-error>
+            <mat-error *ngIf="editForm.get('content')?.hasError('minlength')">
+              Content must be at least 50 characters
+            </mat-error>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Category</mat-label>
+            <mat-select formControlName="category_id">
+              <mat-option *ngFor="let category of categories" [value]="category.id">
+                {{ category.name }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="editForm.get('category_id')?.hasError('required')">
+              Category is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Subcategory (Optional)</mat-label>
+            <mat-select formControlName="subcategory_id">
+              <mat-option [value]="">None</mat-option>
+              <mat-option *ngFor="let subcategory of subcategories" [value]="subcategory.id">
+                {{ subcategory.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Author</mat-label>
+            <input matInput formControlName="author" placeholder="Enter author name">
+            <mat-error *ngIf="editForm.get('author')?.hasError('required')">
+              Author is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Tags (comma separated)</mat-label>
+            <input matInput formControlName="tags" placeholder="Enter tags">
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-checkbox formControlName="is_published" color="primary">
+            Publish Blog
+          </mat-checkbox>
+
+          <mat-checkbox formControlName="is_featured" color="primary">
+            Feature Blog
+          </mat-checkbox>
+        </div>
+
+        <div class="dialog-actions">
+          <button type="button" 
+                  mat-stroked-button 
+                  (click)="closeEditDialog()"
+                  [disabled]="isUpdating">
+            Cancel
+          </button>
+          <button type="submit" 
+                  mat-raised-button 
+                  color="primary"
+                  [disabled]="!editForm.valid || isUpdating">
+            <mat-spinner *ngIf="isUpdating" diameter="20"></mat-spinner>
+            <mat-icon *ngIf="!isUpdating">save</mat-icon>
+            {{ isUpdating ? 'Updating...' : 'Update Blog' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Dialog -->
+  <div class="dialog-overlay" *ngIf="showDeleteDialog" (click)="closeDeleteDialog()">
+    <div class="dialog-content delete-dialog" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <h2>Delete Blog</h2>
+        <button mat-icon-button (click)="closeDeleteDialog()" class="close-btn">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      
+      <div class="delete-content">
+        <mat-icon class="delete-icon">warning</mat-icon>
+        <h3>Are you sure?</h3>
+        <p>You are about to delete the blog <strong>"{{ selectedBlog?.title }}"</strong>.</p>
+        <p class="warning-text">This action cannot be undone and will permanently remove the blog.</p>
+      </div>
+
+      <div class="dialog-actions">
+        <button mat-stroked-button 
+                (click)="closeDeleteDialog()"
+                [disabled]="isDeleting">
+          Cancel
+        </button>
+        <button mat-raised-button 
+                color="warn"
+                (click)="deleteBlog()"
+                [disabled]="isDeleting">
+          <mat-spinner *ngIf="isDeleting" diameter="20"></mat-spinner>
+          <mat-icon *ngIf="!isDeleting">delete_forever</mat-icon>
+          {{ isDeleting ? 'Deleting...' : 'Delete Blog' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -324,27 +324,97 @@ export class CreateBlogComponent {
   onFileSelected(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
+      // Validate file size (5MB limit)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        this.showError('Image size should be less than 5MB');
+        return;
+      }
 
-      reader.onload = () => {
-        const imageUrl = reader.result as string;
-        this.insertImageToEditor(imageUrl); // inject into ngx-editor
-      };
+      // Show loading state
+      this.isLoading = true;
 
-      reader.readAsDataURL(file); // preview as base64
+      // Upload image to server using API service
+      console.log('Starting image upload for file:', file);
+      this.apiService.uploadImage(file, 'blog').subscribe({
+        next: (response:any) => {
+          console.log('Image upload response received:', response);
+          if (response.success) {
+            const imageUrl = response.data.full_url;
+            console.log('Image URL from response:', imageUrl);
+            this.insertImageToEditor(imageUrl);
+            this.showSuccess('Image uploaded successfully!');
+          } else {
+            console.error('Image upload failed:', response.message);
+            this.showError(response.message || 'Failed to upload image');
+          }
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error uploading image:', error);
+          this.showError('Failed to upload image. Please try again.');
+          this.isLoading = false;
+        }
+      });
+    } else {
+      this.showError('Please select a valid image file');
     }
   }
 
   insertImageToEditor(imageUrl: string) {
-    const selection = this.editor.view.state.selection;
-    const { schema, tr } = this.editor.view.state;
+    try {
+      const selection = this.editor.view.state.selection;
+      const { schema, tr } = this.editor.view.state;
 
-    const node = schema.nodes['image'].create({
-      src: imageUrl,
-      alt: 'Uploaded Image'
+      const node = schema.nodes['image'].create({
+        src: imageUrl,
+        alt: 'Uploaded Image'
+      });
+
+      const transaction = tr.replaceSelectionWith(node).scrollIntoView();
+      this.editor.view.dispatch(transaction);
+    } catch (error) {
+      console.error('Error inserting image to editor:', error);
+      // Fallback: insert as HTML link if image node creation fails
+      this.insertImageAsLink(imageUrl);
+    }
+  }
+
+  insertImageAsLink(imageUrl: string) {
+    try {
+      const selection = this.editor.view.state.selection;
+      const { schema, tr } = this.editor.view.state;
+
+      // Create a link node with the image URL
+      const linkNode = schema.nodes['paragraph'].create(
+        null,
+        schema.text('Image uploaded: '),
+        [schema.marks['link'].create({ href: imageUrl })]
+      );
+
+      const transaction = tr.replaceSelectionWith(linkNode).scrollIntoView();
+      this.editor.view.dispatch(transaction);
+    } catch (error) {
+      console.error('Error inserting image link:', error);
+      // Final fallback: show the URL to user
+      this.showError(`Image uploaded successfully. URL: ${imageUrl}`);
+    }
+  }
+
+  /**
+   * Test the upload endpoint to debug issues
+   */
+  testUploadEndpoint() {
+    console.log('Testing upload endpoint...');
+    this.apiService.testImageUploadEndpoint().subscribe({
+      next: (response) => {
+        console.log('Test endpoint response:', response);
+        this.showSuccess('Upload endpoint test successful!');
+      },
+      error: (error) => {
+        console.error('Test endpoint error:', error);
+        this.showError('Upload endpoint test failed!');
+      }
     });
-
-    const transaction = tr.replaceSelectionWith(node).scrollIntoView();
-    this.editor.view.dispatch(transaction);
   }
 }

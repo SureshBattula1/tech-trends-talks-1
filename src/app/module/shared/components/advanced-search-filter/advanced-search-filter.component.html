@@ -1,0 +1,108 @@
+<div class="search-filter-container">
+  <!-- Basic Search Bar -->
+  <div class="basic-search">
+    <mat-form-field appearance="outline" class="search-input">
+      <mat-label>Search</mat-label>
+      <input matInput 
+             [formControlName]="config.fields[0].key || 'search'"
+             [placeholder]="config.fields[0].placeholder || 'Search...'"
+             autocomplete="off">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <button mat-stroked-button 
+            (click)="toggleAdvanced()" 
+            class="toggle-advanced-btn"
+            [class.active]="showAdvanced">
+      <mat-icon>{{ showAdvanced ? 'expand_less' : 'expand_more' }}</mat-icon>
+      {{ showAdvanced ? 'Hide' : 'Advanced' }} Filters
+    </button>
+
+    <button mat-raised-button 
+            color="primary" 
+            (click)="applyFilters()"
+            [disabled]="loading || !hasFilters()"
+            class="apply-filters-btn">
+      <mat-icon>filter_list</mat-icon>
+      Apply Filters
+    </button>
+  </div>
+
+  <!-- Advanced Search Filters -->
+  <div class="advanced-filters" [class.expanded]="showAdvanced">
+    <div class="filters-grid">
+      <ng-container *ngFor="let field of config.fields; trackBy: trackByKey; let i = index">
+        <!-- Skip the first field as it's used in basic search -->
+        <ng-container *ngIf="i > 0">
+          
+          <!-- Text Input -->
+          <mat-form-field *ngIf="field.type === 'text'" appearance="outline" class="filter-field">
+            <mat-label>{{ field.label }}</mat-label>
+            <input matInput 
+                   [formControlName]="field.key"
+                   [placeholder]="field.placeholder || field.label"
+                   autocomplete="off">
+          </mat-form-field>
+
+          <!-- Select Dropdown -->
+          <mat-form-field *ngIf="field.type === 'select'" appearance="outline" class="filter-field">
+            <mat-label>{{ field.label }}</mat-label>
+            <mat-select [formControlName]="field.key">
+              <mat-option value="">All</mat-option>
+              <mat-option *ngFor="let option of getFieldOptions(field)" 
+                         [value]="option.value">
+                {{ option.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Date Picker -->
+          <mat-form-field *ngIf="field.type === 'date'" appearance="outline" class="filter-field">
+            <mat-label>{{ field.label }}</mat-label>
+            <input matInput 
+                   [matDatepicker]="picker"
+                   [formControlName]="field.key"
+                   [placeholder]="field.placeholder || 'MM/DD/YYYY'">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+
+          <!-- Boolean Checkbox -->
+          <mat-checkbox *ngIf="field.type === 'boolean'" 
+                       [formControlName]="field.key"
+                       class="filter-field checkbox-field">
+            {{ field.label }}
+          </mat-checkbox>
+
+        </ng-container>
+      </ng-container>
+    </div>
+
+    <!-- Filter Actions -->
+    <div class="filter-actions" *ngIf="showAdvanced">
+      <button mat-stroked-button 
+              (click)="clearFilters()"
+              [disabled]="!hasFilters()"
+              class="clear-filters-btn">
+        <mat-icon>clear</mat-icon>
+        Clear All
+      </button>
+    </div>
+  </div>
+
+  <!-- Active Filters Display -->
+  <div class="active-filters" *ngIf="hasFilters() && showAdvanced">
+    <div class="active-filters-header">
+      <span class="active-filters-title">Active Filters:</span>
+    </div>
+    <div class="active-filters-tags">
+      <mat-chip *ngFor="let field of config.fields; trackBy: trackByKey"
+                [removable]="true"
+                (removed)="removeFilter(field.key)"
+                class="filter-chip">
+        {{ field.label }}: {{ searchForm.get(field.key)?.value }}
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+    </div>
+  </div>
+</div>

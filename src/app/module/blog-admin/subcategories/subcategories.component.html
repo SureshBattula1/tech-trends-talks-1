@@ -1,0 +1,322 @@
+<div class="subcategories-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <button mat-raised-button 
+            color="primary" 
+            (click)="openCreateDialog()"
+            class="create-btn">
+      <mat-icon>add</mat-icon>
+      Create Subcategory
+    </button>
+    
+
+  </div>
+
+
+  <!-- Data Table -->
+  <mat-card class="table-card">
+    <mat-card-content>
+
+      <!-- Pagination -->
+      <mat-paginator 
+        [length]="subcategories.length"
+        [pageSize]="10"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+        class="pagination">
+      </mat-paginator>
+      
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" class="subcategories-table">
+          
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let subcategory">
+              <div class="subcategory-name">
+                <span class="name-text">{{ subcategory.name }}</span>
+                <span class="slug-text">/{{ subcategory.slug }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Slug Column -->
+          <ng-container matColumnDef="slug">
+            <th mat-header-cell *matHeaderCellDef>Slug</th>
+            <td mat-cell *matCellDef="let subcategory">
+              <code class="slug-code">{{ subcategory.slug }}</code>
+            </td>
+          </ng-container>
+
+          <!-- Category Column -->
+          <ng-container matColumnDef="category">
+            <th mat-header-cell *matHeaderCellDef>Parent Category</th>
+            <td mat-cell *matCellDef="let subcategory">
+              <span class="category-badge">{{ getCategoryName(subcategory.category_id) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Description Column -->
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <td mat-cell *matCellDef="let subcategory">
+              <div class="description-text" [title]="subcategory.description">
+                {{ subcategory.description | slice:0:50 }}{{ subcategory.description.length > 50 ? '...' : '' }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Blog Count Column -->
+          <ng-container matColumnDef="blogCount">
+            <th mat-header-cell *matHeaderCellDef>Blogs</th>
+            <td mat-cell *matCellDef="let subcategory">
+              <span class="blog-count-badge">{{ getBlogCount(subcategory) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let subcategory">
+              <mat-chip [color]="subcategory.is_active ? 'accent' : 'warn'" selected>
+                {{ subcategory.is_active ? 'Active' : 'Inactive' }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Created Date Column -->
+          <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef>Created</th>
+            <td mat-cell *matCellDef="let subcategory">
+              <span class="date-text">{{ formatDate(subcategory.created_at) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let subcategory">
+              <div class="action-buttons">
+                <button mat-icon-button 
+                        (click)="openEditDialog(subcategory)"
+                        matTooltip="Edit Subcategory"
+                        class="edit-btn">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button 
+                        (click)="openDeleteDialog(subcategory)"
+                        matTooltip="Delete Subcategory"
+                        class="delete-btn">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+              [class.selected-row]="selectedSubcategory?.id === row.id"></tr>
+        </table>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="loading-overlay">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Loading subcategories...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!isLoading && subcategories.length === 0" class="empty-state">
+          <mat-icon>subdirectory_arrow_right</mat-icon>
+          <h3>No subcategories found</h3>
+          <p>Create your first subcategory to get started</p>
+          <button mat-raised-button 
+                  color="primary" 
+                  (click)="openCreateDialog()">
+            <mat-icon>add</mat-icon>
+            Create Subcategory
+          </button>
+        </div>
+      </div>
+
+      
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Create Subcategory Dialog -->
+  <div class="dialog-overlay" *ngIf="showCreateDialog" (click)="closeCreateDialog()">
+    <div class="dialog-content" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <h2>Create New Subcategory</h2>
+        <button mat-icon-button (click)="closeCreateDialog()" class="close-btn">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      
+      <form [formGroup]="subcategoryForm" (ngSubmit)="createSubcategory()" class="dialog-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Subcategory Name</mat-label>
+          <input matInput formControlName="name" placeholder="Enter subcategory name">
+          <mat-error *ngIf="subcategoryForm.get('name')?.hasError('required')">
+            Subcategory name is required
+          </mat-error>
+          <mat-error *ngIf="subcategoryForm.get('name')?.hasError('minlength')">
+            Subcategory name must be at least 2 characters
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Parent Category</mat-label>
+          <mat-select formControlName="category_id">
+            <mat-option *ngFor="let category of categories" [value]="category.id">
+              {{ category.name }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="subcategoryForm.get('category_id')?.hasError('required')">
+            Parent category is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" 
+                    rows="3" 
+                    placeholder="Enter subcategory description"></textarea>
+          <mat-error *ngIf="subcategoryForm.get('description')?.hasError('required')">
+            Description is required
+          </mat-error>
+          <mat-error *ngIf="subcategoryForm.get('description')?.hasError('minlength')">
+            Description must be at least 10 characters
+          </mat-error>
+        </mat-form-field>
+
+        <mat-checkbox formControlName="is_active" color="primary">
+          Active Subcategory
+        </mat-checkbox>
+
+        <div class="dialog-actions">
+          <button type="button" 
+                  mat-stroked-button 
+                  (click)="closeCreateDialog()"
+                  [disabled]="isCreating">
+            Cancel
+          </button>
+          <button type="submit" 
+                  mat-raised-button 
+                  color="primary"
+                  [disabled]="!subcategoryForm.valid || isCreating">
+            <mat-spinner *ngIf="isCreating" diameter="20"></mat-spinner>
+            <mat-icon *ngIf="!isCreating">add</mat-icon>
+            {{ isCreating ? 'Creating...' : 'Create Subcategory' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Subcategory Dialog -->
+  <div class="dialog-overlay" *ngIf="showEditDialog" (click)="closeEditDialog()">
+    <div class="dialog-content" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <h2>Edit Subcategory</h2>
+        <button mat-icon-button (click)="closeEditDialog()" class="close-btn">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      
+      <form [formGroup]="editForm" (ngSubmit)="updateSubcategory()" class="dialog-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Subcategory Name</mat-label>
+          <input matInput formControlName="name" placeholder="Enter subcategory name">
+          <mat-error *ngIf="editForm.get('name')?.hasError('required')">
+            Subcategory name is required
+          </mat-error>
+          <mat-error *ngIf="editForm.get('name')?.hasError('minlength')">
+            Subcategory name must be at least 2 characters
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Parent Category</mat-label>
+          <mat-select formControlName="category_id">
+            <mat-option *ngFor="let category of categories" [value]="category.id">
+              {{ category.name }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="editForm.get('category_id')?.hasError('required')">
+            Parent category is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" 
+                    rows="3" 
+                    placeholder="Enter subcategory description"></textarea>
+          <mat-error *ngIf="editForm.get('description')?.hasError('required')">
+            Description is required
+          </mat-error>
+          <mat-error *ngIf="editForm.get('description')?.hasError('minlength')">
+            Description must be at least 10 characters
+          </mat-error>
+        </mat-form-field>
+
+        <mat-checkbox formControlName="is_active" color="primary">
+          Active Subcategory
+        </mat-checkbox>
+
+        <div class="dialog-actions">
+          <button type="button" 
+                  mat-stroked-button 
+                  (click)="closeEditDialog()"
+                  [disabled]="isUpdating">
+            Cancel
+          </button>
+          <button type="submit" 
+                  mat-raised-button 
+                  color="primary"
+                  [disabled]="!editForm.valid || isUpdating">
+            <mat-spinner *ngIf="isUpdating" diameter="20"></mat-spinner>
+            <mat-icon *ngIf="!isUpdating">save</mat-icon>
+            {{ isUpdating ? 'Updating...' : 'Update Subcategory' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Dialog -->
+  <div class="dialog-overlay" *ngIf="showDeleteDialog" (click)="closeDeleteDialog()">
+    <div class="dialog-content delete-dialog" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <h2>Delete Subcategory</h2>
+        <button mat-icon-button (click)="closeDeleteDialog()" class="close-btn">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      
+      <div class="delete-content">
+        <mat-icon class="delete-icon">warning</mat-icon>
+        <h3>Are you sure?</h3>
+        <p>You are about to delete the subcategory <strong>"{{ selectedSubcategory?.name }}"</strong>.</p>
+        <p class="warning-text">This action cannot be undone and will affect all associated blogs.</p>
+      </div>
+
+      <div class="dialog-actions">
+        <button mat-stroked-button 
+                (click)="closeDeleteDialog()"
+                [disabled]="isDeleting">
+          Cancel
+        </button>
+        <button mat-raised-button 
+                color="warn"
+                (click)="deleteSubcategory()"
+                [disabled]="isDeleting">
+          <mat-spinner *ngIf="isDeleting" diameter="20"></mat-spinner>
+          <mat-icon *ngIf="!isDeleting">delete_forever</mat-icon>
+          {{ isDeleting ? 'Deleting...' : 'Delete Subcategory' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

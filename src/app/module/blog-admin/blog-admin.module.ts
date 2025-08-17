@@ -1,11 +1,14 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BlogAdminRoutingModule } from './blog-admin.routing.module';
-
-
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { CategoriesComponent } from './categories/categories.component';
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    // DashboardComponent,
+    // CategoriesComponent
+  ],
   imports: [
     CommonModule,
     BlogAdminRoutingModule
