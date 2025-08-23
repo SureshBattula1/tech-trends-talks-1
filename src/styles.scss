@@ -93,7 +93,7 @@ mat-nav-list a{
 
 mat-sidenav-content.mat-drawer-content.mat-sidenav-content {
     overflow-y: auto;
-    height: 100vh;
+    height: calc(100vh - 55px);
     display: flex;
     flex-direction: column;
 }

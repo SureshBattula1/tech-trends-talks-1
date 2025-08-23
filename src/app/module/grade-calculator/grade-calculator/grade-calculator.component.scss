@@ -1,4 +1,4 @@
-// Variables
+
 $primary-color: #667eea;
 $secondary-color: #764ba2;
 $success-color: #28a745;
@@ -55,7 +55,8 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
 // Main Container
 .grade-calculator-container {
-  min-height: 100vh;
+  height: 100%!important;;
+  overflow: scroll!important;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 2rem 1rem;
   

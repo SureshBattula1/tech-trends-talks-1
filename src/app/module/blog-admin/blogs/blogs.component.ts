@@ -538,21 +538,18 @@ export class BlogsComponent implements OnInit, OnDestroy {
     this.imageInput.nativeElement.click(); // Trigger the file input click
   }
 
-  onFileSelected(event: Event) {
+ onFileSelected(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file && file.type.startsWith('image/')) {
-      // Validate file size (5MB limit)
       const maxSize = 5 * 1024 * 1024; // 5MB
       if (file.size > maxSize) {
         this.showError('Image size should be less than 5MB');
         return;
       }
 
-      // Show loading state
       this.isLoading = true;
-
-      // Upload image to server using API service
       console.log('Starting image upload for file:', file);
+
       this.apiService.uploadImage(file, 'blog').subscribe({
         next: (response: any) => {
           console.log('Image upload response received:', response);
@@ -577,6 +574,7 @@ export class BlogsComponent implements OnInit, OnDestroy {
       this.showError('Please select a valid image file');
     }
   }
+
 
   insertImageToEditor(imageUrl: string) {
     try {
