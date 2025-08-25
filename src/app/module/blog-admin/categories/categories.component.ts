@@ -132,7 +132,7 @@ export class CategoriesComponent implements OnInit, OnDestroy {
           this.categories = response.data;
           this.dataSource.data = this.categories;
           this.paginationService.updatePaginationState({ length: this.categories.length });
-          console.log('Categories loaded successfully:', this.categories.length);
+          // console.log('Categories loaded successfully:', this.categories.length);
         } else {
           console.error('Categories API returned success: false:', response.message);
           this.showError(response.message || 'Failed to load categories');

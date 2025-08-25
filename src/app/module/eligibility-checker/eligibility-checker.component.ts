@@ -796,13 +796,13 @@ export class EligibilityCheckerComponent implements OnInit {
 
   // Handle form submission
   onSubmit(form: NgForm) {
-    console.log('Form submitted:', form.valid);
-    console.log('Selected loan type:', this.selectedLoanType);
+    // console.log('Form submitted:', form.valid);
+    // console.log('Selected loan type:', this.selectedLoanType);
     
     if (this.isFormValid()) {
       this.calculateEligibility();
     } else {
-      console.log('Form validation failed');
+              // console.log('Form validation failed');
       // Trigger validation for all fields
       this.validateField('monthlySalary');
       this.validateField('loanAmount');
@@ -814,13 +814,13 @@ export class EligibilityCheckerComponent implements OnInit {
   // Calculate eligibility
   calculateEligibility() {
     if (!this.selectedLoanType) {
-      console.log('No loan type selected for calculation');
+      // console.log('No loan type selected for calculation');
       return;
     }
 
-    console.log('Calculating eligibility for:', this.selectedLoanType.label);
-    console.log('Interest rate:', this.selectedLoanType.interest);
-    console.log('Tenure months:', this.tenureMonths);
+    // console.log('Calculating eligibility for:', this.selectedLoanType.label);
+    // console.log('Interest rate:', this.selectedLoanType.interest);
+    // console.log('Tenure months:', this.tenureMonths);
 
     const principal = this.loanAmount;
     const annualInterestRate = this.selectedLoanType.interest;
@@ -891,7 +891,7 @@ export class EligibilityCheckerComponent implements OnInit {
       }
     }
 
-    console.log('Calculation completed:', this.result);
+    // console.log('Calculation completed:', this.result);
   }
 
   // Download PDF report
@@ -1134,7 +1134,7 @@ export class EligibilityCheckerComponent implements OnInit {
     };
 
     // Log sitemap data for SEO tools
-    console.log('Sitemap Data:', sitemapData);
+    // console.log('Sitemap Data:', sitemapData);
     
     return sitemapData;
   }

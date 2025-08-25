@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, retry } from 'rxjs/operators';
+import { EnvironmentService } from './environment.service';
+import { LoggingService } from './logging.service';
 
 export interface Category {
   id: number;
@@ -54,23 +56,20 @@ export interface Blog {
 }
 
 export interface ApiResponse<T> {
-  success: boolean;
   data: T;
-  message?: string;
+  message: string;
+  success: boolean;
+  timestamp: string;
 }
 
 export interface PaginatedResponse<T> {
-  success: boolean;
-  message?: string;
-  data: {
-    data: T[];
-    current_page: number;
-    last_page: number;
-    per_page: number;
-    total: number;
-    from: number;
-    to: number;
-  };
+  data: T[];
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+  from: number;
+  to: number;
 }
 
 export interface BlogFilters {
@@ -99,264 +98,383 @@ export interface CreateBlogRequest {
   providedIn: 'root'
 })
 export class ApiService {
-  private readonly baseUrl = `http://127.0.0.1:8000` + '/api/v1';
-
-  constructor(private http: HttpClient) {
-    console.log('ApiService initialized with base URL:', this.baseUrl);
-  }
-
+  
+  constructor(
+    private http: HttpClient,
+    private environmentService: EnvironmentService,
+    private loggingService: LoggingService
+  ) {}
+  
   /**
-   * Test API connectivity
+   * Get request with environment-aware URL
    */
-  testApiConnection(): Observable<any> {
-    console.log('Testing API connection to:', this.baseUrl);
-    return this.http.get(`${this.baseUrl}/health`).pipe(
-      tap(response => console.log('API health check response:', response)),
-      catchError(this.handleError)
-    );
+  get<T>(endpoint: string, params?: HttpParams, headers?: HttpHeaders): Observable<ApiResponse<T>> {
+    const url = this.environmentService.getApiEndpoint(endpoint);
+    
+    this.loggingService.debug(`API GET: ${url}`, { params, headers });
+    
+    return this.http.get<ApiResponse<T>>(url, { params, headers })
+      .pipe(
+        retry(1),
+        catchError(this.handleError.bind(this))
+      );
   }
-
-  // Categories
-  getCategories(): Observable<ApiResponse<Category[]>> {
-    console.log('Fetching categories from:', `${this.baseUrl}/categories`);
-    return this.http.get<ApiResponse<Category[]>>(`${this.baseUrl}/categories`).pipe(
-      tap(response => console.log('Categories API response:', response)),
-      catchError(this.handleError)
-    );
+  
+  /**
+   * Post request with environment-aware URL
+   */
+  post<T>(endpoint: string, body: any, headers?: HttpHeaders): Observable<ApiResponse<T>> {
+    const url = this.environmentService.getApiEndpoint(endpoint);
+    
+    this.loggingService.debug(`API POST: ${url}`, { body, headers });
+    
+    return this.http.post<ApiResponse<T>>(url, body, { headers })
+      .pipe(
+        catchError(this.handleError.bind(this))
+      );
   }
-
-  getCategory(id: number): Observable<ApiResponse<Category>> {
-    console.log('Fetching category:', id, 'from:', `${this.baseUrl}/categories/${id}`);
-    return this.http.get<ApiResponse<Category>>(`${this.baseUrl}/categories/${id}`);
+  
+  /**
+   * Put request with environment-aware URL
+   */
+  put<T>(endpoint: string, body: any, headers?: HttpHeaders): Observable<ApiResponse<T>> {
+    const url = this.environmentService.getApiEndpoint(endpoint);
+    
+    this.loggingService.debug(`API PUT: ${url}`, { body, headers });
+    
+    return this.http.put<ApiResponse<T>>(url, body, { headers })
+      .pipe(
+        catchError(this.handleError.bind(this))
+      );
   }
-
-  createCategory(categoryData: Partial<Category>): Observable<ApiResponse<Category>> {
-    console.log('Creating category with data:', categoryData);
-    return this.http.post<ApiResponse<Category>>(`${this.baseUrl}/categories`, categoryData).pipe(
-      tap(response => console.log('Create category response:', response)),
-      catchError(this.handleError)
-    );
+  
+  /**
+   * Delete request with environment-aware URL
+   */
+  delete<T>(endpoint: string, headers?: HttpHeaders): Observable<ApiResponse<T>> {
+    const url = this.environmentService.getApiEndpoint(endpoint);
+    
+    this.loggingService.debug(`API DELETE: ${url}`, { headers });
+    
+    return this.http.delete<ApiResponse<T>>(url, { headers })
+      .pipe(
+        catchError(this.handleError.bind(this))
+      );
   }
-
-  updateCategory(id: number, categoryData: Partial<Category>): Observable<ApiResponse<Category>> {
-    console.log('Updating category:', id, 'with data:', categoryData);
-    return this.http.put<ApiResponse<Category>>(`${this.baseUrl}/categories/${id}`, categoryData).pipe(
-      tap(response => console.log('Update category response:', response)),
-      catchError(this.handleError)
-    );
+  
+  /**
+   * Patch request with environment-aware URL
+   */
+  patch<T>(endpoint: string, body: any, headers?: HttpHeaders): Observable<ApiResponse<T>> {
+    const url = this.environmentService.getApiEndpoint(endpoint);
+    
+    this.loggingService.debug(`API PATCH: ${url}`, { body, headers });
+    
+    return this.http.patch<ApiResponse<T>>(url, body, { headers })
+      .pipe(
+        catchError(this.handleError.bind(this))
+      );
   }
-
-  deleteCategory(id: number): Observable<ApiResponse<void>> {
-    console.log('Deleting category:', id);
-    return this.http.delete<ApiResponse<void>>(`${this.baseUrl}/categories/${id}`).pipe(
-      tap(response => console.log('Delete category response:', response)),
-      catchError(this.handleError)
-    );
-  }
-
-  getCategorySubcategories(categoryId: number): Observable<ApiResponse<Subcategory[]>> {
-    console.log('Fetching subcategories for category:', categoryId);
-    return this.http.get<ApiResponse<Subcategory[]>>(`${this.baseUrl}/categories/${categoryId}/subcategories`).pipe(
-      tap(response => console.log('Category subcategories response:', response)),
-      catchError(this.handleError)
-    );
-  }
-
-  getCategoryBlogs(categoryId: number): Observable<ApiResponse<Blog[]>> {
-    console.log('Fetching blogs for category:', categoryId);
-    return this.http.get<ApiResponse<Blog[]>>(`${this.baseUrl}/categories/${categoryId}/blogs`).pipe(
-      tap(response => console.log('Category blogs response:', response)),
-      catchError(this.handleError)
-    );
-  }
-
-  // Subcategories
-  getSubcategories(categoryId?: number): Observable<ApiResponse<Subcategory[]>> {
-    let params = new HttpParams();
-    if (categoryId) {
-      params = params.set('category_id', categoryId.toString());
+  
+  /**
+   * Create default headers with authentication if needed
+   */
+  createHeaders(additionalHeaders?: { [key: string]: string }): HttpHeaders {
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+    
+    // Add authentication token if available
+    const token = this.getAuthToken();
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
     }
-    console.log('Fetching subcategories with params:', params.toString());
-    return this.http.get<ApiResponse<Subcategory[]>>(`${this.baseUrl}/subcategories`, { params }).pipe(
-      tap(response => console.log('Subcategories API response:', response)),
-      catchError(this.handleError)
-    );
-  }
-
-  getSubcategory(id: number): Observable<ApiResponse<Subcategory>> {
-    console.log('Fetching subcategory:', id);
-    return this.http.get<ApiResponse<Subcategory>>(`${this.baseUrl}/subcategories/${id}`).pipe(
-      tap(response => console.log('Subcategory response:', response)),
-      catchError(this.handleError)
-    );
-  }
-
-  createSubcategory(subcategoryData: Partial<Subcategory>): Observable<ApiResponse<Subcategory>> {
-    console.log('Creating subcategory with data:', subcategoryData);
-    return this.http.post<ApiResponse<Subcategory>>(`${this.baseUrl}/subcategories`, subcategoryData).pipe(
-      tap(response => console.log('Create subcategory response:', response)),
-      catchError(this.handleError)
-    );
-  }
-
-  updateSubcategory(id: number, subcategoryData: Partial<Subcategory>): Observable<ApiResponse<Subcategory>> {
-    console.log('Updating subcategory:', id, 'with data:', subcategoryData);
-    return this.http.put<ApiResponse<Subcategory>>(`${this.baseUrl}/subcategories/${id}`, subcategoryData).pipe(
-      tap(response => console.log('Update subcategory response:', response)),
-      catchError(this.handleError)
-    );
-  }
-
-  deleteSubcategory(id: number): Observable<ApiResponse<void>> {
-    console.log('Deleting subcategory:', id);
-    return this.http.delete<ApiResponse<void>>(`${this.baseUrl}/subcategories/${id}`).pipe(
-      tap(response => console.log('Delete subcategory response:', response)),
-      catchError(this.handleError)
-    );
-  }
-
-  getSubcategoryBlogs(subcategoryId: number): Observable<ApiResponse<Blog[]>> {
-    console.log('Fetching blogs for subcategory:', subcategoryId);
-    return this.http.get<ApiResponse<Blog[]>>(`${this.baseUrl}/subcategories/${subcategoryId}/blogs`).pipe(
-      tap(response => console.log('Subcategory blogs response:', response)),
-      catchError(this.handleError)
-    );
-  }
-
-  getMyBlogs(filters?: BlogFilters): Observable<PaginatedResponse<Blog>> {
-    let params = new HttpParams();
     
-    if (filters) {
-      if (filters.category_id) params = params.set('category_id', filters.category_id.toString());
-      if (filters.subcategory_id) params = params.set('subcategory_id', filters.subcategory_id.toString());
-      if (filters.search) params = params.set('search', filters.search);
-      if (filters.featured) params = params.set('featured', 'true');
-      if (filters.per_page) params = params.set('per_page', filters.per_page.toString());
-      if (filters.page) params = params.set('page', filters.page.toString());
+    // Add additional headers
+    if (additionalHeaders) {
+      Object.keys(additionalHeaders).forEach(key => {
+        headers = headers.set(key, additionalHeaders[key]);
+      });
     }
-
-    return this.http.get<PaginatedResponse<Blog>>(`${this.baseUrl}/my-blogs`, { params });
-  }
-
-  // Blogs
-  getBlogs(filters?: BlogFilters): Observable<PaginatedResponse<Blog>> {
-    let params = new HttpParams();
     
-    if (filters) {
-      if (filters.category_id) params = params.set('category_id', filters.category_id.toString());
-      if (filters.subcategory_id) params = params.set('subcategory_id', filters.subcategory_id.toString());
-      if (filters.search) params = params.set('search', filters.search);
-      if (filters.featured) params = params.set('featured', 'true');
-      if (filters.per_page) params = params.set('per_page', filters.per_page.toString());
-      if (filters.page) params = params.set('page', filters.page.toString());
-    }
-
-    return this.http.get<PaginatedResponse<Blog>>(`${this.baseUrl}/blogs`, { params });
+    return headers;
   }
-
-  getBlog(id: number): Observable<ApiResponse<Blog>> {
-    return this.http.get<ApiResponse<Blog>>(`${this.baseUrl}/blogs/${id}`);
-  }
-
-  getFeaturedBlogs(): Observable<PaginatedResponse<Blog>> {
-    return this.getBlogs({ featured: true, per_page: 6 });
-  }
-
-  getLatestBlogs(limit: number = 5): Observable<PaginatedResponse<Blog>> {
-    return this.getBlogs({ per_page: limit });
-  }
-
-  // Create Blog
-  createBlog(blogData: CreateBlogRequest): Observable<ApiResponse<Blog>> {
-    return this.http.post<ApiResponse<Blog>>(`${this.baseUrl}/blogs`, blogData).pipe(
-      tap(response => console.log('Create blog response:', response)),
-      catchError(this.handleError)
-    );
-  }
-
-  // Update Blog
-  updateBlog(id: number, blogData: Partial<Blog>): Observable<ApiResponse<Blog>> {
-    console.log('Updating blog:', id, 'with data:', blogData);
-    return this.http.put<ApiResponse<Blog>>(`${this.baseUrl}/blogs/${id}`, blogData).pipe(
-      tap(response => console.log('Update blog response:', response)),
-      catchError(this.handleError)
-    );
-  }
-
-  // Delete Blog
-  deleteBlog(id: number): Observable<ApiResponse<void>> {
-    console.log('Deleting blog:', id);
-    return this.http.delete<ApiResponse<void>>(`${this.baseUrl}/blogs/${id}`).pipe(
-      tap(response => console.log('Delete blog response:', response)),
-      catchError(this.handleError)
-    );
-  }
-
-  // Upload Image
-  uploadImage(image: File, type: string = 'blog'): Observable<ApiResponse<{ url: string; full_url: string }>> {
-    const formData = new FormData();
-    formData.append('image', image);
-    formData.append('type', type);
+  
+  /**
+   * Create query parameters
+   */
+  createParams(params: { [key: string]: any }): HttpParams {
+    let httpParams = new HttpParams();
     
-    console.log('Uploading image:', { name: image.name, size: image.size, type: image.type });
-    console.log('FormData entries:');
-    // Log FormData contents for debugging
-    console.log('Image file:', image);
-    console.log('Type:', type);
-    console.log('Upload endpoint:', `${this.baseUrl}/upload-image`);
+    Object.keys(params).forEach(key => {
+      if (params[key] !== null && params[key] !== undefined) {
+        httpParams = httpParams.set(key, params[key].toString());
+      }
+    });
     
-    return this.http.post<ApiResponse<{ url: string; full_url: string }>>(`${this.baseUrl}/upload-image`, formData).pipe(
-      tap(response => {
-        console.log('Upload image response:', response);
-        console.log('Response data:', response.data);
-        console.log('Response success:', response.success);
-      }),
-      catchError(error => {
-        console.error('Upload image error:', error);
-        console.error('Error status:', error.status);
-        console.error('Error message:', error.message);
-        console.error('Error details:', error.error);
-        return this.handleError(error);
-      })
-    );
+    return httpParams;
   }
-
+  
   /**
    * Handle HTTP errors
    */
   private handleError(error: HttpErrorResponse): Observable<never> {
-    console.error('API Error:', error);
-    
     let errorMessage = 'An error occurred';
+    
     if (error.error instanceof ErrorEvent) {
       // Client-side error
       errorMessage = `Client Error: ${error.error.message}`;
     } else {
       // Server-side error
       errorMessage = `Server Error: ${error.status} - ${error.message}`;
-      if (error.error?.message) {
-        errorMessage += ` - ${error.error.message}`;
+      
+      // Log detailed error in development
+      if (this.environmentService.isDevelopment) {
+        this.loggingService.error('API Error Details:', {
+          status: error.status,
+          statusText: error.statusText,
+          url: error.url,
+          error: error.error
+        });
       }
     }
     
-    console.error('Error Message:', errorMessage);
+    this.loggingService.error(errorMessage, error);
+    
     return throwError(() => new Error(errorMessage));
   }
-
+  
   /**
-   * Test image upload endpoint specifically
+   * Get authentication token from storage
+   */
+  private getAuthToken(): string | null {
+    // TODO: Implement token retrieval from your auth service
+    return localStorage.getItem('auth_token');
+  }
+
+  // ===== CATEGORY METHODS =====
+  
+  /**
+   * Get all categories
+   */
+  getCategories(): Observable<ApiResponse<Category[]>> {
+    return this.get<Category[]>('categories');
+  }
+  
+  /**
+   * Get a specific category by ID
+   */
+  getCategory(id: number): Observable<ApiResponse<Category>> {
+    return this.get<Category>(`categories/${id}`);
+  }
+  
+  /**
+   * Create a new category
+   */
+  createCategory(categoryData: Partial<Category>): Observable<ApiResponse<Category>> {
+    const headers = this.createHeaders();
+    return this.post<Category>('categories', categoryData, headers);
+  }
+  
+  /**
+   * Update an existing category
+   */
+  updateCategory(id: number, categoryData: Partial<Category>): Observable<ApiResponse<Category>> {
+    const headers = this.createHeaders();
+    return this.put<Category>(`categories/${id}`, categoryData, headers);
+  }
+  
+  /**
+   * Delete a category
+   */
+  deleteCategory(id: number): Observable<ApiResponse<void>> {
+    const headers = this.createHeaders();
+    return this.delete<void>(`categories/${id}`, headers);
+  }
+  
+  /**
+   * Get subcategories for a specific category
+   */
+  getCategorySubcategories(categoryId: number): Observable<ApiResponse<Subcategory[]>> {
+    return this.get<Subcategory[]>(`categories/${categoryId}/subcategories`);
+  }
+  
+  /**
+   * Get blogs for a specific category
+   */
+  getCategoryBlogs(categoryId: number): Observable<ApiResponse<Blog[]>> {
+    return this.get<Blog[]>(`categories/${categoryId}/blogs`);
+  }
+
+  // ===== SUBCATEGORY METHODS =====
+  
+  /**
+   * Get all subcategories
+   */
+  getSubcategories(categoryId?: number): Observable<ApiResponse<Subcategory[]>> {
+    let params: HttpParams | undefined;
+    if (categoryId) {
+      params = this.createParams({ category_id: categoryId });
+    }
+    return this.get<Subcategory[]>('subcategories', params);
+  }
+  
+  /**
+   * Get a specific subcategory by ID
+   */
+  getSubcategory(id: number): Observable<ApiResponse<Subcategory>> {
+    return this.get<Subcategory>(`subcategories/${id}`);
+  }
+  
+  /**
+   * Create a new subcategory
+   */
+  createSubcategory(subcategoryData: Partial<Subcategory>): Observable<ApiResponse<Subcategory>> {
+    const headers = this.createHeaders();
+    return this.post<Subcategory>('subcategories', subcategoryData, headers);
+  }
+  
+  /**
+   * Update an existing subcategory
+   */
+  updateSubcategory(id: number, subcategoryData: Partial<Subcategory>): Observable<ApiResponse<Subcategory>> {
+    const headers = this.createHeaders();
+    return this.put<Subcategory>(`subcategories/${id}`, subcategoryData, headers);
+  }
+  
+  /**
+   * Delete a subcategory
+   */
+  deleteSubcategory(id: number): Observable<ApiResponse<void>> {
+    const headers = this.createHeaders();
+    return this.delete<void>(`subcategories/${id}`, headers);
+  }
+  
+  /**
+   * Get blogs for a specific subcategory
+   */
+  getSubcategoryBlogs(subcategoryId: number): Observable<ApiResponse<Blog[]>> {
+    return this.get<Blog[]>(`subcategories/${subcategoryId}/blogs`);
+  }
+
+  // ===== BLOG METHODS =====
+  
+  /**
+   * Get all blogs with optional filters
+   */
+  getBlogs(filters?: BlogFilters): Observable<ApiResponse<PaginatedResponse<Blog>>> {
+    let params: HttpParams | undefined;
+    if (filters) {
+      params = this.createParams(filters);
+    }
+    return this.get<PaginatedResponse<Blog>>('blogs', params);
+  }
+  
+  /**
+   * Get a specific blog by ID
+   */
+  getBlog(id: number): Observable<ApiResponse<Blog>> {
+    return this.get<Blog>(`blogs/${id}`);
+  }
+  
+  /**
+   * Get featured blogs
+   */
+  getFeaturedBlogs(): Observable<ApiResponse<PaginatedResponse<Blog>>> {
+    return this.getBlogs({ featured: true, per_page: 6 });
+  }
+  
+  /**
+   * Get latest blogs
+   */
+  getLatestBlogs(limit: number = 5): Observable<ApiResponse<PaginatedResponse<Blog>>> {
+    return this.getBlogs({ per_page: limit });
+  }
+  
+  /**
+   * Get user's blogs
+   */
+  getMyBlogs(filters?: BlogFilters): Observable<ApiResponse<PaginatedResponse<Blog>>> {
+    let params: HttpParams | undefined;
+    if (filters) {
+      params = this.createParams(filters);
+    }
+    return this.get<PaginatedResponse<Blog>>('my-blogs', params);
+  }
+  
+  /**
+   * Create a new blog
+   */
+  createBlog(blogData: CreateBlogRequest): Observable<ApiResponse<Blog>> {
+    const headers = this.createHeaders();
+    return this.post<Blog>('blogs', blogData, headers);
+  }
+  
+  /**
+   * Update an existing blog
+   */
+  updateBlog(id: number, blogData: Partial<Blog>): Observable<ApiResponse<Blog>> {
+    const headers = this.createHeaders();
+    return this.put<Blog>(`blogs/${id}`, blogData, headers);
+  }
+  
+  /**
+   * Delete a blog
+   */
+  deleteBlog(id: number): Observable<ApiResponse<void>> {
+    const headers = this.createHeaders();
+    return this.delete<void>(`blogs/${id}`, headers);
+  }
+
+  // ===== IMAGE UPLOAD METHODS =====
+  
+  /**
+   * Upload an image
+   */
+  uploadImage(image: File, type: string = 'blog'): Observable<ApiResponse<{ url: string; full_url: string }>> {
+    const formData = new FormData();
+    formData.append('image', image);
+    formData.append('type', type);
+    
+    let headers = this.createHeaders();
+    // Remove Content-Type header for FormData
+    headers = headers.delete('Content-Type');
+    
+    const url = this.environmentService.getApiEndpoint('upload-image');
+    this.loggingService.debug(`API POST: ${url}`, { type, imageName: image.name });
+    
+    return this.http.post<ApiResponse<{ url: string; full_url: string }>>(url, formData, { headers })
+      .pipe(
+        catchError(this.handleError.bind(this))
+      );
+  }
+  
+  /**
+   * Test image upload endpoint
    */
   testImageUploadEndpoint(): Observable<any> {
-    console.log('Testing image upload endpoint...');
     const testFormData = new FormData();
     testFormData.append('test', 'test');
     
-    return this.http.post(`${this.baseUrl}/upload-image`, testFormData).pipe(
-      tap(response => console.log('Test upload endpoint response:', response)),
-      catchError(error => {
-        console.error('Test upload endpoint error:', error);
-        return this.handleError(error);
-      })
-    );
+    let headers = this.createHeaders();
+    headers = headers.delete('Content-Type');
+    
+    const url = this.environmentService.getApiEndpoint('upload-image');
+    this.loggingService.debug(`API POST: ${url}`, { test: true });
+    
+    return this.http.post(url, testFormData, { headers })
+      .pipe(
+        catchError(this.handleError.bind(this))
+      );
+  }
+
+  // ===== HEALTH CHECK METHODS =====
+  
+  /**
+   * Test API connectivity
+   */
+  testApiConnection(): Observable<any> {
+    return this.get<any>('health');
   }
 }

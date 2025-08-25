@@ -335,13 +335,13 @@ export class CreateBlogComponent {
       this.isLoading = true;
 
       // Upload image to server using API service
-      console.log('Starting image upload for file:', file);
+      // console.log('Starting image upload for file:', file);
       this.apiService.uploadImage(file, 'blog').subscribe({
         next: (response:any) => {
-          console.log('Image upload response received:', response);
+          // console.log('Image upload response received:', response);
           if (response.success) {
             const imageUrl = response.data.full_url;
-            console.log('Image URL from response:', imageUrl);
+                         // console.log('Image URL from response:', imageUrl);
             this.insertImageToEditor(imageUrl);
             this.showSuccess('Image uploaded successfully!');
           } else {
@@ -405,10 +405,10 @@ export class CreateBlogComponent {
    * Test the upload endpoint to debug issues
    */
   testUploadEndpoint() {
-    console.log('Testing upload endpoint...');
+    // console.log('Testing upload endpoint...');
     this.apiService.testImageUploadEndpoint().subscribe({
       next: (response) => {
-        console.log('Test endpoint response:', response);
+        // console.log('Test endpoint response:', response);
         this.showSuccess('Upload endpoint test successful!');
       },
       error: (error) => {

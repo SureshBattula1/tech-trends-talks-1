@@ -266,9 +266,9 @@ export class GradeCalculatorComponent implements OnInit {
         message: this.getFinalGradeMessage(requiredFinalGrade, targetGrade)
       };
       
-      console.log('Final grade calculation result:', this.finalGradeResult);
+      // console.log('Final grade calculation result:', this.finalGradeResult);
     } else {
-      console.log('Final grade form is invalid:', this.finalGradeForm.errors);
+              // console.log('Final grade form is invalid:', this.finalGradeForm.errors);
       this.markFormGroupTouched(this.finalGradeForm);
     }
   }
@@ -308,15 +308,15 @@ export class GradeCalculatorComponent implements OnInit {
       // Recalculate results
       this.calculateUniGrade();
       
-      console.log('Assignment added:', newAssignment);
-      console.log('All assignments:', this.uniAssignments);
+          // console.log('Assignment added:', newAssignment);
+    // console.log('All assignments:', this.uniAssignments);
     }
   }
 
   removeUniAssignment(id: string): void {
     this.uniAssignments = this.uniAssignments.filter(assignment => assignment.id !== id);
     this.calculateUniGrade();
-    console.log('Assignment removed. Remaining assignments:', this.uniAssignments);
+    // console.log('Assignment removed. Remaining assignments:', this.uniAssignments);
   }
 
   calculateUniGrade(): void {
@@ -369,7 +369,7 @@ export class GradeCalculatorComponent implements OnInit {
       assignments: [...this.uniAssignments]
     };
     
-    console.log('University grade calculation result:', this.uniGradeResult);
+    // console.log('University grade calculation result:', this.uniGradeResult);
   }
 
   getGradeClassification(average: number): string {
@@ -413,13 +413,13 @@ export class GradeCalculatorComponent implements OnInit {
   clearUniAssignments(): void {
     this.uniAssignments = [];
     this.uniGradeResult = null;
-    console.log('All assignments cleared');
+    // console.log('All assignments cleared');
   }
 
   addCourse(): void {
-    console.log('Adding course...', this.courseForm.value);
-    console.log('Form valid:', this.courseForm.valid);
-    console.log('Form errors:', this.courseForm.errors);
+    // console.log('Adding course...', this.courseForm.value);
+    // console.log('Form valid:', this.courseForm.valid);
+    // console.log('Form errors:', this.courseForm.errors);
     
     if (this.courseForm.valid) {
       const courseData = this.courseForm.value;
@@ -437,7 +437,7 @@ export class GradeCalculatorComponent implements OnInit {
           year: courseData.year
         };
 
-        console.log('New course created:', newCourse);
+        // console.log('New course created:', newCourse);
 
         // Find or create semester
         let semester = this.semesters.find(s => 
@@ -455,23 +455,23 @@ export class GradeCalculatorComponent implements OnInit {
             semesterPercentage: 0
           };
           this.semesters.push(semester);
-          console.log('New semester created:', semester);
+          // console.log('New semester created:', semester);
         }
 
         semester.courses.push(newCourse);
-        console.log('Course added to semester:', semester);
+        // console.log('Course added to semester:', semester);
         
         this.calculateSemesterStats(semester);
         this.calculateAcademicRecord();
         this.courseForm.reset();
         
         // Show success message or feedback
-        console.log('Course added successfully:', newCourse);
-        console.log('Updated semesters:', this.semesters);
-        console.log('Updated academic record:', this.academicRecord);
+            // console.log('Course added successfully:', newCourse);
+    // console.log('Updated semesters:', this.semesters);
+    // console.log('Updated academic record:', this.academicRecord);
       }
     } else {
-      console.log('Form is invalid:', this.courseForm.errors);
+              // console.log('Form is invalid:', this.courseForm.errors);
       this.markFormGroupTouched(this.courseForm);
     }
   }
@@ -493,19 +493,19 @@ export class GradeCalculatorComponent implements OnInit {
         this.calculateSemesterStats(semester);
       }
       this.calculateAcademicRecord();
-      console.log('Course removed successfully');
+      // console.log('Course removed successfully');
     }
   }
 
   calculateSemesterStats(semester: Semester): void {
-    console.log('Calculating stats for semester:', semester.name);
-    console.log('Courses in semester:', semester.courses);
+    // console.log('Calculating stats for semester:', semester.name);
+    // console.log('Courses in semester:', semester.courses);
     
     if (semester.courses.length === 0) {
       semester.totalCredits = 0;
       semester.semesterGPA = 0;
       semester.semesterPercentage = 0;
-      console.log('No courses, stats reset to 0');
+              // console.log('No courses, stats reset to 0');
       return;
     }
 
@@ -521,16 +521,16 @@ export class GradeCalculatorComponent implements OnInit {
     );
     semester.semesterPercentage = totalPercentage / semester.totalCredits;
     
-    console.log('Semester stats calculated:', {
-      totalCredits: semester.totalCredits,
-      semesterGPA: semester.semesterGPA,
-      semesterPercentage: semester.semesterPercentage
-    });
+    // console.log('Semester stats calculated:', {
+    //   totalCredits: semester.totalCredits,
+    //   semesterGPA: semester.semesterGPA,
+    //   semesterPercentage: semester.semesterPercentage
+    // });
   }
 
   calculateAcademicRecord(): void {
-    console.log('Calculating academic record...');
-    console.log('Current semesters:', this.semesters);
+    // console.log('Calculating academic record...');
+    // console.log('Current semesters:', this.semesters);
     
     this.academicRecord.totalCredits = this.semesters.reduce((sum, semester) => 
       sum + semester.totalCredits, 0
@@ -579,7 +579,7 @@ export class GradeCalculatorComponent implements OnInit {
       this.academicRecord.academicWarning = true;
     }
     
-    console.log('Academic record calculated:', this.academicRecord);
+    // console.log('Academic record calculated:', this.academicRecord);
   }
 
   percentageToGrade(percentage: number): GradeInfo {
@@ -630,13 +630,13 @@ export class GradeCalculatorComponent implements OnInit {
 
   exportTranscript(): void {
     // Implementation for exporting transcript
-    console.log('Exporting transcript...');
+    // console.log('Exporting transcript...');
     alert('Transcript export functionality will be implemented soon!');
   }
 
   printAcademicRecord(): void {
     // Implementation for printing academic record
-    console.log('Printing academic record...');
+    // console.log('Printing academic record...');
     window.print();
   }
 
@@ -660,9 +660,9 @@ export class GradeCalculatorComponent implements OnInit {
 
   // Test method to verify calculations
   testCalculations(): void {
-    console.log('=== Testing Calculations ===');
-    console.log('Current semesters:', this.semesters);
-    console.log('Current academic record:', this.academicRecord);
+    // console.log('=== Testing Calculations ===');
+    // console.log('Current semesters:', this.semesters);
+    // console.log('Current academic record:', this.academicRecord);
     
     // Test adding a sample course
     const testCourse = {
@@ -673,13 +673,13 @@ export class GradeCalculatorComponent implements OnInit {
       year: '2025'
     };
     
-    console.log('Testing with course:', testCourse);
+    // console.log('Testing with course:', testCourse);
     
     // Manually set form values for testing
     this.courseForm.patchValue(testCourse);
     
-    console.log('Form values set:', this.courseForm.value);
-    console.log('Form valid:', this.courseForm.valid);
+    // console.log('Form values set:', this.courseForm.value);
+    // console.log('Form valid:', this.courseForm.valid);
     
     // Test the add course method
     this.addCourse();
@@ -698,6 +698,6 @@ export class GradeCalculatorComponent implements OnInit {
       deanListEligible: false,
       academicWarning: false
     };
-    console.log('All data cleared');
+    // console.log('All data cleared');
   }
 }

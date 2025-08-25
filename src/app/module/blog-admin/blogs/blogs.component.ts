@@ -7,7 +7,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Subject, takeUntil } from 'rxjs';
 import { Editor, Toolbar } from 'ngx-editor';
 
-import { ApiService, Blog, Category, Subcategory } from '../../../services/api.service';
+import { ApiService, Blog, Category, Subcategory, ApiResponse, PaginatedResponse } from '../../../services/api.service';
 import { PaginationService } from '../../../services/pagination.service';
 import { SearchFilterConfig, AdvancedSearchFilterComponent } from '../../shared/components/advanced-search-filter/advanced-search-filter.component';
 import { SharedModule } from '../../shared/shared.module';
@@ -168,14 +168,14 @@ export class BlogsComponent implements OnInit, OnDestroy {
             value: cat.id,
             label: cat.name
           }));
-          console.log('Categories loaded for filters:', this.categories.length);
+          // console.log('Categories loaded for filters:', this.categories.length);
         } else {
-          console.error('Categories API returned success: false:', response.message);
+          // console.error('Categories API returned success: false:', response.message);
           this.showError(response.message || 'Failed to load categories for filters');
         }
       },
       error: (error) => {
-        console.error('Error loading categories for filters:', error);
+        // console.error('Error loading categories for filters:', error);
         this.showError(`Failed to load categories for filters: ${error.message || error.statusText || 'Unknown error'}`);
       }
     });
@@ -194,14 +194,14 @@ export class BlogsComponent implements OnInit, OnDestroy {
             value: sub.id,
             label: sub.name
           }));
-          console.log('Subcategories loaded for filters:', this.subcategories.length);
+          // console.log('Subcategories loaded for filters:', this.subcategories.length);
         } else {
-          console.error('Subcategories API returned success: false:', response.message);
+          // console.error('Subcategories API returned success: false:', response.message);
           this.showError(response.message || 'Failed to load subcategories for filters');
         }
       },
       error: (error) => {
-        console.error('Error loading subcategories for filters:', error);
+        // console.error('Error loading subcategories for filters:', error);
         this.showError(`Failed to load subcategories for filters: ${error.message || error.statusText || 'Unknown error'}`);
       }
     });
@@ -222,20 +222,20 @@ export class BlogsComponent implements OnInit, OnDestroy {
     const filters = { ...this.searchFilters, ...pagination };
 
     this.apiService.getMyBlogs(filters).subscribe({
-      next: (response) => {
+      next: (response: ApiResponse<PaginatedResponse<Blog>>) => {
         if (response.success) {
           this.blogs = response.data.data;
           this.dataSource.data = this.blogs;
           this.paginationService.updatePaginationState({ length: response.data.total });
-          console.log('Blogs loaded successfully:', this.blogs.length);
+          // console.log('Blogs loaded successfully:', this.blogs.length);
         } else {
-          console.error('Blogs API returned success: false:', response.message || 'Unknown error');
+          // console.error('Blogs API returned success: false:', response.message || 'Unknown error');
           this.showError(response.message || 'Failed to load blogs');
         }
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error loading blogs:', error);
+        // console.error('Error loading blogs:', error);
         this.showError(`Failed to load blogs: ${error.message || error.statusText || 'Unknown error'}`);
         this.isLoading = false;
       }
@@ -427,7 +427,7 @@ export class BlogsComponent implements OnInit, OnDestroy {
    */
   toggleBlogStatus(blog: Blog): void {
     const newStatus = !blog.is_published;
-    console.log(`Toggling blog ${blog.id} status to: ${newStatus}`);
+    // console.log(`Toggling blog ${blog.id} status to: ${newStatus}`);
     
     this.apiService.updateBlog(blog.id, { is_published: newStatus }).subscribe({
       next: (response) => {
@@ -450,7 +450,7 @@ export class BlogsComponent implements OnInit, OnDestroy {
    */
   toggleBlogFeatured(blog: Blog): void {
     const newFeatured = !blog.is_featured;
-    console.log(`Toggling blog ${blog.id} featured status to: ${newFeatured}`);
+    // console.log(`Toggling blog ${blog.id} featured status to: ${newFeatured}`);
     
     // Note: You'll need to add updateBlog method to ApiService
     // this.apiService.updateBlog(blog.id, { is_featured: newFeatured }).subscribe({
@@ -548,14 +548,14 @@ export class BlogsComponent implements OnInit, OnDestroy {
       }
 
       this.isLoading = true;
-      console.log('Starting image upload for file:', file);
+      // console.log('Starting image upload for file:', file);
 
       this.apiService.uploadImage(file, 'blog').subscribe({
         next: (response: any) => {
-          console.log('Image upload response received:', response);
+          // console.log('Image upload response received:', response);
           if (response.success) {
             const imageUrl = response.data.full_url || response.data.url;
-            console.log('Image URL from response:', imageUrl);
+                         // console.log('Image URL from response:', imageUrl);
             this.insertImageToEditor(imageUrl);
             this.showSuccess('Image uploaded successfully!');
           } else {
@@ -620,10 +620,10 @@ export class BlogsComponent implements OnInit, OnDestroy {
    * Test the upload endpoint to debug issues
    */
   testUploadEndpoint() {
-    console.log('Testing upload endpoint...');
+    // console.log('Testing upload endpoint...');
     this.apiService.testImageUploadEndpoint().subscribe({
       next: (response) => {
-        console.log('Test endpoint response:', response);
+        // console.log('Test endpoint response:', response);
         this.showSuccess('Upload endpoint test successful!');
       },
       error: (error) => {

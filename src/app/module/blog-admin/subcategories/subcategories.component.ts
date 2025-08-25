@@ -130,7 +130,7 @@ export class SubcategoriesComponent implements OnInit, OnDestroy {
             value: cat.id,
             label: cat.name
           }));
-          console.log('Categories loaded for filters:', this.categories.length);
+          // console.log('Categories loaded for filters:', this.categories.length);
         } else {
           console.error('Categories API returned success: false:', response.message);
           this.showError(response.message || 'Failed to load categories for filters');
@@ -163,7 +163,7 @@ export class SubcategoriesComponent implements OnInit, OnDestroy {
           this.subcategories = response.data;
           this.dataSource.data = this.subcategories;
           this.paginationService.updatePaginationState({ length: this.subcategories.length });
-          console.log('Subcategories loaded successfully:', this.subcategories.length);
+          // console.log('Subcategories loaded successfully:', this.subcategories.length);
         } else {
           console.error('Subcategories API returned success: false:', response.message);
           this.showError(response.message || 'Failed to load subcategories');
