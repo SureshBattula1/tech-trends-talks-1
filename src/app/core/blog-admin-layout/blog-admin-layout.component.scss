@@ -9,6 +9,8 @@ html, body {
     display: flex;
     flex-direction: column;
     min-height: 100%;
+    max-width: var(--container-xl);
+    margin: 0 auto;
 }
 
 .component-sidenav {
@@ -23,6 +25,7 @@ html, body {
     min-height: 95vh;
 }
 
+
 app-component-viewer {
     font-weight: 400;
     padding: 0px;
@@ -33,14 +36,6 @@ app-footer{
     margin-top: 0;
 }
 
-.component-viewer-sidenav-container {
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
-    flex: 1;
-    // margin-top: 56px;
-    background-color:#edeff7;
-}
 
 .component-sidenav{
     width: 22%!important;

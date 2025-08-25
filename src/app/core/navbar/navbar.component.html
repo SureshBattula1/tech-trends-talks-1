@@ -14,10 +14,7 @@
                 Blogs
             </a>
             
-            <a class="app-menu" routerLink="/loan-eligibility-calculator/checker" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> 
-                Loan Eligibility
-            </a>
-            
+          
             <div class="profile-container" [matMenuTriggerFor]="calculatorMenu" matTooltip="Calculator Options">
                 <a class="app-menu" routerLink="/calculator" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button>
                     Calculator
@@ -34,6 +31,13 @@
                     <mat-icon>calculate</mat-icon>
                     <span>SIP Calculator</span>
                 </button>
+
+                 
+                <button mat-menu-item routerLink="/calculator/loan-eligibility-calculator" routerLinkActive="active-menu-item" [routerLinkActiveOptions]="{ exact: true }">
+                    <mat-icon>calculate</mat-icon>
+                    <span>Loan Eligibility</span>
+                </button>
+
             </mat-menu>
 
             <ng-container *ngIf="!isAuthenticated; else authenticatedUser">

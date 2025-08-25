@@ -29,7 +29,7 @@ export const routes: Routes = [
         loadChildren: ()=> import('./module/calculator/calculator.module').then(m => m.CalculatorModule) 
     },
     { 
-        path: 'loan-eligibility-calculator', 
+        path: 'calculator/loan-eligibility-calculator', 
         loadChildren: () => import('./module/eligibility-checker/eligibility-checker.module').then(m => m.EligibilityCheckerModule) 
     },
     { 

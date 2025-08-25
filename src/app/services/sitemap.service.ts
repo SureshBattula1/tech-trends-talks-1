@@ -74,7 +74,7 @@ export class SitemapService {
     });
 
     urls.push({
-      url: `${this.baseUrl}/loan-eligibility-calculator/checker`,
+      url: `${this.baseUrl}/calculator/loan-eligibility-calculator/checker`,
       changefreq: 'weekly',
       priority: 0.8
     });

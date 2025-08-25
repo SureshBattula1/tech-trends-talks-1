@@ -5,10 +5,11 @@
   justify-content: space-between;
   padding: 0 2rem;
   height: 70px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background-color: var(--primary-custom-dark);
   position: relative;
   z-index: 1000;
+  max-width: var(--container-xl);
+  margin: 0 auto;
   
   // Responsive padding
   @media (max-width: 768px) {
@@ -16,18 +17,6 @@
     height: 60px;
   }
   
-  // Glass morphism effect
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  }
 }
 
 // Logo styling
@@ -36,11 +25,10 @@
   font-weight: 700;
   margin: 0;
   padding: 0;
-  color: #ffffff;
+  color: var(--primary-custom-light);
   display: flex;
   align-items: center;
   gap: 12px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   z-index: 1;
   position: relative;
   
@@ -54,17 +42,10 @@
     height: 45px;
     border-radius: 50%;
     border: 3px solid #ffd700;
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-    transition: all 0.3s ease;
     
     @media (max-width: 768px) {
       width: 35px;
       height: 35px;
-    }
-    
-    &:hover {
-      transform: scale(1.1);
-      box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
     }
   }
 }
@@ -85,16 +66,14 @@
 
 // Menu items styling
 .app-menu {
-  color: #ffffff !important;
+  color: var(--primary-custom-light) !important;
   font-weight: 500;
   text-decoration: none;
   padding: 0.75rem 1.25rem;
   border-radius: 25px;
-  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+
   
   // Hover effect with gradient
   &::before {
@@ -105,12 +84,10 @@
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s ease;
   }
   
   &:hover {
     background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     
     &::before {
@@ -118,9 +95,6 @@
     }
   }
   
-  &:active {
-    transform: translateY(0);
-  }
   
   @media (max-width: 768px) {
     padding: 0.5rem 1rem;
@@ -130,11 +104,11 @@
 
 // Selected menu item
 .navbar-header-item-selected {
-  background: linear-gradient(135deg, #ff6b6b, #ee5a24) !important;
+  background-color: #394972;
+  border: 2px solid #1ebed9;
   color: #ffffff !important;
   font-weight: 600 !important;
-  border: 2px solid #ffffff !important;
-  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4) !important;
+  // box-shadow: 0 4px 15px #1ebed9 !important;
   transform: translateY(-2px);
 }
 
@@ -148,7 +122,7 @@
     font-size: 45px;
     line-height: 45px;
     color: #ffffff;
-    transition: all 0.3s ease;
+    // transition: all 0.3s ease;
     cursor: pointer;
     
     @media (max-width: 768px) {
@@ -158,10 +132,7 @@
       line-height: 35px;
     }
     
-    &:hover {
-      color: #ffd700;
-      transform: scale(1.1);
-    }
+   
   }
 }
 
@@ -179,12 +150,10 @@
     align-items: center;
     gap: 12px;
     padding: 1rem 1.5rem;
-    transition: all 0.3s ease;
     
     &:hover {
       background: linear-gradient(135deg, #667eea, #764ba2);
       color: #ffffff;
-      transform: translateX(5px);
     }
     
     mat-icon {
@@ -225,19 +194,16 @@
     border-radius: 25px;
     padding: 0.75rem 1.5rem;
     font-weight: 600;
-    transition: all 0.3s ease;
+    // transition: all 0.3s ease;
     border: none;
     box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
     
     &:hover {
       background: linear-gradient(135deg, #ff5252, #d84315) !important;
-      transform: translateY(-2px);
+      // transform: translateY(-2px);
       box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
     }
     
-    &:active {
-      transform: translateY(0);
-    }
   }
 }
 
@@ -266,7 +232,6 @@
   
   &:hover {
     background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.1);
   }
 }
 
@@ -286,33 +251,17 @@
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
-// Apply animations
-.navbar-header {
-  animation: fadeInUp 0.6s ease-out;
-}
-
-.app-menu {
-  animation: fadeInUp 0.6s ease-out;
-  animation-fill-mode: both;
-  
-  &:nth-child(1) { animation-delay: 0.1s; }
-  &:nth-child(2) { animation-delay: 0.2s; }
-  &:nth-child(3) { animation-delay: 0.3s; }
-  &:nth-child(4) { animation-delay: 0.4s; }
-}
 
 // Focus states for accessibility
 .app-menu:focus,
 .app-menu[type="button"]:focus {
-  outline: 2px solid #ffd700;
+  outline: 2px solid var(--primary-custom-light);
   outline-offset: 2px;
 }
 

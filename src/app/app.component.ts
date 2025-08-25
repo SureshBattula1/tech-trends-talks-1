@@ -50,9 +50,9 @@ export class AppComponent implements OnInit{
       this.addCanonicalTag('https://techtrendstalks.com/calculator/sip-calculator');
     }
 
-    if (currentUrl.includes('/loan-eligibility-calculator/checker')) {
+    if (currentUrl.includes('/calculator/loan-eligibility-calculator/checker')) {
       this.addLoanEligibilityStructuredData();
-      this.addCanonicalTag('https://techtrendstalks.com/loan-eligibility-calculator/checker');
+      this.addCanonicalTag('https://techtrendstalks.com/calculator/loan-eligibility-calculator/checker');
     }
     
   }

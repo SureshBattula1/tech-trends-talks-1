@@ -403,7 +403,7 @@ Start using our EMI calculator today and take control of your financial future!
 
 **Keywords**: EMI Calculator, Loan Calculator, Home Loan EMI, Car Loan Calculator, Personal Loan EMI, Interest Calculator, Loan Repayment, Monthly Installment, Financial Planning, Debt Management
 
-**Related Tools**: [SIP Calculator](/calculator/sip-calculator), [Loan Eligibility Calculator](/loan-eligibility-calculator/checker), [Financial Blog](/blogs/home)
+**Related Tools**: [SIP Calculator](/calculator/sip-calculator), [Loan Eligibility Calculator](/calculator/loan-eligibility-calculator/checker), [Financial Blog](/blogs/home)
       `,
       tags: ["emi calculator", "loan calculator", "home loan emi", "car loan calculator", "personal loan emi", "interest calculator", "loan repayment", "monthly installment", "financial planning", "debt management"],
       category_id: 1,
