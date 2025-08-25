@@ -17,6 +17,7 @@
 .app-menu-list {
   display: flex;
   margin-right: 1.3rem;
+  align-items: center;
 }
 
 .app-menu {
@@ -31,3 +32,43 @@
   background-color: #394972;
 }
 
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: 1rem;
+}
+
+.user-name {
+  color: #b6e5ff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.logout-btn {
+  background-color: #d32f2f !important;
+  color: white !important;
+  border-radius: 4px;
+  padding: 8px 16px;
+  transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+  background-color: #b71c1c !important;
+}
+
+
+.profile-container{
+  mat-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 40px;
+      line-height: 40px;
+      color: #b6e5ff; 
+  }
+}
+
+.active-menu-item {
+  background-color: #e0f7fa !important;
+  font-weight: bold;
+}

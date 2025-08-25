@@ -221,7 +221,7 @@ export class BlogsComponent implements OnInit, OnDestroy {
     const pagination = this.paginationService.getPaginationConfig();
     const filters = { ...this.searchFilters, ...pagination };
 
-    this.apiService.getBlogs(filters).subscribe({
+    this.apiService.getMyBlogs(filters).subscribe({
       next: (response) => {
         if (response.success) {
           this.blogs = response.data.data;

@@ -1,25 +1,45 @@
 <div class="login-container">
   <mat-card class="login-card">
     <h2>Login</h2>
-    <form>
+    
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Email</mat-label>
-        <input matInput type="email" required />
+        <input matInput type="email" formControlName="email" required />
+        <mat-error *ngIf="loginForm.get('email')?.invalid">
+          {{ getErrorMessage('email') }}
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Password</mat-label>
-        <input matInput [type]="hidePassword ? 'password' : 'text'" required />
-        <button mat-icon-button matSuffix (click)="togglePasswordVisibility()" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="!hidePassword">
+        <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" required />
+        <button mat-icon-button matSuffix (click)="togglePasswordVisibility()" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="!hidePassword" type="button">
           <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
+        <mat-error *ngIf="loginForm.get('password')?.invalid">
+          {{ getErrorMessage('password') }}
+        </mat-error>
       </mat-form-field>
 
-      <button mat-raised-button color="primary" class="full-width">Login</button>
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <button 
+        mat-raised-button 
+        color="primary" 
+        class="full-width" 
+        type="submit"
+        [disabled]="loginForm.invalid || isLoading">
+        <mat-spinner *ngIf="isLoading" diameter="20" class="spinner"></mat-spinner>
+        <span *ngIf="!isLoading">Login</span>
+      </button>
     </form>
 
     <div class="login-links">
-      <a routerLink="/register">Register</a>
+      <span>Don't have an account?</span>
+      <a routerLink="/register">Register here</a>
       <span> | </span>
       <a routerLink="/forgot-password">Forgot Password?</a>
     </div>

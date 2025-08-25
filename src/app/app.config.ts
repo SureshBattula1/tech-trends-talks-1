@@ -10,6 +10,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { registerLocaleData } from '@angular/common';
 import localeIndia from '@angular/common/locales/en-IN';
 import { LoadingInterceptor } from './services/loading-bar/loading.interceptor';
+import { AuthInterceptor } from './core/auth/auth.interceptor';
 
 registerLocaleData(localeIndia);
 
@@ -22,6 +23,7 @@ export const appConfig: ApplicationConfig = {
       provideHttpClient(withInterceptorsFromDi(),), 
       provideClientHydration(),
       { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
+      { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
       { provide: LOCALE_ID, useValue: 'en-IN' },
   ]
 };

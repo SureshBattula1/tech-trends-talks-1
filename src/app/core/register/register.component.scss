@@ -1,10 +1,19 @@
-.form-card {
-    display: flex;
-    max-width: 350px;
-    margin: 40px auto;
-    padding: 20px;
-    justify-content: center;
-    align-items: center;
+.register-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #e7e9f1;
+}
+
+.register-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .full-width {
@@ -12,15 +21,50 @@
   margin-bottom: 16px;
 }
 
-.action-buttons{
-  display: flex;
-  justify-content: space-between;
+.register-links {
+  margin-top: 16px;
+  text-align: center;
 }
 
-.app-register-container{
-   height: 100vh;
+.register-links span {
+  color: #666;
+  margin-right: 8px;
+}
+
+.register-links a {
+  text-decoration: none;
+  color: #3f51b5;
+  font-weight: 500;
+}
+
+.register-links a:hover {
+  text-decoration: underline;
+}
+
+.error-message {
+  color: #d32f2f;
+  background-color: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.spinner {
+  margin-right: 8px;
+}
+
+button[type="submit"] {
   display: flex;
-  justify-content: center;
   align-items: center;
-  background-color: #e7e9f1;
+  justify-content: center;
+  min-height: 40px;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #333;
 }

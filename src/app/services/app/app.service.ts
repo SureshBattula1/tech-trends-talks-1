@@ -13,4 +13,8 @@ export class AppService {
     this._isSidebarVisible.set(!this._isSidebarVisible());
   }
 
+  setSidebarVisibleTrue() {
+    this._isSidebarVisible.set(true);
+  }
+
 }

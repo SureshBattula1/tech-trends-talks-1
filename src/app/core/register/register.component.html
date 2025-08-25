@@ -1,42 +1,82 @@
-<div class="app-register-container">
-  <mat-card class="form-card">
+<div class="register-container">
+  <mat-card class="register-card">
     <h2>Registration</h2>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>First Name</mat-label>
-        <input matInput formControlName="firstName" />
+        <input matInput formControlName="firstname" required />
+        <mat-error *ngIf="registerForm.get('firstname')?.invalid">
+          {{ getErrorMessage('firstname') }}
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Middle Name</mat-label>
-        <input matInput formControlName="middleName" />
+        <mat-label>Middle Name (Optional)</mat-label>
+        <input matInput formControlName="middle_name" />
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Last Name</mat-label>
-        <input matInput formControlName="lastName" />
+        <input matInput formControlName="lastname" required />
+        <mat-error *ngIf="registerForm.get('lastname')?.invalid">
+          {{ getErrorMessage('lastname') }}
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Email</mat-label>
-        <input matInput formControlName="email" type="email" />
+        <input matInput formControlName="email" type="email" required />
+        <mat-error *ngIf="registerForm.get('email')?.invalid">
+          {{ getErrorMessage('email') }}
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Password</mat-label>
-        <input matInput formControlName="password" type="password" />
+        <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" required />
+        <button mat-icon-button matSuffix (click)="togglePasswordVisibility()" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="!hidePassword" type="button">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="registerForm.get('password')?.invalid">
+          {{ getErrorMessage('password') }}
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Confirm Password</mat-label>
-        <input matInput formControlName="confirmPassword" type="password" />
+        <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="password_confirmation" required />
+        <button mat-icon-button matSuffix (click)="toggleConfirmPasswordVisibility()" [attr.aria-label]="'Hide confirm password'" [attr.aria-pressed]="!hideConfirmPassword" type="button">
+          <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="registerForm.get('password_confirmation')?.invalid">
+          {{ getErrorMessage('password_confirmation') }}
+        </mat-error>
       </mat-form-field>
 
-      <div class="action-buttons">
-        <button type="submit" routerLink="/login" mat-raised-button color="primary" type="submit">back</button>
-         <button type="button" mat-raised-button color="primary" type="submit">Register</button>
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
       </div>
+
+      <div class="error-message" *ngIf="getPasswordMismatchError()">
+        {{ getPasswordMismatchError() }}
+      </div>
+
+      <button 
+        mat-raised-button 
+        color="primary" 
+        class="full-width" 
+        type="submit"
+        [disabled]="registerForm.invalid || isLoading">
+        <mat-spinner *ngIf="isLoading" diameter="20" class="spinner"></mat-spinner>
+        <span *ngIf="!isLoading">Register</span>
+      </button>
     </form>
+
+    <div class="register-links">
+      <span>Already have an account?</span>
+      <a routerLink="/login">Login here</a>
+    </div>
   </mat-card>
 </div>
 

@@ -99,7 +99,7 @@ export interface CreateBlogRequest {
   providedIn: 'root'
 })
 export class ApiService {
-  private readonly baseUrl = `https://api.techtrendstalks.com` + '/api/v1';
+  private readonly baseUrl = `http://127.0.0.1:8000` + '/api/v1';
 
   constructor(private http: HttpClient) {
     console.log('ApiService initialized with base URL:', this.baseUrl);
@@ -221,6 +221,21 @@ export class ApiService {
       tap(response => console.log('Subcategory blogs response:', response)),
       catchError(this.handleError)
     );
+  }
+
+  getMyBlogs(filters?: BlogFilters): Observable<PaginatedResponse<Blog>> {
+    let params = new HttpParams();
+    
+    if (filters) {
+      if (filters.category_id) params = params.set('category_id', filters.category_id.toString());
+      if (filters.subcategory_id) params = params.set('subcategory_id', filters.subcategory_id.toString());
+      if (filters.search) params = params.set('search', filters.search);
+      if (filters.featured) params = params.set('featured', 'true');
+      if (filters.per_page) params = params.set('per_page', filters.per_page.toString());
+      if (filters.page) params = params.set('page', filters.page.toString());
+    }
+
+    return this.http.get<PaginatedResponse<Blog>>(`${this.baseUrl}/my-blogs`, { params });
   }
 
   // Blogs

@@ -3,6 +3,8 @@ import { Subject, takeUntil, forkJoin } from 'rxjs';
 
 import { ApiService, Category, Subcategory, Blog } from '../../../services/api.service';
 import { SharedModule } from '../../shared/shared.module';
+import { AuthService } from '../../../core/auth/auth.service';
+import { User } from '../../../core/auth/auth.interfaces';
 
 interface DashboardStats {
   totalBlogs: number;
@@ -63,20 +65,54 @@ export class DashboardComponent implements OnInit, OnDestroy {
   isLoadingSubcategories = false;
   isLoadingBlogs = false;
 
+  // User information
+  currentUser: User | null = null;
+
   // Table columns
   readonly categoryColumns = ['name', 'blogCount', 'subcategoryCount', 'totalViews', 'status'];
   readonly subcategoryColumns = ['name', 'category', 'blogCount', 'totalViews', 'status'];
   readonly recentBlogColumns = ['title', 'category', 'status', 'views', 'createdAt'];
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    public authService: AuthService
+  ) {}
 
   ngOnInit(): void {
+    this.loadUserInfo();
     this.loadDashboardData();
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  /**
+   * Load current user information
+   */
+  private loadUserInfo(): void {
+    this.currentUser = this.authService.getCurrentUser();
+  }
+
+  /**
+   * Get user display name
+   */
+  getUserDisplayName(): string {
+    if (this.currentUser) {
+      return this.currentUser.firstname || this.currentUser.name;
+    }
+    return 'User';
+  }
+
+  /**
+   * Get user role display
+   */
+  getUserRole(): string {
+    if (this.currentUser) {
+      return this.currentUser.role.charAt(0).toUpperCase() + this.currentUser.role.slice(1);
+    }
+    return 'User';
   }
 
   /**
@@ -88,7 +124,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     forkJoin({
       categories: this.apiService.getCategories(),
       subcategories: this.apiService.getSubcategories(),
-      blogs: this.apiService.getBlogs({ per_page: 1000 }) // Get all blogs for counting
+      blogs: this.apiService.getMyBlogs({ per_page: 1000 }) // Get all blogs for counting
     })
     .pipe(takeUntil(this.destroy$))
     .subscribe({
