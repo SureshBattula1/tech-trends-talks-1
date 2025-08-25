@@ -1,12 +1,12 @@
-<div class="calculator-container">
+<div class="calculator-container container mx-auto px-5 py-5">
   <!-- Header Section -->
-  <div class="calculator-header">
+  <div class="calculator-header text-center mb-10 p-10 rounded-3xl bg-gradient-to-br from-primary to-secondary text-white shadow-lg">
     <div class="header-content">
-      <h1>EMI Calculator - Calculate Loan EMI, Interest & Repayment Schedule</h1>
-      <div>
-        <span>Use our free EMI calculator to calculate monthly EMI for home loan, car loan, personal loan, and more. Get complete repayment schedule, interest breakdown, and download PDF report.</span>
+      <h1 class="text-4xl font-bold mb-4 tracking-tight">EMI Calculator - Calculate Loan EMI, Interest & Repayment Schedule</h1>
+      <div class="mb-4">
+        <span class="text-lg opacity-90">Use our free EMI calculator to calculate monthly EMI for home loan, car loan, personal loan, and more. Get complete repayment schedule, interest breakdown, and download PDF report.</span>
       </div>
-      <p>Free EMI Calculator for all types of loans including home loan, car loan, personal loan, business loan, education loan, gold loan and more. Get complete repayment schedule, interest breakdown, and download detailed reports in Excel and PDF formats.</p>
+      <p class="text-base opacity-90 sr-only">Free EMI Calculator for all types of loans including home loan, car loan, personal loan, business loan, education loan, gold loan and more. Get complete repayment schedule, interest breakdown, and download detailed reports in Excel and PDF formats.</p>
       
       <!-- Enhanced SEO Keywords Section - Hidden for users but accessible to search engines -->
       <div class="seo-keywords" aria-hidden="true">
@@ -122,18 +122,18 @@
     </div>
   </div>
 
-  <!-- Main Calculator Form -->
-  <div class="calculator-main">
-    <div class="form-container">
-      <!-- Loan Type Selection -->
-      <div class="loan-type-section">
-        <div class="step-header">
-          <div class="step-number">1</div>
-          <div class="step-info">
-            <h3>Choose Loan Type</h3>
-            <p>Select the type of loan you're interested in from our comprehensive list</p>
-          </div>
-        </div>
+        <!-- Main Calculator Form -->
+      <div class="calculator-main bg-white rounded-3xl p-10 mb-10 shadow-lg border border-gray-200">
+        <div class="form-container max-w-4xl mx-auto">
+          <!-- Loan Type Selection -->
+          <div class="loan-type-section mb-8">
+            <div class="step-header flex items-center gap-5 mb-8 p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border border-gray-200 text-center">
+              <div class="step-number w-12 h-12 bg-gradient-to-br from-primary to-secondary text-white rounded-full flex items-center justify-center text-xl font-bold flex-shrink-0">1</div>
+              <div class="step-info">
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Choose Loan Type</h3>
+                <p class="text-gray-600">Select the type of loan you're interested in from our comprehensive list</p>
+              </div>
+            </div>
         
         <div class="loan-type-grid" [class.expanded]="isLoanTypesExpanded">
           <div class="loan-type-card" 
@@ -152,8 +152,8 @@
         </div>
         
         <!-- More/Less Button -->
-        <div class="loan-types-more-section" *ngIf="shouldShowMoreButton() || isLoanTypesExpanded">
-          <button class="more-btn" (click)="toggleLoanTypesExpansion()" [@pulseAnimation]>
+        <div class="loan-types-more-section text-center" *ngIf="shouldShowMoreButton() || isLoanTypesExpanded">
+          <button class="more-btn btn btn-secondary btn-md" (click)="toggleLoanTypesExpansion()" [@pulseAnimation]>
             <span class="more-text">{{ getMoreButtonText() }}</span>
             <span class="more-icon" [class.expanded]="isLoanTypesExpanded">{{ getMoreButtonIcon() }}</span>
           </button>
@@ -161,31 +161,31 @@
       </div>
 
       <!-- Selected Loan Type Display -->
-      <div class="selected-loan-display" *ngIf="selectedLoanTypeIndex >= 0">
-        <div class="selected-loan-card">
-          <div class="selected-loan-icon">{{ loanTypes[selectedLoanTypeIndex].icon }}</div>
+      <div class="selected-loan-display mb-8" *ngIf="selectedLoanTypeIndex >= 0">
+        <div class="selected-loan-card bg-primary/10 border border-primary/20 rounded-2xl p-6 flex items-center gap-4">
+          <div class="selected-loan-icon text-3xl">{{ loanTypes[selectedLoanTypeIndex].icon }}</div>
           <div class="selected-loan-info">
-            <h4>{{ loanTypes[selectedLoanTypeIndex].viewValue }}</h4>
-            <p>Selected for EMI calculation</p>
-            <span class="selected-interest-rate">{{ loanTypes[selectedLoanTypeIndex].interest }}% p.a.</span>
+            <h4 class="text-xl font-semibold text-gray-800 mb-2">{{ loanTypes[selectedLoanTypeIndex].viewValue }}</h4>
+            <p class="text-gray-600 mb-2">Selected for EMI calculation</p>
+            <span class="selected-interest-rate text-primary font-semibold">{{ loanTypes[selectedLoanTypeIndex].interest }}% p.a.</span>
           </div>
         </div>
       </div>
 
       <!-- Calculator Inputs -->
       <div class="calculator-inputs">
-        <div class="input-row">
+        <div class="input-row grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <div class="input-group">
-            <label>Loan Amount</label>
-            <div class="input-wrapper">
-              <span class="currency-symbol">₹</span>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Loan Amount</label>
+            <div class="input-wrapper relative">
+              <span class="currency-symbol absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">₹</span>
               <input 
                 type="text" 
                 [formControl]="amountForm" 
                 (input)="onAmountInput($event)"
                 (blur)="onAmountBlur()"
                 placeholder="Enter loan amount"
-                class="form-input">
+                class="form-input w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors">
             </div>
             <app-price-progress-bar 
               [mode]="'PRICE'" 
