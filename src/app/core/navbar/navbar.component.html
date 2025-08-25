@@ -1,99 +1,73 @@
 <nav aria-label="Top Toolbar" class="navbar-header">
-    <button class="app-menu" type="button" (click)="toggle()"  mat-icon-button  fxShow="true" fxHide.gt-sm>
+    <button class="app-menu" type="button" (click)="toggle()" mat-icon-button fxShow="true" fxHide.gt-sm>
         <mat-icon>menu</mat-icon>
     </button>
+    
     <h3 class="app-logo">
-        <img src="assets/images/image.png" alt="My Logo" class="logo logo-img" />
+        <img src="assets/images/logo.png" alt="Tech Trends Talks Logo" class="logo logo-img" />
         Tech Trends Talks  
     </h3>
+    
     <div class="app-menu-list" fxShow="true" fxHide.lt-md>
-
-         @if(module() === '' || module() === 'BLOGS'){
-             <a class="app-menu"  routerLink="/blogs/home" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> Blogs</a>
-             <a class="app-menu"  routerLink="/loan-eligibility-calculator/checker" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> Loan Eligibility</a>
-             <!-- <a class="app-menu" routerLink="/calculator/emi-calculator" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> EMI Calculator</a>
-             <a class="app-menu" routerLink="/calculator/sip-calculator" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> SIP Calculator</a> -->
-
-             <div
-             class="profile-container"
-             [matMenuTriggerFor]="calcuatorMenu"
-             matTooltip="Profile Settings"
-             (mouseenter)="menuTrigger.openMenu()"
-             #menuTrigger="matMenuTrigger"
-           >
-             <a
-               class="app-menu"
-               routerLink="/calculator"
-               [routerLinkActive]="'navbar-header-item-selected'"
-               [routerLinkActiveOptions]="{ exact: false }"
-               mat-button
-             >
-               Calculator
-             </a>
-           </div>
-           
-           <mat-menu #calcuatorMenu="matMenu" class="app-profile-menu-list">
-             <button
-               mat-menu-item
-               routerLink="/calculator/emi-calculator"
-               routerLinkActive="active-menu-item"
-               [routerLinkActiveOptions]="{ exact: true }"
-             >
-               <mat-icon>home</mat-icon>
-               <span>EMI Calculator</span>
-             </button>
-           
-             <button
-               mat-menu-item
-               routerLink="/calculator/sip-calculator"
-               routerLinkActive="active-menu-item"
-               [routerLinkActiveOptions]="{ exact: true }"
-             >
-               <mat-icon>calculate</mat-icon>
-               <span>SIP Calculator</span>
-             </button>
-           </mat-menu>
-
-             @if(!isAuthenticated){
-                 <a class="app-menu" routerLink="/login" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> Login</a>
-             } @else {
-                <div
-                class="profile-container"
-                [matMenuTriggerFor]="profileMenu"
-                matTooltip="Profile Settings"
-                (mouseenter)="menuTrigger.openMenu()"
-                #menuTrigger="matMenuTrigger"
-                >
-                <button mat-icon-button>
-                    <mat-icon>account_circle</mat-icon>
-                </button>
+        <ng-container *ngIf="module() === '' || module() === 'BLOGS'">
+            <a class="app-menu" routerLink="/blogs/home" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> 
+                Blogs
+            </a>
+            
+            <a class="app-menu" routerLink="/loan-eligibility-calculator/checker" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> 
+                Loan Eligibility
+            </a>
+            
+            <div class="profile-container" [matMenuTriggerFor]="calculatorMenu" matTooltip="Calculator Options">
+                <a class="app-menu" routerLink="/calculator" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button>
+                    Calculator
+                </a>
             </div>
+            
+            <mat-menu #calculatorMenu="matMenu" class="app-profile-menu-list">
+                <button mat-menu-item routerLink="/calculator/emi-calculator" routerLinkActive="active-menu-item" [routerLinkActiveOptions]="{ exact: true }">
+                    <mat-icon>home</mat-icon>
+                    <span>EMI Calculator</span>
+                </button>
                 
-                <!-- Menu Definition -->
+                <button mat-menu-item routerLink="/calculator/sip-calculator" routerLinkActive="active-menu-item" [routerLinkActiveOptions]="{ exact: true }">
+                    <mat-icon>calculate</mat-icon>
+                    <span>SIP Calculator</span>
+                </button>
+            </mat-menu>
+
+            <ng-container *ngIf="!isAuthenticated; else authenticatedUser">
+                <a class="app-menu" routerLink="/login" [routerLinkActive]="'navbar-header-item-selected'" [routerLinkActiveOptions]="{ exact: false }" mat-button> 
+                    Login
+                </a>
+            </ng-container>
+            
+            <ng-template #authenticatedUser>
+                <div class="profile-container" [matMenuTriggerFor]="profileMenu" matTooltip="Profile Settings">
+                    <button mat-icon-button>
+                        <mat-icon>account_circle</mat-icon>
+                    </button>
+                </div>
+                
                 <mat-menu #profileMenu="matMenu" class="app-profile-menu-list">
                     <button mat-menu-item routerLink="/blogs-admin/dashboard">
-                    <mat-icon>dashboard</mat-icon>
-                    <span>Admin Dashboard</span>
+                        <mat-icon>dashboard</mat-icon>
+                        <span>Admin Dashboard</span>
                     </button>
                     <button mat-menu-item routerLink="/blogs-admin/dashboard">
-                    <mat-icon>person</mat-icon>
-                    <span>{{ userDisplayName }}</span>
+                        <mat-icon>person</mat-icon>
+                        <span>{{ userDisplayName }}</span>
                     </button>
                     <button mat-menu-item (click)="logout()">
-                    <mat-icon>logout</mat-icon>
-                    <span>Logout</span>
+                        <mat-icon>logout</mat-icon>
+                        <span>Logout</span>
                     </button>
                 </mat-menu>
-  
-             }
-        }
+            </ng-template>
+        </ng-container>
 
-        @if(module() === 'BLOGS_ADMIN'){
+        <ng-container *ngIf="module() === 'BLOGS_ADMIN'">
             <ng-content></ng-content>
-            <!-- <div class="user-menu">
-                <span class="user-name">Welcome, {{ userDisplayName }}</span>
-                <button class="app-menu logout-btn" (click)="logout()" mat-button>Logout</button>
-            </div> -->
-        }
+        </ng-container>
     </div>
 </nav>

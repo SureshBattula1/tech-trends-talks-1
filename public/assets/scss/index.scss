@@ -1,1 +1,31 @@
-@import '../../assets/scss/blocks/flex-grid.scss';
+// ==========================================================================
+// SCSS IMPORTS - TECH TRENDS TALKS
+// ==========================================================================
+
+// Abstracts - Variables and mixins first (foundation)
+@import 'abstracts/variables.scss';
+@import 'abstracts/mixins.scss';
+
+// Base utilities and variables
+@import 'base/utilities.scss';
+@import '_variables.scss';             // Root variables
+
+// Component styles
+@import 'components/buttons.scss';
+@import 'components/forms.scss';
+@import 'components/cards.scss';
+@import 'components/calculator.scss';
+
+// Layout styles
+@import 'layouts/header.scss';
+@import 'layouts/footer.scss';
+@import 'layouts/grid.scss';
+
+// Theme styles
+@import 'themes/default.scss';
+
+// Special blocks and utilities
+@import 'blocks/flex-grid.scss';
+
+// Root component files (legacy structure)
+@import '_layout.scss';

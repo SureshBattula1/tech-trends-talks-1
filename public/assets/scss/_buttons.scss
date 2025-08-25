@@ -1,0 +1,284 @@
+// Button Component Styles
+@import 'variables';
+
+// Base Button Styles
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: map-get($font-sizes, base);
+  font-weight: map-get($font-weights, medium);
+  line-height: 1.5;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: map-get($border-radius, lg);
+  cursor: pointer;
+  transition: all map-get($transitions, normal);
+  user-select: none;
+  white-space: nowrap;
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  
+  &:focus {
+    outline: 2px solid map-get($accent-colors, gold);
+    outline-offset: 2px;
+  }
+  
+  // Icon support
+  .btn-icon {
+    width: 1.25em;
+    height: 1.25em;
+  }
+  
+  // Loading state
+  &.btn-loading {
+    position: relative;
+    color: transparent;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      width: 1em;
+      height: 1em;
+      border: 2px solid currentColor;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+// Button Variants
+.btn-primary {
+  background: map-get($gradients, primary);
+  color: map-get($neutral-colors, white);
+  border-color: map-get($primary-colors, primary);
+  
+  &:hover:not(:disabled) {
+    background: map-get($gradients, secondary);
+    transform: translateY(-2px);
+    box-shadow: map-get($shadows, lg);
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+.btn-secondary {
+  background: map-get($gradients, secondary);
+  color: map-get($neutral-colors, white);
+  border-color: map-get($primary-colors, secondary);
+  
+  &:hover:not(:disabled) {
+    background: map-get($gradients, primary);
+    transform: translateY(-2px);
+    box-shadow: map-get($shadows, lg);
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+.btn-success {
+  background: map-get($gradients, success);
+  color: map-get($neutral-colors, white);
+  border-color: map-get($accent-colors, success);
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: map-get($shadows, lg);
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+.btn-warning {
+  background: map-get($gradients, warning);
+  color: map-get($neutral-colors, white);
+  border-color: map-get($accent-colors, warning);
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: map-get($shadows, lg);
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+.btn-error {
+  background: map-get($gradients, error);
+  color: map-get($neutral-colors, white);
+  border-color: map-get($accent-colors, error);
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: map-get($shadows, lg);
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+.btn-outline {
+  background: transparent;
+  color: map-get($primary-colors, primary);
+  border-color: map-get($primary-colors, primary);
+  
+  &:hover:not(:disabled) {
+    background: map-get($primary-colors, primary);
+    color: map-get($neutral-colors, white);
+    transform: translateY(-2px);
+    box-shadow: map-get($shadows, lg);
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+.btn-ghost {
+  background: transparent;
+  color: map-get($primary-colors, primary);
+  border-color: transparent;
+  
+  &:hover:not(:disabled) {
+    background: rgba(map-get($primary-colors, primary), 0.1);
+    transform: translateY(-2px);
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+// Button Sizes
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: map-get($font-sizes, sm);
+  border-radius: map-get($border-radius, base);
+}
+
+.btn-lg {
+  padding: 1rem 2rem;
+  font-size: map-get($font-sizes, lg);
+  border-radius: map-get($border-radius, xl);
+}
+
+.btn-xl {
+  padding: 1.25rem 2.5rem;
+  font-size: map-get($font-sizes, xl);
+  border-radius: map-get($border-radius, '2xl');
+}
+
+// Button Shapes
+.btn-rounded {
+  border-radius: map-get($border-radius, full);
+}
+
+.btn-square {
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  border-radius: map-get($border-radius, base);
+}
+
+// Button Groups
+.btn-group {
+  display: inline-flex;
+  border-radius: map-get($border-radius, lg);
+  overflow: hidden;
+  
+  .btn {
+    border-radius: 0;
+    border-right-width: 0;
+    
+    &:first-child {
+      border-top-left-radius: map-get($border-radius, lg);
+      border-bottom-left-radius: map-get($border-radius, lg);
+    }
+    
+    &:last-child {
+      border-right-width: 1px;
+      border-top-right-radius: map-get($border-radius, lg);
+      border-bottom-right-radius: map-get($border-radius, lg);
+    }
+    
+    &:hover {
+      z-index: 1;
+    }
+  }
+}
+
+// Floating Action Button
+.btn-fab {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: map-get($gradients, primary);
+  color: map-get($neutral-colors, white);
+  box-shadow: map-get($shadows, xl);
+  z-index: map-get($z-index, fixed);
+  
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: map-get($shadows, '2xl');
+  }
+  
+  &:active {
+    transform: scale(1.05);
+  }
+}
+
+// Icon Button
+.btn-icon-only {
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  border-radius: 50%;
+  
+  .btn-icon {
+    width: 1.5em;
+    height: 1.5em;
+  }
+}
+
+// Loading Animation
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Responsive Button Adjustments
+@media (max-width: 768px) {
+  .btn {
+    padding: 0.6rem 1.2rem;
+    font-size: map-get($font-sizes, sm);
+  }
+  
+  .btn-lg {
+    padding: 0.8rem 1.6rem;
+    font-size: map-get($font-sizes, base);
+  }
+  
+  .btn-xl {
+    padding: 1rem 2rem;
+    font-size: map-get($font-sizes, lg);
+  }
+}

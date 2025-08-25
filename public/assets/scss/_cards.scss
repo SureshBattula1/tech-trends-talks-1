@@ -1,0 +1,469 @@
+// Card Component Styles
+@import 'variables';
+
+// Base Card
+.card {
+  background: map-get($neutral-colors, white);
+  border-radius: map-get($border-radius, xl);
+  box-shadow: map-get($shadows, base);
+  overflow: hidden;
+  transition: all map-get($transitions, normal);
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: map-get($shadows, lg);
+  }
+  
+  // Card Variants
+  &.card-elevated {
+    box-shadow: map-get($shadows, lg);
+    
+    &:hover {
+      box-shadow: map-get($shadows, xl);
+    }
+  }
+  
+  &.card-bordered {
+    border: 1px solid map-get($neutral-colors, gray-200);
+    box-shadow: none;
+    
+    &:hover {
+      border-color: map-get($primary-colors, primary);
+      box-shadow: map-get($shadows, base);
+    }
+  }
+  
+  &.card-glass {
+    @include glass-morphism();
+    backdrop-filter: blur(20px);
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
+  
+  &.card-gradient {
+    background: map-get($gradients, primary);
+    color: map-get($neutral-colors, white);
+    
+    .card-title,
+    .card-subtitle {
+      color: map-get($neutral-colors, white);
+    }
+    
+    .card-text {
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+}
+
+// Card Header
+.card-header {
+  padding: map-get($spacing, 6);
+  border-bottom: 1px solid map-get($neutral-colors, gray-200);
+  background-color: map-get($neutral-colors, gray-50);
+  
+  .card-header-title {
+    margin: 0;
+    font-size: map-get($font-sizes, xl);
+    font-weight: map-get($font-weights, semibold);
+    color: map-get($neutral-colors, gray-900);
+  }
+  
+  .card-header-subtitle {
+    margin: map-get($spacing, 1) 0 0 0;
+    font-size: map-get($font-sizes, base);
+    color: map-get($neutral-colors, gray-600);
+  }
+  
+  .card-header-actions {
+    display: flex;
+    gap: map-get($spacing, 2);
+    margin-top: map-get($spacing, 3);
+  }
+}
+
+// Card Body
+.card-body {
+  padding: map-get($spacing, 6);
+  
+  .card-title {
+    margin: 0 0 map-get($spacing, 3) 0;
+    font-size: map-get($font-sizes, lg);
+    font-weight: map-get($font-weights, semibold);
+    color: map-get($neutral-colors, gray-900);
+  }
+  
+  .card-subtitle {
+    margin: 0 0 map-get($spacing, 4) 0;
+    font-size: map-get($font-sizes, base);
+    color: map-get($neutral-colors, gray-600);
+  }
+  
+  .card-text {
+    margin: 0 0 map-get($spacing, 4) 0;
+    font-size: map-get($font-sizes, base);
+    line-height: map-get($line-heights, relaxed);
+    color: map-get($neutral-colors, gray-700);
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Card Footer
+.card-footer {
+  padding: map-get($spacing, 6);
+  border-top: 1px solid map-get($neutral-colors, gray-200);
+  background-color: map-get($neutral-colors, gray-50);
+  
+  .card-footer-actions {
+    display: flex;
+    gap: map-get($spacing, 3);
+    justify-content: flex-end;
+    
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: map-get($spacing, 2);
+    }
+  }
+}
+
+// Card Media
+.card-media {
+  position: relative;
+  overflow: hidden;
+  
+  .card-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform map-get($transitions, normal);
+  }
+  
+  .card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.1) 50%,
+      rgba(0, 0, 0, 0.7) 100%
+    );
+    display: flex;
+    align-items: flex-end;
+    padding: map-get($spacing, 6);
+    color: map-get($neutral-colors, white);
+    
+    .card-overlay-content {
+      .card-overlay-title {
+        margin: 0 0 map-get($spacing, 2) 0;
+        font-size: map-get($font-sizes, xl);
+        font-weight: map-get($font-weights, bold);
+        color: map-get($neutral-colors, white);
+      }
+      
+      .card-overlay-subtitle {
+        margin: 0;
+        font-size: map-get($font-sizes, base);
+        color: rgba(255, 255, 255, 0.9);
+      }
+    }
+  }
+  
+  &:hover .card-image {
+    transform: scale(1.05);
+  }
+}
+
+// Card Stats
+.card-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: map-get($spacing, 4);
+  padding: map-get($spacing, 6);
+  
+  .stat-item {
+    text-align: center;
+    
+    .stat-value {
+      display: block;
+      font-size: map-get($font-sizes, '3xl');
+      font-weight: map-get($font-weights, bold);
+      color: map-get($primary-colors, primary);
+      line-height: 1;
+    }
+    
+    .stat-label {
+      display: block;
+      margin-top: map-get($spacing, 1);
+      font-size: map-get($font-sizes, sm);
+      color: map-get($neutral-colors, gray-600);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  }
+}
+
+// Card List
+.card-list {
+  .card-list-item {
+    display: flex;
+    align-items: center;
+    gap: map-get($spacing, 4);
+    padding: map-get($spacing, 4) map-get($spacing, 6);
+    border-bottom: 1px solid map-get($neutral-colors, gray-100);
+    transition: background-color map-get($transitions, fast);
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    &:hover {
+      background-color: map-get($neutral-colors, gray-50);
+    }
+    
+    .card-list-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background: map-get($gradients, primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: map-get($neutral-colors, white);
+      flex-shrink: 0;
+    }
+    
+    .card-list-content {
+      flex: 1;
+      
+      .card-list-title {
+        margin: 0 0 map-get($spacing, 1) 0;
+        font-size: map-get($font-sizes, base);
+        font-weight: map-get($font-weights, medium);
+        color: map-get($neutral-colors, gray-900);
+      }
+      
+      .card-list-subtitle {
+        margin: 0;
+        font-size: map-get($font-sizes, sm);
+        color: map-get($neutral-colors, gray-600);
+      }
+    }
+    
+    .card-list-action {
+      flex-shrink: 0;
+    }
+  }
+}
+
+// Card Grid
+.card-grid {
+  display: grid;
+  gap: map-get($spacing, 6);
+  
+  &.card-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  &.card-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  &.card-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  &.card-grid-auto {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+  
+  @media (max-width: 1024px) {
+    &.card-grid-4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    &.card-grid-2,
+    &.card-grid-3,
+    &.card-grid-4 {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Card Sizes
+.card {
+  &.card-sm {
+    .card-header,
+    .card-body,
+    .card-footer {
+      padding: map-get($spacing, 4);
+    }
+    
+    .card-title {
+      font-size: map-get($font-sizes, base);
+    }
+  }
+  
+  &.card-lg {
+    .card-header,
+    .card-body,
+    .card-footer {
+      padding: map-get($spacing, 8);
+    }
+    
+    .card-title {
+      font-size: map-get($font-sizes, '2xl');
+    }
+  }
+  
+  &.card-xl {
+    .card-header,
+    .card-body,
+    .card-footer {
+      padding: map-get($spacing, 10);
+    }
+    
+    .card-title {
+      font-size: map-get($font-sizes, '3xl');
+    }
+  }
+}
+
+// Interactive Cards
+.card {
+  &.card-clickable {
+    cursor: pointer;
+    
+    &:hover {
+      transform: translateY(-6px);
+      box-shadow: map-get($shadows, xl);
+    }
+    
+    &:active {
+      transform: translateY(-2px);
+    }
+  }
+  
+  &.card-draggable {
+    cursor: grab;
+    
+    &:active {
+      cursor: grabbing;
+    }
+  }
+}
+
+// Card Loading State
+.card-loading {
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
+    animation: shimmer 1.5s infinite;
+  }
+  
+  .card-content {
+    opacity: 0.6;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+// Card Themes
+.card {
+  &.card-primary {
+    border-left: 4px solid map-get($primary-colors, primary);
+    
+    .card-header {
+      background-color: rgba(map-get($primary-colors, primary), 0.1);
+      border-bottom-color: rgba(map-get($primary-colors, primary), 0.2);
+    }
+  }
+  
+  &.card-success {
+    border-left: 4px solid map-get($accent-colors, success);
+    
+    .card-header {
+      background-color: rgba(map-get($accent-colors, success), 0.1);
+      border-bottom-color: rgba(map-get($accent-colors, success), 0.2);
+    }
+  }
+  
+  &.card-warning {
+    border-left: 4px solid map-get($accent-colors, warning);
+    
+    .card-header {
+      background-color: rgba(map-get($accent-colors, warning), 0.1);
+      border-bottom-color: rgba(map-get($accent-colors, warning), 0.2);
+    }
+  }
+  
+  &.card-error {
+    border-left: 4px solid map-get($accent-colors, error);
+    
+    .card-header {
+      background-color: rgba(map-get($accent-colors, error), 0.1);
+      border-bottom-color: rgba(map-get($accent-colors, error), 0.2);
+    }
+  }
+}
+
+// Responsive Adjustments
+@media (max-width: 768px) {
+  .card {
+    .card-header,
+    .card-body,
+    .card-footer {
+      padding: map-get($spacing, 4);
+    }
+    
+    .card-title {
+      font-size: map-get($font-sizes, lg);
+    }
+    
+    .card-subtitle {
+      font-size: map-get($font-sizes, base);
+    }
+  }
+  
+  .card-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: map-get($spacing, 3);
+    padding: map-get($spacing, 4);
+    
+    .stat-item .stat-value {
+      font-size: map-get($font-sizes, '2xl');
+    }
+  }
+  
+  .card-list .card-list-item {
+    padding: map-get($spacing, 3) map-get($spacing, 4);
+  }
+}

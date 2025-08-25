@@ -1,74 +1,329 @@
-.app-logo {
-  font-size: 24px;
-  margin: 0px;
-  padding: 0px;
-  color: #b6e5ff;
+// Modern Navbar Styling
+.navbar-header {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 70px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1000;
+  
+  // Responsive padding
+  @media (max-width: 768px) {
+    padding: 0 1rem;
+    height: 60px;
+  }
+  
+  // Glass morphism effect
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
 }
 
-.app-logo img{
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid orange
+// Logo styling
+.app-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  padding: 0;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+  position: relative;
+  
+  @media (max-width: 768px) {
+    font-size: 1.2rem;
+    gap: 8px;
+  }
+  
+  .logo-img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 3px solid #ffd700;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    transition: all 0.3s ease;
+    
+    @media (max-width: 768px) {
+      width: 35px;
+      height: 35px;
+    }
+    
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+    }
+  }
 }
 
+// Menu list container
 .app-menu-list {
   display: flex;
-  margin-right: 1.3rem;
   align-items: center;
+  gap: 1rem;
+  margin-right: 1rem;
+  z-index: 1;
+  position: relative;
+  
+  @media (max-width: 768px) {
+    gap: 0.5rem;
+  }
 }
 
+// Menu items styling
 .app-menu {
-  color: #b6e5ff!important;
-  margin-right: 4px;
+  color: #ffffff !important;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  
+  // Hover effect with gradient
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    
+    &::before {
+      left: 100%;
+    }
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  @media (max-width: 768px) {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
 }
 
+// Selected menu item
 .navbar-header-item-selected {
-  font-weight: 800;
-  border: 2px solid #1ebed9;
-  color: #fff!important;
-  background-color: #394972;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  border: 2px solid #ffffff !important;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4) !important;
+  transform: translateY(-2px);
 }
 
+// Profile container
+.profile-container {
+  position: relative;
+  
+  mat-icon {
+    width: 45px;
+    height: 45px;
+    font-size: 45px;
+    line-height: 45px;
+    color: #ffffff;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    
+    @media (max-width: 768px) {
+      width: 35px;
+      height: 35px;
+      font-size: 35px;
+      line-height: 35px;
+    }
+    
+    &:hover {
+      color: #ffd700;
+      transform: scale(1.1);
+    }
+  }
+}
+
+// Menu styling
+.app-profile-menu-list {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  overflow: hidden;
+  
+  .mat-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 1rem 1.5rem;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #ffffff;
+      transform: translateX(5px);
+    }
+    
+    mat-icon {
+      color: inherit;
+      margin-right: 8px;
+    }
+    
+    span {
+      font-weight: 500;
+    }
+  }
+}
+
+// Active menu item
+.active-menu-item {
+  background: linear-gradient(135deg, #667eea, #764ba2) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+// User menu styling
 .user-menu {
   display: flex;
   align-items: center;
   gap: 1rem;
   margin-left: 1rem;
-}
-
-.user-name {
-  color: #b6e5ff;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.logout-btn {
-  background-color: #d32f2f !important;
-  color: white !important;
-  border-radius: 4px;
-  padding: 8px 16px;
-  transition: background-color 0.3s;
-}
-
-.logout-btn:hover {
-  background-color: #b71c1c !important;
-}
-
-
-.profile-container{
-  mat-icon {
-      width: 40px;
-      height: 40px;
-      font-size: 40px;
-      line-height: 40px;
-      color: #b6e5ff; 
+  
+  .user-name {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+  
+  .logout-btn {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24) !important;
+    color: #ffffff !important;
+    border-radius: 25px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    
+    &:hover {
+      background: linear-gradient(135deg, #ff5252, #d84315) !important;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
   }
 }
 
-.active-menu-item {
-  background-color: #e0f7fa !important;
-  font-weight: bold;
+// Mobile menu button
+.app-menu[type="button"] {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  min-width: 45px;
+  
+  @media (max-width: 768px) {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+  }
+  
+  mat-icon {
+    color: #ffffff;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+  }
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+  }
+}
+
+// Responsive design
+@media (max-width: 1024px) {
+  .app-menu-list {
+    gap: 0.75rem;
+  }
+  
+  .app-menu {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+// Animation keyframes
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Apply animations
+.navbar-header {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.app-menu {
+  animation: fadeInUp 0.6s ease-out;
+  animation-fill-mode: both;
+  
+  &:nth-child(1) { animation-delay: 0.1s; }
+  &:nth-child(2) { animation-delay: 0.2s; }
+  &:nth-child(3) { animation-delay: 0.3s; }
+  &:nth-child(4) { animation-delay: 0.4s; }
+}
+
+// Focus states for accessibility
+.app-menu:focus,
+.app-menu[type="button"]:focus {
+  outline: 2px solid #ffd700;
+  outline-offset: 2px;
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .navbar-header {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  }
+  
+  .app-profile-menu-list {
+    background: rgba(44, 62, 80, 0.95);
+    color: #ffffff;
+  }
 }

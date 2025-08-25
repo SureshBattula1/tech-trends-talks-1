@@ -1,6 +1,5 @@
 import { Component, inject, Inject, OnInit, Renderer2 } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
-import { NavbarComponent } from './core/navbar/navbar.component';
 import { ComponentSidenavComponent } from './core/component-sidenav/component-sidenav.component';
 import { Meta, Title } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
@@ -11,7 +10,7 @@ import { LoaderComponent } from './core/loader/loader.component';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, ComponentSidenavComponent, PageComingSoonComponent],
+  imports: [RouterOutlet, ComponentSidenavComponent, PageComingSoonComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'] 
 

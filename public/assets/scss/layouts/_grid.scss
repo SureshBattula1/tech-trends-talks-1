@@ -1,0 +1,434 @@
+// ==========================================================================
+// GRID LAYOUT STYLES
+// ==========================================================================
+
+// Container
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
+
+  &.container-sm {
+    max-width: var(--container-sm);
+  }
+
+  &.container-md {
+    max-width: var(--container-md);
+  }
+
+  &.container-lg {
+    max-width: var(--container-lg);
+  }
+
+  &.container-xl {
+    max-width: var(--container-xl);
+  }
+
+  &.container-2xl {
+    max-width: var(--container-2xl);
+  }
+
+  &.container-fluid {
+    max-width: none;
+  }
+}
+
+// Grid System
+.grid {
+  @include grid(var(--grid-columns), var(--grid-gutter));
+  width: 100%;
+
+  &.grid-no-gap {
+    gap: 0;
+  }
+
+  &.grid-sm-gap {
+    gap: var(--spacing-sm);
+  }
+
+  &.grid-md-gap {
+    gap: var(--spacing-md);
+  }
+
+  &.grid-lg-gap {
+    gap: var(--spacing-lg);
+  }
+
+  &.grid-xl-gap {
+    gap: var(--spacing-xl);
+  }
+}
+
+// Grid Columns
+@for $i from 1 through 12 {
+  .col-#{$i} {
+    grid-column: span $i;
+  }
+}
+
+// Grid Rows
+@for $i from 1 through 12 {
+  .row-#{$i} {
+    grid-row: span $i;
+  }
+}
+
+// Responsive Grid Columns
+// Responsive grid columns for sm breakpoint
+@media (min-width: var(--breakpoint-sm)) {
+  @for $i from 1 through 12 {
+    .sm\:col-#{$i} {
+      grid-column: span $i;
+    }
+  }
+}
+
+// Responsive grid columns for md breakpoint
+@media (min-width: var(--breakpoint-md)) {
+  @for $i from 1 through 12 {
+    .md\:col-#{$i} {
+      grid-column: span $i;
+    }
+  }
+}
+
+// Responsive grid columns for lg breakpoint
+@media (min-width: var(--breakpoint-lg)) {
+  @for $i from 1 through 12 {
+    .lg\:col-#{$i} {
+      grid-column: span $i;
+    }
+  }
+}
+
+// Responsive grid columns for xl breakpoint
+@media (min-width: var(--breakpoint-xl)) {
+  @for $i from 1 through 12 {
+    .xl\:col-#{$i} {
+      grid-column: span $i;
+    }
+  }
+}
+
+// Responsive grid columns for 2xl breakpoint
+@media (min-width: var(--breakpoint-2xl)) {
+  @for $i from 1 through 12 {
+    .\32xl\:col-#{$i} {
+      grid-column: span $i;
+    }
+  }
+}
+
+// Grid Auto Columns
+.grid-cols-auto {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.grid-cols-auto-sm {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.grid-cols-auto-lg {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+// Grid Auto Rows
+.grid-rows-auto {
+  grid-auto-rows: auto;
+}
+
+.grid-rows-min {
+  grid-auto-rows: min-content;
+}
+
+.grid-rows-max {
+  grid-auto-rows: max-content;
+}
+
+// Grid Flow
+.grid-flow-row {
+  grid-auto-flow: row;
+}
+
+.grid-flow-col {
+  grid-auto-flow: column;
+}
+
+.grid-flow-dense {
+  grid-auto-flow: dense;
+}
+
+// Grid Alignment
+.grid-items-start {
+  align-items: start;
+}
+
+.grid-items-center {
+  align-items: center;
+}
+
+.grid-items-end {
+  align-items: end;
+}
+
+.grid-items-stretch {
+  align-items: stretch;
+}
+
+.grid-justify-start {
+  justify-items: start;
+}
+
+.grid-justify-center {
+  justify-items: center;
+}
+
+.grid-justify-end {
+  justify-items: end;
+}
+
+.grid-justify-stretch {
+  justify-items: stretch;
+}
+
+// Grid Content Alignment
+.grid-content-start {
+  align-content: start;
+}
+
+.grid-content-center {
+  align-content: center;
+}
+
+.grid-content-end {
+  align-content: end;
+}
+
+.grid-content-between {
+  align-content: space-between;
+}
+
+.grid-content-around {
+  align-content: space-around;
+}
+
+.grid-content-evenly {
+  align-content: space-evenly;
+}
+
+.grid-content-stretch {
+  align-content: stretch;
+}
+
+// Grid Justify Content
+.grid-justify-content-start {
+  justify-content: start;
+}
+
+.grid-justify-content-center {
+  justify-content: center;
+}
+
+.grid-justify-content-end {
+  justify-content: end;
+}
+
+.grid-justify-content-between {
+  justify-content: space-between;
+}
+
+.grid-justify-content-around {
+  justify-content: space-around;
+}
+
+.grid-justify-content-evenly {
+  justify-content: space-evenly;
+}
+
+.grid-justify-content-stretch {
+  justify-content: stretch;
+}
+
+// Grid Areas
+.grid-areas {
+  grid-template-areas: var(--grid-areas);
+}
+
+// Common Grid Layouts
+.grid-layout-sidebar {
+  grid-template-columns: 250px 1fr;
+  grid-template-areas: "sidebar main";
+
+  @include respond-below(var(--breakpoint-md)) {
+    grid-template-columns: 1fr;
+    grid-template-areas: "main";
+  }
+}
+
+.grid-layout-header {
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas: "header" "main" "footer";
+  min-height: 100vh;
+}
+
+.grid-layout-dashboard {
+  grid-template-columns: 250px 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas: "sidebar header" "sidebar main";
+  min-height: 100vh;
+
+  @include respond-below(var(--breakpoint-md)) {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas: "header" "sidebar" "main";
+  }
+}
+
+.grid-layout-cards {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.grid-layout-form {
+  grid-template-columns: 1fr;
+  max-width: 600px;
+  margin: 0 auto;
+  gap: var(--spacing-lg);
+}
+
+// Flexbox Grid (Fallback)
+.flex-grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin: calc(-1 * var(--grid-gutter) / 2);
+
+  .flex-col {
+    flex: 1;
+    padding: calc(var(--grid-gutter) / 2);
+    min-width: 250px;
+  }
+
+  @for $i from 1 through 12 {
+    .flex-col-#{$i} {
+      flex: 0 0 calc(#{$i} / 12 * 100%);
+      max-width: calc(#{$i} / 12 * 100%);
+    }
+  }
+}
+
+// Masonry Grid
+.masonry-grid {
+  columns: 3;
+  column-gap: var(--spacing-lg);
+
+  @include respond-to(md) {
+    columns: 3;
+  }
+
+  @include respond-below(var(--breakpoint-md)) {
+    columns: 2;
+    column-gap: var(--spacing-md);
+  }
+
+  @include respond-below(var(--breakpoint-sm)) {
+    columns: 1;
+  }
+
+  .masonry-item {
+    break-inside: avoid;
+    margin-bottom: var(--spacing-lg);
+    display: inline-block;
+    width: 100%;
+  }
+}
+
+// CSS Grid with Fallback
+.grid-with-fallback {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--grid-gutter);
+
+  @supports not (display: grid) {
+    display: flex;
+    flex-wrap: wrap;
+    margin: calc(-1 * var(--grid-gutter) / 2);
+
+    > * {
+      flex: 1;
+      padding: calc(var(--grid-gutter) / 2);
+      min-width: 250px;
+    }
+  }
+}
+
+// Grid Utilities
+.grid-gap-0 { gap: 0; }
+.grid-gap-1 { gap: var(--spacing-xs); }
+.grid-gap-2 { gap: var(--spacing-sm); }
+.grid-gap-3 { gap: var(--spacing-md); }
+.grid-gap-4 { gap: var(--spacing-lg); }
+.grid-gap-5 { gap: var(--spacing-xl); }
+
+// Responsive Grid Utilities
+@each $breakpoint, $width in (
+  sm: var(--breakpoint-sm),
+  md: var(--breakpoint-md),
+  lg: var(--breakpoint-lg),
+  xl: var(--breakpoint-xl)
+) {
+  @media (min-width: #{$width}) {
+    .#{$breakpoint}\:grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+    .#{$breakpoint}\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .#{$breakpoint}\:grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .#{$breakpoint}\:grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+    .#{$breakpoint}\:grid-cols-5 { grid-template-columns: repeat(5, 1fr); }
+    .#{$breakpoint}\:grid-cols-6 { grid-template-columns: repeat(6, 1fr); }
+    .#{$breakpoint}\:grid-cols-12 { grid-template-columns: repeat(12, 1fr); }
+  }
+}
+
+// Grid Debug
+.grid-debug {
+  .grid > * {
+    background-color: var(--primary-50);
+    border: 1px solid var(--primary-color);
+    padding: var(--spacing-sm);
+    text-align: center;
+    font-size: var(--font-size-sm);
+    color: var(--primary-color);
+  }
+}
+
+// Responsive Adjustments
+@include respond-below(var(--breakpoint-md)) {
+  .container {
+    padding-left: var(--spacing-sm);
+    padding-right: var(--spacing-sm);
+  }
+
+  .grid {
+    gap: var(--spacing-md);
+  }
+
+  .grid-layout-sidebar,
+  .grid-layout-dashboard {
+    grid-template-columns: 1fr;
+  }
+}
+
+@include respond-below(var(--breakpoint-sm)) {
+  .container {
+    padding-left: var(--spacing-xs);
+    padding-right: var(--spacing-xs);
+  }
+
+  .grid {
+    gap: var(--spacing-sm);
+  }
+
+  .grid-layout-cards {
+    grid-template-columns: 1fr;
+  }
+}
