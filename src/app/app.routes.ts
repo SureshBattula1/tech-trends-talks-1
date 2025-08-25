@@ -6,6 +6,7 @@ import { UnauthorizedComponent } from './core/unauthorized/unauthorized.componen
 import { ForgotPasswordComponent } from './core/forgot-password/forgot-password.component';
 import { AuthGuard } from './core/auth/auth.guard';
 import { RoleGuard } from './core/auth/role.guard';
+import { UtilityDemoComponent } from './module/utility-demo/utility-demo.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
@@ -35,6 +36,7 @@ export const routes: Routes = [
         path: 'grade-calculator', 
         loadChildren: () => import('./module/grade-calculator/grade-calculator.module').then(m => m.GradeCalculatorModule) 
     },
+    { path: 'utility-demo', component: UtilityDemoComponent },
     { path: '', redirectTo:'calculator', pathMatch: 'full' },
     { path: '**', component: PageNotFoundComponent}
 ];
