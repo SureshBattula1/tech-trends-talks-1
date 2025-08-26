@@ -64,6 +64,10 @@
       gap: 24px;
       margin-bottom: 32px;
 
+      mat-card {
+       min-height: auto;
+      }
+
       .stat-card {
         background: white;
         border-radius: 12px;
@@ -298,55 +302,6 @@
       }
     }
 
-    .quick-actions {
-      .actions-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        border: none;
-
-        .mat-mdc-card-header {
-          padding: 24px 24px 16px 24px;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-
-          .mat-mdc-card-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 0;
-            font-size: 20px;
-            font-weight: 600;
-            color: white;
-
-            mat-icon {
-              color: white;
-            }
-          }
-        }
-
-        .mat-mdc-card-content {
-          padding: 24px;
-
-          .actions-grid {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-
-            button {
-              height: 48px;
-              padding: 0 24px;
-              border-radius: 8px;
-              font-weight: 500;
-              min-width: 160px;
-
-              mat-icon {
-                margin-right: 8px;
-              }
-            }
-          }
-        }
-      }
-    }
   }
 }
 
@@ -383,15 +338,7 @@
         }
       }
     }
-
-    .quick-actions .actions-card .mat-mdc-card-content .actions-grid {
-      flex-direction: column;
-
-      button {
-        width: 100%;
-        min-width: auto;
-      }
-    }
+    
   }
 }
 

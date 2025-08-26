@@ -43,7 +43,8 @@ app-footer{
 }
 
 .component-sidenav{
-    width: 22%!important;
+    width: 16%!important;
+    overflow-x: hidden;
 }
 
 // Admin sidebar styling
@@ -82,10 +83,14 @@ app-footer{
                 }
 
                 &.navbar-header-item-selected {
-                    background-color: #667eea !important;
+                    background-color: #2b3862 !important;
                     color: white !important;
 
                     mat-icon {
+                        color: white !important;
+                    }
+
+                    span {
                         color: white !important;
                     }
                 }
@@ -145,4 +150,8 @@ app-footer{
 
 ::ng-deep span.mat-mdc-list-item-unscoped-content.mdc-list-item__primary-text {
     display: flex;
+}
+
+.component-viewer-nav .component-viewer-nav-content {
+    padding: 0px;
 }

@@ -82,6 +82,8 @@ app-component-sidenav {
     height: calc(100vh - 75px);
     overflow: auto;
     box-sizing: border-box;
+    overflow-x: hidden;
+    background-color: #ffffff;
 }
 
 .navbar-header-item-selected{
@@ -330,4 +332,8 @@ input[type="number"] {
       opacity: 0.8;
     }
   }
+}
+
+.table-container{
+  overflow-x: scroll;
 }

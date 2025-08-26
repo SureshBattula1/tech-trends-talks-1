@@ -143,13 +143,6 @@
         <div *ngIf="!isLoading && blogs.length === 0" class="empty-state">
           <mat-icon>article</mat-icon>
           <h3>No blogs found</h3>
-          <p>Create your first blog to get started</p>
-          <button mat-raised-button 
-                  color="primary" 
-                  (click)="openCreateDialog()">
-            <mat-icon>add</mat-icon>
-            Create Blog
-          </button>
         </div>
       </div>
 

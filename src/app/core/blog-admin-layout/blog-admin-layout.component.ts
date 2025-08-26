@@ -9,6 +9,7 @@ import { AppService } from '../../services/app/app.service';
 import { LoaderService } from '../../services/loading-bar/loader.service';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { AuthService } from '../auth/auth.service';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-blog-admin-layout',
@@ -22,11 +23,28 @@ export class BlogAdminLayoutComponent implements OnInit {
   public authService = inject(AuthService);
   public loader = inject(LoaderService);
   private router = inject(Router);
+  private breakpointObserver = inject(BreakpointObserver);
   
   isVisible = computed(() => this.appService.isSidebarVisible());
+
+  isMobile = false;
   
   ngOnInit(): void {
-    this.appService.setSidebarVisibleTrue();
+    this.appService.setSidebarVisible(true);
+
+    this.breakpointObserver.observe([Breakpoints.Small, Breakpoints.XSmall])
+      .subscribe(result => {
+        this.isMobile = result.matches;
+        if(this.isMobile){
+          this.appService.setSidebarVisible(false);
+        }
+      });
+  }
+
+  menuClick(): void {
+    if(this.isMobile){    
+      this.appService.toggleSidenav();
+    }
   }
 
   goToHome(): void {

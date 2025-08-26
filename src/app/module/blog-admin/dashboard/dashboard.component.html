@@ -3,13 +3,6 @@
   <div class="page-header">
     <div class="header-content">
       <h1>Welcome back, {{ getUserDisplayName() }}! 👋</h1>
-      <p>You're logged in as a <strong>{{ getUserRole() }}</strong>. 
-        @if(authService.isAdmin()){
-          Here's your blog management dashboard overview.
-        } @else {
-          Here's your blog dashboard where you can view and manage content.
-        }
-      </p>
     </div>
     <button mat-raised-button color="primary" (click)="refreshDashboard()" [disabled]="isLoading">
       <mat-icon>refresh</mat-icon>
@@ -253,39 +246,6 @@
 
     </div>
 
-    <!-- Quick Actions Section -->
-    <div class="quick-actions">
-      <mat-card class="actions-card">
-        <mat-card-header>
-          <mat-card-title>
-            <mat-icon>flash_on</mat-icon>
-            Quick Actions
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="actions-grid">
-            @if(authService.isAdmin()){
-              <button mat-raised-button color="primary" routerLink="/blogs-admin/create-post">
-                <mat-icon>add_circle</mat-icon>
-                Create New Post
-              </button>
-              <button mat-raised-button color="accent" routerLink="/blogs-admin/categories">
-                <mat-icon>category</mat-icon>
-                Manage Categories
-              </button>
-            }
-            <button mat-raised-button color="warn" routerLink="/blogs-admin/blogs">
-              <mat-icon>article</mat-icon>
-              View All Blogs
-            </button>
-            <button mat-raised-button color="primary" routerLink="/blogs/home">
-              <mat-icon>home</mat-icon>
-              Go to Blog Home
-            </button>
-          </div>
-        </mat-card-content>
-      </mat-card>
-    </div>
     
   </div>
 </div>
