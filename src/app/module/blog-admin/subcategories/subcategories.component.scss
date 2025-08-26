@@ -317,19 +317,10 @@
 
       // Delete Dialog Specific Styles
       &.delete-dialog {
-        max-width: 400px;
 
         .delete-content {
           padding: 24px;
           text-align: center;
-
-          .delete-icon {
-            font-size: 48px;
-            width: 48px;
-            height: 48px;
-            color: #e74c3c;
-            margin-bottom: 16px;
-          }
 
           h3 {
             margin: 0 0 16px 0;

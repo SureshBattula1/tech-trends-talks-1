@@ -442,8 +442,7 @@ export class ApiService {
     headers = headers.delete('Content-Type');
     
     const url = this.environmentService.getApiEndpoint('upload-image');
-    this.loggingService.debug(`API POST: ${url}`, { type, imageName: image.name });
-    
+  
     return this.http.post<ApiResponse<{ url: string; full_url: string }>>(url, formData, { headers })
       .pipe(
         catchError(this.handleError.bind(this))

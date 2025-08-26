@@ -58,7 +58,7 @@ app-navbar {
     top: 0;
     left: 0;
     right: 0;
-    z-index: 2;
+    z-index: 1;
     color: #b6e5ff;
     background: #2b3862;
 }
@@ -275,3 +275,26 @@ input[type="number"] {
 }
 
 
+.delete-dialog {
+  
+  max-width: 800px!important;
+
+  .delete-icon {
+    font-size: 30px;
+    width: 30px;
+    height: 30px;
+    color: #f44336;
+    margin-bottom: 0px
+  }
+  .dialog-actions{
+    display: flex;
+    justify-content: space-around;
+    gap: 22px;
+    margin: 24px;
+  }
+}
+
+.eligibility-checker-container,
+.calculator-container{
+  margin-top: 1rem!important;
+}

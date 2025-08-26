@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject, takeUntil } from 'rxjs';
-import { Editor, Toolbar } from 'ngx-editor';
+import { Editor, Toolbar, toHTML, schema   } from 'ngx-editor';
 
 import { ApiService, Blog, Category, Subcategory, ApiResponse, PaginatedResponse } from '../../../services/api.service';
 import { PaginationService } from '../../../services/pagination.service';
@@ -24,7 +24,6 @@ export class BlogsComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  // ngx-editor Configuration
   public editor!: Editor;
   public toolbar: Toolbar = [
     ['bold', 'italic'],
@@ -44,6 +43,7 @@ export class BlogsComponent implements OnInit, OnDestroy {
   blogs: Blog[] = [];
   categories: Category[] = [];
   subcategories: Subcategory[] = [];
+  filteredSubcategories: Subcategory[] = [];
   dataSource = new MatTableDataSource<Blog>();
   
   // Loading states
@@ -104,6 +104,7 @@ export class BlogsComponent implements OnInit, OnDestroy {
     this.loadSubcategories();
     this.loadBlogs();
     this.setupPagination();
+    this.setupFormListeners();
   }
 
   ngAfterViewInit(): void {
@@ -125,7 +126,7 @@ export class BlogsComponent implements OnInit, OnDestroy {
       excerpt: ['', [Validators.required, Validators.minLength(10)]],
       content: ['', [Validators.required, Validators.minLength(50)]],
       category_id: ['', Validators.required],
-      subcategory_id: [''],
+      subcategory_id: ['', Validators.required],
       author: ['', Validators.required],
       tags: [''],
       is_published: [false],
@@ -138,7 +139,7 @@ export class BlogsComponent implements OnInit, OnDestroy {
       excerpt: ['', [Validators.required, Validators.minLength(10)]],
       content: ['', [Validators.required, Validators.minLength(50)]],
       category_id: ['', Validators.required],
-      subcategory_id: [''],
+      subcategory_id: ['',Validators.required],
       author: ['', Validators.required],
       tags: [''],
       is_published: [false],
@@ -153,6 +154,38 @@ export class BlogsComponent implements OnInit, OnDestroy {
   private setupPagination(): void {
     // Don't subscribe to pagination state changes to avoid infinite loops
     // Blogs will be loaded when filters change or pagination is manually triggered
+  }
+
+  /**
+   * Setup form listeners for category-subcategory filtering
+   */
+  private setupFormListeners(): void {
+    // Listen to category changes in create form
+    this.blogForm.get('category_id')?.valueChanges.subscribe(categoryId => {
+      this.filterSubcategoriesByCategory(categoryId);
+      // Reset subcategory when category changes
+      this.blogForm.get('subcategory_id')?.setValue('');
+    });
+
+    // Listen to category changes in edit form
+    this.editForm.get('category_id')?.valueChanges.subscribe(categoryId => {
+      this.filterSubcategoriesByCategory(categoryId);
+      // Reset subcategory when category changes
+      this.editForm.get('subcategory_id')?.setValue('');
+    });
+  }
+
+  /**
+   * Filter subcategories based on selected category
+   */
+  private filterSubcategoriesByCategory(categoryId: number | string): void {
+    if (!categoryId || categoryId === '') {
+      this.filteredSubcategories = [];
+    } else {
+      this.filteredSubcategories = this.subcategories.filter(
+        subcategory => subcategory.category_id === Number(categoryId)
+      );
+    }
   }
 
   /**
@@ -284,6 +317,7 @@ export class BlogsComponent implements OnInit, OnDestroy {
   closeCreateDialog(): void {
     this.showCreateDialog = false;
     this.blogForm.reset();
+    this.filteredSubcategories = [];
   }
 
   /**
@@ -293,8 +327,11 @@ export class BlogsComponent implements OnInit, OnDestroy {
     if (this.blogForm.valid) {
       this.isCreating = true;
       
+      const jsonContent = this.blogForm.value.content;
+      const htmlContent = toHTML(jsonContent, schema);
       const blogData = {
         ...this.blogForm.value,
+        content: htmlContent,
         tags: this.blogForm.value.tags ? this.blogForm.value.tags.split(',').map((tag: string) => tag.trim()) : []
       };
 
@@ -323,6 +360,10 @@ export class BlogsComponent implements OnInit, OnDestroy {
    */
   openEditDialog(blog: Blog): void {
     this.selectedBlog = blog;
+    
+    // First set the category to filter subcategories
+    this.filterSubcategoriesByCategory(blog.category_id);
+    
     this.editForm.patchValue({
       title: blog.title,
       excerpt: blog.excerpt,
@@ -345,6 +386,7 @@ export class BlogsComponent implements OnInit, OnDestroy {
     this.showEditDialog = false;
     this.selectedBlog = null;
     this.editForm.reset();
+    this.filteredSubcategories = [];
   }
 
   /**
@@ -450,24 +492,6 @@ export class BlogsComponent implements OnInit, OnDestroy {
    */
   toggleBlogFeatured(blog: Blog): void {
     const newFeatured = !blog.is_featured;
-    // console.log(`Toggling blog ${blog.id} featured status to: ${newFeatured}`);
-    
-    // Note: You'll need to add updateBlog method to ApiService
-    // this.apiService.updateBlog(blog.id, { is_featured: newFeatured }).subscribe({
-    //   next: (response) => {
-    //     if (response.success) {
-    //       this.showSuccess(`Blog ${newFeatured ? 'featured' : 'unfeatured'} successfully`);
-    //       this.loadBlogs();
-    //     } else {
-    //       this.showError(response.message || 'Failed to update blog featured status');
-    //     }
-    //   },
-    //   error: (error) => {
-    //     console.error('Error updating blog featured status:', error);
-    //     this.showError('Failed to update blog featured status');
-    //     }
-    //   }
-    // });
 
     // Temporary implementation
     setTimeout(() => {
@@ -616,20 +640,5 @@ export class BlogsComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Test the upload endpoint to debug issues
-   */
-  testUploadEndpoint() {
-    // console.log('Testing upload endpoint...');
-    this.apiService.testImageUploadEndpoint().subscribe({
-      next: (response) => {
-        // console.log('Test endpoint response:', response);
-        this.showSuccess('Upload endpoint test successful!');
-      },
-      error: (error) => {
-        console.error('Test endpoint error:', error);
-        this.showError('Upload endpoint test failed!');
-      }
-    });
-  }
+ 
 }

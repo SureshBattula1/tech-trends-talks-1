@@ -8,14 +8,7 @@
       <mat-icon>add</mat-icon>
       Create Blog
     </button>
-    <button mat-raised-button 
-            color="accent" 
-            (click)="testUploadEndpoint()"
-            class="test-btn"
-            style="margin-left: 10px;">
-      <mat-icon>bug_report</mat-icon>
-      Test Upload
-    </button>
+    
   </div>
 
   <!-- Data Table -->
@@ -189,7 +182,7 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Excerpt</mat-label>
           <textarea matInput formControlName="excerpt" 
-                    rows="3" 
+                    rows="1" 
                     placeholder="Enter blog excerpt"></textarea>
           <mat-error *ngIf="blogForm.get('excerpt')?.hasError('required')">
             Excerpt is required
@@ -199,12 +192,54 @@
           </mat-error>
         </mat-form-field>
 
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Category</mat-label>
+            <mat-select formControlName="category_id">
+              <mat-option *ngFor="let category of categories" [value]="category.id">
+                {{ category.name }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="blogForm.get('category_id')?.hasError('required')">
+              Category is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Subcategory </mat-label>
+            <mat-select formControlName="subcategory_id">
+              <mat-option [value]="">None</mat-option>
+              <mat-option *ngFor="let subcategory of filteredSubcategories" [value]="subcategory.id">
+                {{ subcategory.name }}
+              </mat-option>
+            </mat-select>
+          <mat-error *ngIf="blogForm.get('subcategory_id')?.hasError('required')">
+            Sub Category is required
+          </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Author</mat-label>
+            <input matInput formControlName="author" placeholder="Enter author name">
+            <mat-error *ngIf="blogForm.get('author')?.hasError('required')">
+              Author is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Tags (comma separated)</mat-label>
+            <input matInput formControlName="tags" placeholder="Enter tags">
+          </mat-form-field>
+        </div>
+
         <div class="content-editor-container">
           <label class="editor-label">Content</label>
           <div class="editor-container">
             <ngx-editor-menu [editor]="editor" [toolbar]="toolbar" [customMenuRef]="customMenu"></ngx-editor-menu>
             <ngx-editor [editor]="editor" formControlName="content"></ngx-editor>
-            <input type="file" #imageInput (change)="onFileSelected($event)" style="display: none;">
+            <input type="file" #imageInput (change)="onFileSelected($event)" style="display: none;" accept="image/*">
 
             <!-- Create template reference for custom menu -->
             <ng-template #customMenu>
@@ -223,45 +258,6 @@
               Content must be at least 50 characters
             </mat-error>
           </div>
-        </div>
-
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Category</mat-label>
-            <mat-select formControlName="category_id">
-              <mat-option *ngFor="let category of categories" [value]="category.id">
-                {{ category.name }}
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="blogForm.get('category_id')?.hasError('required')">
-              Category is required
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Subcategory (Optional)</mat-label>
-            <mat-select formControlName="subcategory_id">
-              <mat-option [value]="">None</mat-option>
-              <mat-option *ngFor="let subcategory of subcategories" [value]="subcategory.id">
-                {{ subcategory.name }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Author</mat-label>
-            <input matInput formControlName="author" placeholder="Enter author name">
-            <mat-error *ngIf="blogForm.get('author')?.hasError('required')">
-              Author is required
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Tags (comma separated)</mat-label>
-            <input matInput formControlName="tags" placeholder="Enter tags">
-          </mat-form-field>
         </div>
 
         <div class="form-row">
@@ -372,7 +368,7 @@
             <mat-label>Subcategory (Optional)</mat-label>
             <mat-select formControlName="subcategory_id">
               <mat-option [value]="">None</mat-option>
-              <mat-option *ngFor="let subcategory of subcategories" [value]="subcategory.id">
+              <mat-option *ngFor="let subcategory of filteredSubcategories" [value]="subcategory.id">
                 {{ subcategory.name }}
               </mat-option>
             </mat-select>
