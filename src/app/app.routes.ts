@@ -15,7 +15,7 @@ export const routes: Routes = [
     { 
         path: 'blogs', 
         loadChildren: ()=> import('./module/blog/blog.module').then(m => m.BlogModule),
-        canActivate: [AuthGuard]
+        // canActivate: [AuthGuard]
     },
     { 
         path: 'blogs-admin', 
