@@ -52,7 +52,7 @@ app-footer{
         .admin-header {
             padding: 24px 16px 16px 16px;
             border-bottom: 1px solid #e0e0e0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary-custom-dark);
             color: white;
             text-align: center;
 
@@ -141,4 +141,8 @@ app-footer{
 
 .mat-drawer.mat-drawer-side {
     z-index: 1;
+}
+
+::ng-deep span.mat-mdc-list-item-unscoped-content.mdc-list-item__primary-text {
+    display: flex;
 }
