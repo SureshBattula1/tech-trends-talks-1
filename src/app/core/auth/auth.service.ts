@@ -3,12 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { User, LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, AuthState } from './auth.interfaces';
+import { EnvironmentService } from '../../services/environment.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
-  private readonly baseUrl = 'http://127.0.0.1:8000/api/v1';
+export class AuthService {  
+  
+  private readonly baseUrl:any = 'http://127.0.0.1:8000/api/v1';
   private readonly tokenKey = 'auth_token';
   private readonly userKey = 'auth_user';
 
@@ -23,9 +25,11 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private environmentService: EnvironmentService,
   ) {
     this.initializeAuth();
+    this.baseUrl = `${this.environmentService.apiUrl}/${this.environmentService.apiVersion}`;
   }
 
   private initializeAuth(): void {

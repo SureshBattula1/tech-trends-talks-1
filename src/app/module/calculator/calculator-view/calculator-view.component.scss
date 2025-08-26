@@ -3,45 +3,10 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background: #fafbfc;
   min-height: 100vh;
 }
 
-/* Header Section */
-.calculator-header {
-  text-align: center;
-  margin-bottom: 40px;
-  padding: 40px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 20px;
-  color: white;
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-
-  .header-content {
-    h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin: 0 0 16px 0;
-      letter-spacing: -0.5px;
-    }
-
-    p {
-      font-size: 1.1rem;
-      margin: 0;
-      opacity: 0.9;
-      font-weight: 400;
-      /* Hide visually but keep for SEO */
-      position: absolute;
-      left: -9999px;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-    }
-  }
-}
 
 /* Main Calculator Form */
 .calculator-main {
@@ -1287,7 +1252,6 @@
   .amount {
     font-weight: 600;
     color: #1f2937;
-    font-family: 'Monaco', 'Menlo', monospace;
   }
 }
 
@@ -1380,7 +1344,6 @@
   }
 
   .amount {
-    font-family: 'Monaco', 'Menlo', monospace;
     font-weight: 500;
     color: #1f2937;
   }
@@ -2197,7 +2160,6 @@
     text-align: center;
     font-size: 1.1rem;
     margin: 20px 0;
-    font-family: 'Courier New', monospace;
   }
 
   ul {

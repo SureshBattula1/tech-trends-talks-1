@@ -4,7 +4,7 @@ export const environment = {
   staging: true,
   
   // API Configuration
-  apiUrl: 'https://staging-api.techtrendtalks.com/api',
+  apiUrl: 'http://testing.api.techtrendstalks.com/api',
   apiVersion: 'v1',
   
   // App Configuration
