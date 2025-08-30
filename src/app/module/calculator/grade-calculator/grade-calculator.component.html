@@ -1,370 +1,833 @@
 <div class="grade-calculator-container">
-  <!-- Hero Section -->
-  <section class="hero-section animate-on-scroll">
-    <div class="hero-content">
-      <h1 class="hero-title" [@fadeInUp]>
-        <span class="gradient-text">Grade Calculator</span>
-      </h1>
-      <p class="hero-subtitle" [@fadeInUp]>
-        Calculate SGPA & CGPA with our professional grade calculator tool. 
-        Convert marks to grades and track your academic performance.
-      </p>
-      <div class="hero-features" [@fadeInUp]>
-        <div class="feature-item">
-          <span class="icon">🧮</span>
-          <span>SGPA Calculator</span>
-        </div>
-        <div class="feature-item">
-          <span class="icon">📈</span>
-          <span>CGPA Calculator</span>
-        </div>
-        <div class="feature-item">
-          <span class="icon">🎓</span>
-          <span>Grade Converter</span>
-        </div>
-      </div>
-    </div>
-    <div class="hero-visual" [@bounceIn]>
-      <div class="grade-circle">
-        <div class="inner-circle">
-          <span class="grade-letter">A+</span>
-          <span class="grade-point">9.0</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Grading System Info -->
-  <section class="grading-info animate-on-scroll">
-    <div class="container">
-      <h2 class="section-title" [@fadeInUp]>
-        <span class="icon">ℹ️</span>
-        Grading System (2015-16 onwards)
-      </h2>
-      <div class="grading-table-container" [@slideIn]>
-        <table class="grading-table">
-          <thead>
-            <tr>
-              <th>Marks Range</th>
-              <th>Letter Grade</th>
-              <th>Grade Point</th>
-              <th>Performance</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let grade of gradingSystem" 
-                [style.border-left-color]="getGradeColor(grade.grade)">
-              <td class="marks-range">
-                <span class="min-mark">{{grade.min === -1 ? 'Absent' : grade.min + '%'}}</span>
-                <span class="separator" *ngIf="grade.min !== -1">-</span>
-                <span class="max-mark" *ngIf="grade.min !== -1">{{grade.max}}%</span>
-              </td>
-              <td class="letter-grade" [style.color]="getGradeColor(grade.grade)">
-                {{grade.grade}}
-              </td>
-              <td class="grade-point">{{grade.gradePoint}}</td>
-              <td class="performance" [style.color]="getPerformanceColor(grade.performance)">
-                {{grade.performance}}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+  <!-- Header Section -->
+  <div class="calculator-header">
+    <div class="header-content">
+      <h1>Student Grade Calculate - SGPA & CGPA Online</h1>
+      <p>Use our free Grade Calculator to calculate SGPA and CGPA using SASTRA grading system. Convert marks to grades, analyze performance, and download detailed reports.</p>
+      
+      <!-- Enhanced SEO Keywords Section -->
+      <div class="seo-keywords" aria-hidden="true" style="display: none;">
+        <span class="keyword-tag">Grade Calculator</span>
+        <span class="keyword-tag">SGPA Calculator</span>
+        <span class="keyword-tag">CGPA Calculator</span>
+        <span class="keyword-tag">GPA Calculator</span>
+        <span class="keyword-tag">Marks to Grade Converter</span>
+        <span class="keyword-tag">Semester Grade Point Average</span>
+        <span class="keyword-tag">Cumulative Grade Point Average</span>
+        <span class="keyword-tag">SASTRA Grading System</span>
+        <span class="keyword-tag">Student Grade Calculator</span>
+        <span class="keyword-tag">Academic Performance Calculator</span>
+        <span class="keyword-tag">Grade Point Calculator</span>
+        <span class="keyword-tag">University Grade Calculator</span>
+        <span class="keyword-tag">College Grade Calculator</span>
+        <span class="keyword-tag">Engineering Grade Calculator</span>
+        <span class="keyword-tag">Academic GPA Calculator</span>
+        <span class="keyword-tag">Grade Analysis Tool</span>
+        <span class="keyword-tag">Performance Tracking</span>
+        <span class="keyword-tag">Academic Insights</span>
+        <span class="keyword-tag">Grade Distribution</span>
       </div>
       
-      <!-- Formula Section -->
-      <div class="formula-section" [@fadeInUp]>
-        <div class="formula-card">
-          <h3>SGPA Formula</h3>
-          <p class="formula">SGPA = (Σ Ci × Pi) / (Σ Ci)</p>
-          <p class="formula-desc">Where Ci is credits and Pi is grade points</p>
-        </div>
-        <div class="formula-card">
-          <h3>CGPA Formula</h3>
-          <p class="formula">CGPA = (Σ SGPAi × Ni) / (Σ Ni)</p>
-          <p class="formula-desc">Where SGPAi is SGPA of i-th semester and Ni is credits</p>
-        </div>
+      <!-- Additional SEO Content -->
+      <div class="seo-content" aria-hidden="true" style="display: none;">
+        <p>Our comprehensive Grade Calculator helps students calculate SGPA and CGPA using the SASTRA grading system (2015-16 onwards). Convert marks to grades, analyze academic performance, and track progress across semesters. Get detailed insights, grade distribution charts, and professional reports for academic planning.</p>
+        <p>Calculate grades for courses with marks from 0-100%, supporting all grade levels from S (Outstanding) to F (Fail). Our calculator provides instant SGPA and CGPA calculations with visual charts, performance analysis, and downloadable reports suitable for academic records and planning.</p>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- Calculator Form -->
-  <section class="calculator-section animate-on-scroll">
-    <div class="container">
-      <h2 class="section-title" [@fadeInUp]>
-        <span class="icon">✏️</span>
-        Enter Your Grades
-      </h2>
-      
-      <!-- Loading State -->
-      <div class="loading-state" *ngIf="!isFormReady">
-        <div class="loading-spinner">
-          <span class="icon spinner-icon">🔄</span>
+  <!-- Main Calculator Form -->
+  <div class="calculator-main">
+    <form [formGroup]="gradeCalculatorForm" class="form-container">
+      <!-- Student Information -->
+      <div class="student-info-section">
+        <div class="step-header">
+          <div class="step-number">1</div>
+          <div class="step-info">
+            <h3>Student Information</h3>
+            <p>Enter your basic details for the grade report</p>
+          </div>
         </div>
-        <p>Initializing Grade Calculator...</p>
+        
+        <div class="student-info-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Student Name *</label>
+              <input 
+                type="text" 
+                formControlName="studentName"
+                placeholder="Enter your full name"
+                class="form-input">
+            </div>
+            
+            <div class="form-group">
+              <label>Student ID</label>
+              <input 
+                type="text" 
+                formControlName="studentId"
+                placeholder="Enter student ID (optional)"
+                class="form-input">
+            </div>
+            
+            <div class="form-group">
+              <label>Academic Year</label>
+              <select formControlName="academicYear" class="form-input">
+                <option value="2024-25">2024-25</option>
+                <option value="2023-24">2023-24</option>
+                <option value="2022-23">2022-23</option>
+                <option value="2021-22">2021-22</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Form Content -->
-      <form [formGroup]="gradeCalculatorForm" (ngSubmit)="calculateResults()" class="calculator-form" *ngIf="isFormReady">
-        <div class="semesters-container" formArrayName="semesters">
-          <div class="semester-card" 
-               *ngFor="let semester of semestersArray.controls; let semesterIndex = index; trackBy: trackByIndex"
-               [@slideIn]>
+      <!-- Course Templates -->
+      <div class="course-templates-section">
+        <div class="step-header">
+          <div class="step-number">2</div>
+          <div class="step-info">
+            <h3>Quick Start Options</h3>
+            <p>Choose a template or start from scratch</p>
+          </div>
+        </div>
+        
+        <div class="template-buttons">
+          <button 
+            mat-stroked-button 
+            *ngFor="let template of Object.keys(courseTemplates)"
+            (click)="loadCourseTemplate(template)"
+            class="template-btn">
+            <mat-icon>school</mat-icon>
+            {{ template }}
+          </button>
+          
+          <button 
+            mat-stroked-button 
+            (click)="loadDemoData()"
+            class="template-btn demo-btn">
+            <mat-icon>play_arrow</mat-icon>
+            Load Demo Data
+          </button>
+        </div>
+      </div>
+
+      <!-- Semester Management -->
+      <div class="semester-section">
+        <div class="step-header">
+          <div class="step-number">3</div>
+          <div class="step-info">
+            <h3>Semester Details</h3>
+            <p>Add your semesters and courses</p>
+          </div>
+        </div>
+        
+        <div class="semester-controls">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="addSemester()"
+            class="add-semester-btn">
+            <mat-icon>add</mat-icon>
+            Add Semester
+          </button>
+          
+          <button 
+            mat-button 
+            (click)="resetCalculator()"
+            class="reset-btn">
+            <mat-icon>refresh</mat-icon>
+            Reset Calculator
+          </button>
+        </div>
+
+        <!-- Semesters List -->
+        <div formArrayName="semesters" class="semesters-list" [@staggerList]>
+          <div 
+            class="semester-card" 
+            *ngFor="let semester of semestersArray.controls; let semesterIndex = index; trackBy: trackByIndex"
+            [formGroupName]="semesterIndex"
+            [@slideIn]>
             
             <div class="semester-header">
               <div class="semester-title">
-                <span class="icon">📅</span>
-                <input type="text" 
-                       [formControlName]="'name'" 
-                       placeholder="Semester Name (e.g., Semester 1)"
-                       class="semester-name-input">
+                <input 
+                  type="text" 
+                  formControlName="name"
+                  placeholder="Semester Name"
+                  class="semester-name-input">
               </div>
-              <button type="button" 
-                      class="btn-remove-semester"
-                      (click)="removeSemester(semesterIndex)"
-                      *ngIf="semestersArray.length > 1">
-                <span class="icon">🗑️</span>
-              </button>
-            </div>
-
-            <div class="courses-container" formArrayName="courses">
-              <div class="course-row" 
-                   *ngFor="let course of getCoursesArray(semester); let courseIndex = index; trackBy: trackByIndex"
-                   [@fadeInUp]>
-                
-                <div class="course-inputs">
-                  <input type="text" 
-                         [formControlName]="'name'" 
-                         placeholder="Course Name"
-                         class="course-name-input">
-                  
-                  <div class="numeric-inputs">
-                    <div class="input-group">
-                      <label>Credits</label>
-                      <input type="number" 
-                             [formControlName]="'credits'" 
-                             min="1" 
-                             max="10"
-                             class="credits-input">
-                    </div>
-                    
-                    <div class="input-group">
-                      <label>Marks (%)</label>
-                      <input type="number" 
-                             [formControlName]="'marks'" 
-                             min="0" 
-                             max="100"
-                             class="marks-input">
-                    </div>
-                  </div>
-                </div>
-
-                <button type="button" 
-                        class="btn-remove-course"
-                        (click)="removeCourse(semesterIndex, courseIndex)"
-                        *ngIf="getCoursesArray(semester).length > 1">
-                  <span class="icon">❌</span>
+              
+              <div class="semester-actions">
+                <button 
+                  mat-icon-button 
+                  (click)="removeSemester(semesterIndex)"
+                  [disabled]="semestersArray.length <= 1"
+                  class="remove-btn">
+                  <mat-icon>delete</mat-icon>
                 </button>
               </div>
             </div>
 
-            <button type="button" 
-                    class="btn-add-course"
-                    (click)="addCourse(semesterIndex)">
-              <span class="icon">➕</span>
-              Add Course
-            </button>
+            <!-- Courses List -->
+            <div formArrayName="courses" class="courses-list">
+              <div 
+                class="course-row" 
+                *ngFor="let course of getCoursesArray(semester); let courseIndex = index; trackBy: trackByIndex"
+                [formGroupName]="courseIndex">
+                
+                <div class="course-inputs">
+                  <div class="course-name">
+                    <input 
+                      type="text" 
+                      formControlName="name"
+                      placeholder="Course Name"
+                      class="course-input">
+                  </div>
+                  
+                  <div class="course-credits">
+                    <input 
+                      type="number" 
+                      formControlName="credits"
+                      placeholder="Credits"
+                      min="1" 
+                      max="10"
+                      class="course-input credits-input">
+                  </div>
+                  
+                  <div class="course-marks">
+                    <input 
+                      type="number" 
+                      formControlName="marks"
+                      placeholder="Marks %"
+                      min="0" 
+                      max="100"
+                      class="course-input marks-input">
+                  </div>
+                  
+                  <div class="course-grade" *ngIf="course.get('marks')?.value > 0">
+                    <span 
+                      class="grade-badge"
+                      [style.background-color]="getGradeColor(getGradeInfo(course.get('marks')?.value).grade)">
+                      {{ getGradeInfo(course.get('marks')?.value).grade }}
+                    </span>
+                  </div>
+                </div>
+                
+                <div class="course-actions">
+                  <button 
+                    mat-icon-button 
+                    (click)="removeCourse(semesterIndex, courseIndex)"
+                    [disabled]="getCoursesArray(semester).length <= 1"
+                    class="remove-course-btn">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </div>
+              
+              <button 
+                mat-button 
+                (click)="addCourse(semesterIndex)"
+                class="add-course-btn">
+                <mat-icon>add</mat-icon>
+                Add Course
+              </button>
+            </div>
           </div>
         </div>
 
-        <div class="form-actions" [@fadeInUp]>
-          <button type="button" 
-                  class="btn-add-semester"
-                  (click)="addSemester()">
-            <span class="icon">⭕</span>
-            Add Semester
-          </button>
-          
-          <button type="button" 
-                  class="btn-demo"
-                  (click)="loadDemoData()">
-            <span class="icon">▶️</span>
-            Load Demo Data
-          </button>
-          
-          <button type="submit" 
-                  class="btn-calculate"
-                  [disabled]="!gradeCalculatorForm.valid">
-            <span class="icon">🧮</span>
-            Calculate Results
-          </button>
-          
-          <button type="button" 
-                  class="btn-reset"
-                  (click)="resetCalculator()">
-            <span class="icon">🔄</span>
-            Reset
+        <!-- Calculate Button -->
+        <div class="calculate-section">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="calculateResults()"
+            [disabled]="!gradeCalculatorForm.valid"
+            class="calculate-btn"
+            [@pulse]="animationState">
+            <mat-icon>calculate</mat-icon>
+            Calculate Grades
           </button>
         </div>
-      </form>
-    </div>
-  </section>
+      </div>
+    </form>
+  </div>
 
   <!-- Results Section -->
-  <section class="results-section animate-on-scroll" #resultSection *ngIf="showResults">
-    <div class="container">
-      <h2 class="section-title" [@fadeInUp]>
-        <span class="icon">📊</span>
-        Your Results
-      </h2>
+  <div class="results-section" *ngIf="showResults" #resultSection>
+    <!-- Results Header -->
+    <div class="results-header">
+      <div class="header-icon">
+        <mat-icon>school</mat-icon>
+      </div>
+      <div class="header-content">
+        <h2>Your Academic Results</h2>
+        <p>Comprehensive analysis of your academic performance</p>
+      </div>
+    </div>
 
-      <!-- Overall Results -->
-      <div class="overall-results" [@bounceIn]>
-        <div class="result-card main-result" [@pulse]="animationState">
-          <div class="result-icon">
-            <span class="icon">🏆</span>
+    <!-- Main Results Layout -->
+    <div class="results-main-layout">
+      <!-- Summary Cards Grid -->
+      <div class="summary-cards-grid">
+        <div class="summary-card primary">
+          <div class="card-header">
+            <div class="card-icon">
+              <mat-icon>star</mat-icon>
+            </div>
+            <div class="card-badge">Overall</div>
           </div>
-          <div class="result-content">
+          <div class="card-content">
             <h3>CGPA</h3>
-            <div class="result-value">{{cgpa.toFixed(2)}}</div>
-            <div class="result-percentage">{{percentage.toFixed(1)}}%</div>
+            <div class="amount">{{ cgpa | number:'1.2-2' }}</div>
+            <p class="description">Cumulative Grade Point Average</p>
+          </div>
+        </div>
+
+        <div class="summary-card secondary">
+          <div class="card-header">
+            <div class="card-icon">
+              <mat-icon>trending_up</mat-icon>
+            </div>
+            <div class="card-badge">Percentage</div>
+          </div>
+          <div class="card-content">
+            <h3>Percentage</h3>
+            <div class="amount">{{ percentage | number:'1.1-1' }}%</div>
+            <p class="description">Equivalent percentage</p>
+          </div>
+        </div>
+
+        <div class="summary-card accent">
+          <div class="card-header">
+            <div class="card-icon">
+              <mat-icon>book</mat-icon>
+            </div>
+            <div class="card-badge">Total</div>
+          </div>
+          <div class="card-content">
+            <h3>Total Credits</h3>
+            <div class="amount">{{ gradeAnalysis?.totalCredits || 0 }}</div>
+            <p class="description">Credits completed</p>
+          </div>
+        </div>
+
+        <div class="summary-card info">
+          <div class="card-header">
+            <div class="card-icon">
+              <mat-icon>class</mat-icon>
+            </div>
+            <div class="card-badge">Courses</div>
+          </div>
+          <div class="card-content">
+            <h3>Total Courses</h3>
+            <div class="amount">{{ gradeAnalysis?.totalCourses || 0 }}</div>
+            <p class="description">Courses completed</p>
           </div>
         </div>
       </div>
 
-      <!-- Semester Results -->
-      <div class="semester-results" [@slideIn]>
-        <div class="semester-result-card" 
-             *ngFor="let semester of semesters; trackBy: trackByIndex"
-             [@fadeInUp]>
+      <!-- Chart Container -->
+      <div class="chart-container">
+        <div class="chart-header">
+          <h3>Grade Distribution</h3>
+          <p>Visual breakdown of your grades</p>
+        </div>
+        <div class="chart-wrapper">
+          <canvas baseChart
+            [data]="chartData"
+            [type]="chartType"
+            [options]="chartOptions">
+          </canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance Analysis -->
+    <div class="performance-analysis" *ngIf="gradeAnalysis">
+      <div class="analysis-header">
+        <h3>📊 Performance Analysis</h3>
+        <p>Detailed insights about your academic performance</p>
+      </div>
+      
+      <div class="analysis-grid">
+        <div class="analysis-card">
+          <h4>Best Semester</h4>
+          <div class="analysis-value">{{ gradeAnalysis.bestSemester }}</div>
+          <p>Highest SGPA achieved</p>
+        </div>
+        
+        <div class="analysis-card">
+          <h4>Worst Semester</h4>
+          <div class="analysis-value">{{ gradeAnalysis.worstSemester }}</div>
+          <p>Lowest SGPA achieved</p>
+        </div>
+        
+        <div class="analysis-card">
+          <h4>Performance Trend</h4>
+          <div class="analysis-value trend-{{ gradeAnalysis.performanceTrend }}">
+            {{ gradeAnalysis.performanceTrend | titlecase }}
+          </div>
+          <p>Academic progress direction</p>
+        </div>
+        
+        <div class="analysis-card">
+          <h4>Average SGPA</h4>
+          <div class="analysis-value">{{ gradeAnalysis.averageSGPA | number:'1.2-2' }}</div>
+          <p>Mean semester performance</p>
+        </div>
+      </div>
+
+      <!-- Performance Insights -->
+      <div class="insights-section" *ngIf="performanceInsights.length > 0">
+        <h4>🎯 Performance Insights</h4>
+        <div class="insights-list">
+          <div class="insight-item" *ngFor="let insight of performanceInsights">
+            <mat-icon>lightbulb</mat-icon>
+            <span>{{ insight }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="recommendations-section" *ngIf="gradeAnalysis.recommendations.length > 0">
+        <h4>💡 Recommendations</h4>
+        <div class="recommendations-list">
+          <div class="recommendation-item" *ngFor="let recommendation of gradeAnalysis.recommendations">
+            <mat-icon>recommend</mat-icon>
+            <span>{{ recommendation }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Download Reports Section -->
+    <div class="download-reports-section">
+      <div class="reports-header">
+        <h3>📥 Download Reports</h3>
+        <p>Get detailed information in your preferred format</p>
+      </div>
+      
+      <div class="reports-buttons">
+        <button mat-raised-button color="primary" (click)="exportToPDF()" class="report-btn">
+          <mat-icon>picture_as_pdf</mat-icon>
+          Download PDF Report
+        </button>
+        
+        <button mat-raised-button color="accent" (click)="exportToExcel()" class="report-btn">
+          <mat-icon>table_chart</mat-icon>
+          Download Excel Report
+        </button>
+        
+        <button mat-raised-button color="warn" (click)="shareResults()" class="report-btn">
+          <mat-icon>share</mat-icon>
+          Share Results
+        </button>
+      </div>
+    </div>
+
+    <!-- Semester Details -->
+    <div class="semester-details" *ngIf="semesters.length > 0">
+      <div class="details-header">
+        <h3>📚 Semester Details</h3>
+        <p>Click on any semester to view detailed breakdown</p>
+      </div>
+      
+      <div class="semester-cards">
+        <div 
+          class="semester-detail-card" 
+          *ngFor="let semester of semesters; let semesterIndex = index; trackBy: trackByIndex"
+          [@fadeInUp]>
           
-          <div class="semester-header">
-            <h3 class="semester-name">
-              <span class="icon">📅</span>
-              {{semester.name}}
-            </h3>
-            <div class="semester-summary">
-              <span class="sgpa">
-                SGPA: <strong>{{semester.sgpa.toFixed(2)}}</strong>
-              </span>
-              <span class="credits">
-                Credits: <strong>{{semester.credits}}</strong>
-              </span>
-            </div>
-          </div>
-
-          <div class="courses-results">
-            <div class="course-result" 
-                 *ngFor="let course of semester.courses; trackBy: trackByIndex">
-              
-              <div class="course-info">
-                <span class="course-name">{{course.name}}</span>
-                <span class="course-credits">{{course.credits}} credits</span>
-              </div>
-              
-              <div class="course-grades">
-                <span class="marks">{{course.marks === -1 ? 'Absent' : course.marks + '%'}}</span>
-                <span class="grade" [style.background-color]="getGradeColor(course.grade)">
-                  {{course.grade}}
+          <div class="semester-card-header" (click)="toggleSemesterExpansion(semesterIndex)">
+            <div class="semester-info">
+              <h4>{{ semester.name }}</h4>
+              <div class="semester-stats">
+                <span class="stat">
+                  <strong>SGPA:</strong> {{ semester.sgpa | number:'1.2-2' }}
                 </span>
-                <span class="grade-point">{{course.gradePoint}}</span>
-                <span class="performance" [style.color]="getPerformanceColor(course.performance)">
-                  {{course.performance}}
+                <span class="stat">
+                  <strong>Credits:</strong> {{ semester.credits }}
+                </span>
+                <span class="stat">
+                  <strong>Avg Marks:</strong> {{ semester.averageMarks | number:'1.1-1' }}%
                 </span>
               </div>
             </div>
+            
+            <div class="expand-icon">
+              <mat-icon [@expandCollapse]="isSemesterExpanded(semesterIndex) ? 'expanded' : 'collapsed'">
+                {{ isSemesterExpanded(semesterIndex) ? 'expand_less' : 'expand_more' }}
+              </mat-icon>
+            </div>
+          </div>
+          
+          <div class="semester-courses" *ngIf="isSemesterExpanded(semesterIndex)">
+            <div class="courses-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Course</th>
+                    <th>Credits</th>
+                    <th>Marks</th>
+                    <th>Grade</th>
+                    <th>Grade Point</th>
+                    <th>Performance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let course of semester.courses; trackBy: trackByIndex">
+                    <td>{{ course.name }}</td>
+                    <td>{{ course.credits }}</td>
+                    <td>{{ course.marks }}%</td>
+                    <td>
+                      <span 
+                        class="grade-badge"
+                        [style.background-color]="course.color">
+                        {{ course.grade }}
+                      </span>
+                    </td>
+                    <td>{{ course.gradePoint }}</td>
+                    <td>
+                      <span 
+                        class="performance-badge"
+                        [style.background-color]="getPerformanceColor(course.performance)">
+                        {{ course.performance }}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
-
-      <!-- Share Results -->
-      <div class="share-results" [@fadeInUp]>
-        <h3>Share Your Results</h3>
-        <div class="share-buttons">
-          <button class="btn-share" (click)="shareResults()">
-            <span class="icon">📤</span>
-            Share
-          </button>
-          <button class="btn-download" (click)="downloadResults()">
-            <span class="icon">⬇️</span>
-            Download PDF
-          </button>
-        </div>
-      </div>
     </div>
-  </section>
+  </div>
 
-  <!-- How to Use Section -->
-  <section class="how-to-use animate-on-scroll">
-    <div class="container">
-      <h2 class="section-title" [@fadeInUp]>
-        <span class="icon">❓</span>
-        How to Use
-      </h2>
+  <!-- Grading System Section -->
+  <div class="grading-system-section">
+    <div class="system-header">
+      <h2>📋 SASTRA Grading System (2015-16 onwards)</h2>
+      <p>Complete grading system for students admitted in academic year 2015-16 and afterwards</p>
+    </div>
+    
+    <div class="grading-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Marks Secured</th>
+            <th>Letter Grade</th>
+            <th>Grade Point</th>
+            <th>Description of Performance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let grade of gradingSystem; trackBy: trackByIndex">
+            <td>
+              <span *ngIf="grade.min === -1">Absent</span>
+              <span *ngIf="grade.min >= 0">{{ grade.min }}{{ grade.max === 100 ? '+' : '-' }}{{ grade.max }}%</span>
+            </td>
+            <td>
+              <span 
+                class="grade-badge"
+                [style.background-color]="grade.color">
+                {{ grade.grade }}
+              </span>
+            </td>
+            <td>{{ grade.gradePoint }}</td>
+            <td>{{ grade.performance }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Formula Section -->
+    <div class="formula-section">
+      <h3>📐 Calculation Formulas</h3>
       
-      <div class="steps-container">
-        <div class="step" [@fadeInUp]>
-          <div class="step-number">1</div>
-          <div class="step-content">
-            <h3>Enter Course Details</h3>
-            <p>Add your course names, credits, and marks for each semester.</p>
-          </div>
+      <div class="formula-card">
+        <h4>SGPA (Semester Grade Point Average)</h4>
+        <div class="formula">
+          SGPA = (Σ Ci × Pi) / (Σ Ci)
         </div>
-        
-        <div class="step" [@fadeInUp]>
-          <div class="step-number">2</div>
-          <div class="step-content">
-            <h3>Calculate Results</h3>
-            <p>Click calculate to get your SGPA and CGPA instantly.</p>
-          </div>
-        </div>
-        
-        <div class="step" [@fadeInUp]>
-          <div class="step-number">3</div>
-          <div class="step-content">
-            <h3>View Performance</h3>
-            <p>See detailed breakdown of grades and performance for each course.</p>
-          </div>
-        </div>
+        <p>Where:</p>
+        <ul>
+          <li><strong>Ci</strong> = Credit assigned to the i-th course</li>
+          <li><strong>Pi</strong> = Grade point secured in the i-th course</li>
+          <li><strong>n</strong> = Number of courses registered for examinations</li>
+        </ul>
       </div>
-    </div>
-  </section>
-
-  <!-- SEO Content -->
-  <section class="seo-content animate-on-scroll">
-    <div class="container">
-      <h2 class="section-title" [@fadeInUp]>
-        <span class="icon">🔍</span>
-        About Grade Calculator
-      </h2>
       
-      <div class="content-grid">
-        <div class="content-card" [@fadeInUp]>
-          <h3>What is SGPA?</h3>
-          <p>
-            SGPA (Semester Grade Point Average) is the average of grade points earned in all courses 
-            taken during a specific semester. It's calculated using the formula: 
-            <strong>SGPA = (Σ Ci × Pi) / (Σ Ci)</strong> where Ci is credits and Pi is grade points.
-          </p>
+      <div class="formula-card">
+        <h4>CGPA (Cumulative Grade Point Average)</h4>
+        <div class="formula">
+          CGPA = (Σ (SGPA)i × Ni) / (Σ Ni)
         </div>
-        
-        <div class="content-card" [@fadeInUp]>
-          <h3>What is CGPA?</h3>
-          <p>
-            CGPA (Cumulative Grade Point Average) is the average of SGPA across all semesters. 
-            It's calculated using: <strong>CGPA = (Σ SGPAi × Ni) / (Σ Ni)</strong> where 
-            SGPAi is the SGPA of the i-th semester and Ni is the number of credits.
-          </p>
-        </div>
-        
-        <div class="content-card" [@fadeInUp]>
-          <h3>Grade Conversion</h3>
-          <p>
-            Our calculator automatically converts your marks to the appropriate letter grades 
-            and grade points based on the standard 10-point grading scale. You can also 
-            convert CGPA to percentage by multiplying by 10.
-          </p>
-        </div>
+        <p>Where:</p>
+        <ul>
+          <li><strong>(SGPA)i</strong> = SGPA of i-th semester</li>
+          <li><strong>Ni</strong> = Number of credits in i-th semester</li>
+          <li><strong>k</strong> = Number of semesters completed</li>
+        </ul>
       </div>
     </div>
-  </section>
+  </div>
+
+  <!-- SEO Content Section -->
+  <div class="seo-content-section">
+    <div class="seo-container">
+      
+      <!-- What is Grade Calculator Section -->
+      <section class="seo-section">
+        <h2>What is a Grade Calculator?</h2>
+        <p>A <strong>Grade Calculator</strong> is an educational tool that helps students calculate their academic performance metrics like SGPA (Semester Grade Point Average) and CGPA (Cumulative Grade Point Average). It converts marks to grades and provides comprehensive analysis of academic performance.</p>
+        
+        <h3>Why Use Our Grade Calculator?</h3>
+        <ul>
+          <li><strong>SASTRA Compliant:</strong> Uses official SASTRA grading system (2015-16 onwards)</li>
+          <li><strong>Instant Calculations:</strong> Get SGPA and CGPA instantly with detailed breakdowns</li>
+          <li><strong>Performance Analysis:</strong> Track academic progress and identify areas for improvement</li>
+          <li><strong>Visual Charts:</strong> Understand grade distribution with interactive charts</li>
+          <li><strong>Export Reports:</strong> Download professional PDF and Excel reports</li>
+          <li><strong>Mobile Friendly:</strong> Works perfectly on all devices</li>
+        </ul>
+      </section>
+
+      <!-- Enhanced FAQ Section -->
+      <section class="seo-section">
+        <h2>Frequently Asked Questions (FAQ)</h2>
+        <div class="faq-grid">
+          <div class="faq-item" [class.active]="activeFaqIndex === 0" (click)="toggleFaq(0)">
+            <div class="faq-question">
+              <h3>How to calculate SGPA?</h3>
+              <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>SGPA = (Σ Ci × Pi) / (Σ Ci) where Ci is credit assigned to i-th course and Pi is grade point secured in i-th course.</p>
+            </div>
+          </div>
+          
+          <div class="faq-item" [class.active]="activeFaqIndex === 1" (click)="toggleFaq(1)">
+            <div class="faq-question">
+              <h3>How to calculate CGPA?</h3>
+              <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>CGPA = (Σ (SGPA)i × Ni) / (Σ Ni) where (SGPA)i is SGPA of i-th semester and Ni is number of credits in i-th semester.</p>
+            </div>
+          </div>
+          
+          <div class="faq-item" [class.active]="activeFaqIndex === 2" (click)="toggleFaq(2)">
+            <div class="faq-question">
+              <h3>What is the SASTRA grading system?</h3>
+              <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>S (91-100%): Outstanding (10 points), A+ (86-90%): Excellent (9 points), A (75-85%): Very Good (8 points), B (66-74%): Good (7 points), C (55-65%): Satisfactory (6 points), D (50-54%): Pass (5 points), F (0-49%): Fail (0 points)</p>
+            </div>
+          </div>
+          
+          <div class="faq-item" [class.active]="activeFaqIndex === 3" (click)="toggleFaq(3)">
+            <div class="faq-question">
+              <h3>How to convert CGPA to percentage?</h3>
+              <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>Multiply your CGPA by 10 to get the equivalent percentage. For example, CGPA 8.5 = 85%.</p>
+            </div>
+          </div>
+          
+          <div class="faq-item" [class.active]="activeFaqIndex === 4" (click)="toggleFaq(4)">
+            <div class="faq-question">
+              <h3>What is a good CGPA?</h3>
+              <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>CGPA 8.0+ is considered excellent, 7.0-7.9 is good, 6.0-6.9 is satisfactory, and below 6.0 needs improvement.</p>
+            </div>
+          </div>
+          
+          <div class="faq-item" [class.active]="activeFaqIndex === 5" (click)="toggleFaq(5)">
+            <div class="faq-question">
+              <h3>How to improve my CGPA?</h3>
+              <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>Focus on improving performance in core subjects, maintain consistent study habits, seek help for difficult courses, and consider reducing course load if necessary.</p>
+            </div>
+          </div>
+          
+          <div class="faq-item" [class.active]="activeFaqIndex === 6" (click)="toggleFaq(6)">
+            <div class="faq-question">
+              <h3>Can I calculate grades for multiple semesters?</h3>
+              <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>Yes, our calculator supports multiple semesters. Add as many semesters as needed to calculate your overall CGPA.</p>
+            </div>
+          </div>
+          
+          <div class="faq-item" [class.active]="activeFaqIndex === 7" (click)="toggleFaq(7)">
+            <div class="faq-question">
+              <h3>How accurate is the grade calculator?</h3>
+              <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>Our calculator uses the official SASTRA formulas and grading system, ensuring 100% accuracy in calculations.</p>
+            </div>
+          </div>
+          
+          <div class="faq-item" [class.active]="activeFaqIndex === 8" (click)="toggleFaq(8)">
+            <div class="faq-question">
+              <h3>Can I download my grade report?</h3>
+              <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>Yes, you can download detailed reports in PDF and Excel formats for record keeping and academic planning.</p>
+            </div>
+          </div>
+          
+          <div class="faq-item" [class.active]="activeFaqIndex === 9" (click)="toggleFaq(9)">
+            <div class="faq-question">
+              <h3>What if I have failed courses?</h3>
+              <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>Failed courses (F grade) contribute 0 grade points to your SGPA and CGPA. Address failed courses immediately to improve your academic standing.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Benefits Section -->
+      <section class="seo-section">
+        <h2>Benefits of Using Our Grade Calculator</h2>
+        <div class="benefits-grid">
+          <div class="benefit-item">
+            <h3>🎯 Accurate Calculations</h3>
+            <p>Uses official SASTRA formulas and grading system for precise SGPA and CGPA calculations.</p>
+          </div>
+          
+          <div class="benefit-item">
+            <h3>📊 Performance Analysis</h3>
+            <p>Get detailed insights into your academic performance with trend analysis and recommendations.</p>
+          </div>
+          
+          <div class="benefit-item">
+            <h3>📱 Mobile Friendly</h3>
+            <p>Responsive design that works perfectly on smartphones, tablets, and desktop computers.</p>
+          </div>
+          
+          <div class="benefit-item">
+            <h3>💾 Export Reports</h3>
+            <p>Download professional PDF and Excel reports for academic records and planning.</p>
+          </div>
+          
+          <div class="benefit-item">
+            <h3>🚀 Instant Results</h3>
+            <p>Get immediate calculations without any delays or need for registration.</p>
+          </div>
+          
+          <div class="benefit-item">
+            <h3>🔒 Privacy Protected</h3>
+            <p>No personal data collection or storage. All calculations are performed locally.</p>
+          </div>
+          
+          <div class="benefit-item">
+            <h3>📈 Visual Charts</h3>
+            <p>Understand your grade distribution with interactive charts and visual breakdowns.</p>
+          </div>
+          
+          <div class="benefit-item">
+            <h3>🎓 Academic Templates</h3>
+            <p>Quick start with predefined course templates for different engineering branches.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tips for Better Grades Section -->
+      <section class="seo-section">
+        <h2>Tips for Better Academic Performance</h2>
+        <div class="tips-container">
+          <div class="tip-item">
+            <h3>1. Consistent Study Habits</h3>
+            <p>Maintain regular study schedules and avoid last-minute cramming for better retention.</p>
+          </div>
+          
+          <div class="tip-item">
+            <h3>2. Focus on Core Subjects</h3>
+            <p>Prioritize subjects that carry more credits and are fundamental to your field.</p>
+          </div>
+          
+          <div class="tip-item">
+            <h3>3. Seek Help Early</h3>
+            <p>Don't hesitate to ask for help from professors or tutors when you face difficulties.</p>
+          </div>
+          
+          <div class="tip-item">
+            <h3>4. Practice Regularly</h3>
+            <p>Solve practice problems and previous year questions to improve understanding.</p>
+          </div>
+          
+          <div class="tip-item">
+            <h3>5. Manage Time Effectively</h3>
+            <p>Plan your study schedule and allocate time based on subject difficulty and credit weight.</p>
+          </div>
+          
+          <div class="tip-item">
+            <h3>6. Review Performance</h3>
+            <p>Regularly analyze your grades to identify weak areas and work on improvement.</p>
+          </div>
+          
+          <div class="tip-item">
+            <h3>7. Stay Organized</h3>
+            <p>Keep track of assignments, deadlines, and exam schedules to avoid last-minute stress.</p>
+          </div>
+          
+          <div class="tip-item">
+            <h3>8. Group Study</h3>
+            <p>Collaborate with classmates for better understanding and knowledge sharing.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Related Tools Section -->
+      <section class="seo-section">
+        <h2>Related Educational Tools</h2>
+        <div class="related-tools">
+          <a href="/calculator/emi-calculator" class="tool-link">
+            <h3>💰 EMI Calculator</h3>
+            <p>Calculate loan EMIs and repayment schedules</p>
+          </a>
+          
+          <a href="/calculator/sip-calculator" class="tool-link">
+            <h3>📈 SIP Calculator</h3>
+            <p>Plan your investments and calculate returns</p>
+          </a>
+          
+          <a href="/loan-eligibility-calculator/checker" class="tool-link">
+            <h3>✅ Loan Eligibility Calculator</h3>
+            <p>Check your loan approval chances</p>
+          </a>
+          
+          <a href="/blogs/home" class="tool-link">
+            <h3>📚 Educational Blog</h3>
+            <p>Read expert articles on academics and finance</p>
+          </a>
+        </div>
+      </section>
+
+      <!-- Call to Action Section -->
+      <section class="seo-section cta-section">
+        <h2>Start Calculating Your Grades Today!</h2>
+        <p>Use our free Grade Calculator to track your academic progress, analyze performance, and plan your educational journey effectively.</p>
+        <div class="cta-buttons">
+          <button class="cta-primary" (click)="scrollToCalculator()">Calculate Grades Now</button>
+          <button class="cta-secondary" (click)="downloadGuide()">Download Grade Guide</button>
+        </div>
+      </section>
+
+    </div>
+  </div>
 </div>

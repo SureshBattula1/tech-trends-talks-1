@@ -31,10 +31,6 @@ export const routes: Routes = [
         path: 'loan-eligibility-calculator', 
         loadChildren: () => import('./module/eligibility-checker/eligibility-checker.module').then(m => m.EligibilityCheckerModule) 
     },
-    { 
-        path: 'grade-calculator', 
-        loadChildren: () => import('./module/grade-calculator/grade-calculator.module').then(m => m.GradeCalculatorModule) 
-    },
     { path: '', redirectTo:'calculator', pathMatch: 'full' },
     { path: '**', component: PageNotFoundComponent}
 ];
