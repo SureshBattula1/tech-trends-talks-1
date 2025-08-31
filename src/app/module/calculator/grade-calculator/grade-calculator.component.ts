@@ -219,8 +219,13 @@ export class GradeCalculatorComponent implements OnInit {
     setTimeout(() => {
       this.addSemester();
       this.isFormReady = true;
-      this.cd.markForCheck();
+      this.cd.detectChanges();
     }, 0);
+    
+    // Subscribe to form value changes to ensure UI updates
+    this.gradeCalculatorForm.valueChanges.subscribe(() => {
+      this.cd.detectChanges();
+    });
   }
 
   private updateMetaTags(): void {
@@ -347,17 +352,30 @@ export class GradeCalculatorComponent implements OnInit {
 
     this.semestersArray.push(semesterGroup);
     this.addCourse(this.semestersArray.length - 1);
-    this.cd.markForCheck();
+    
+    // Force update validity and trigger change detection
+    this.semestersArray.updateValueAndValidity({ emitEvent: true });
+    this.gradeCalculatorForm.updateValueAndValidity({ emitEvent: true });
+    
+    // Force change detection
+    this.cd.detectChanges();
   }
 
   removeSemester(index: number): void {
     if (this.semestersArray.length > 1) {
       this.semestersArray.removeAt(index);
       this.expandedSemesters.delete(index);
+      
+      // Force update validity and trigger change detection
+      this.semestersArray.updateValueAndValidity({ emitEvent: true });
+      this.gradeCalculatorForm.updateValueAndValidity({ emitEvent: true });
+      
+      // Force change detection
+      this.cd.detectChanges();
+      
       if (this.semestersArray.length > 0) {
         this.calculateResults();
       }
-      this.cd.markForCheck();
     }
   }
 
@@ -383,7 +401,13 @@ export class GradeCalculatorComponent implements OnInit {
     });
 
     coursesArray.push(courseGroup);
-    this.cd.markForCheck();
+    
+    // Force update validity and trigger change detection
+    coursesArray.updateValueAndValidity({ emitEvent: true });
+    semesterControl.updateValueAndValidity({ emitEvent: true });
+    
+    // Force change detection
+    this.cd.detectChanges();
   }
 
   removeCourse(semesterIndex: number, courseIndex: number): void {
@@ -400,12 +424,17 @@ export class GradeCalculatorComponent implements OnInit {
     if (!coursesArray || courseIndex < 0 || courseIndex >= coursesArray.length) {
       return;
     }
-    console.log('coursesArray', coursesArray);
-    console.log(semesterControl);
     if (coursesArray.length > 1) {
       coursesArray.removeAt(courseIndex);
+      
+      // Force update validity and trigger change detection
+      coursesArray.updateValueAndValidity({ emitEvent: true });
+      semesterControl.updateValueAndValidity({ emitEvent: true });
+      
+      // Force change detection
+      this.cd.detectChanges();
+      
       this.calculateResults();
-      this.cd.markForCheck();
     }
   }
 
@@ -503,14 +532,14 @@ export class GradeCalculatorComponent implements OnInit {
         this.resultSection.nativeElement.scrollIntoView({ behavior: 'smooth' });
       }
       this.loader.hide();
-      this.cd.markForCheck();
+      this.cd.detectChanges();
     }, 300);
 
     // Trigger pulse animation
     this.animationState = 'pulse';
     setTimeout(() => {
       this.animationState = 'normal';
-      this.cd.markForCheck();
+      this.cd.detectChanges();
     }, 200);
   }
 
@@ -619,7 +648,7 @@ export class GradeCalculatorComponent implements OnInit {
     } else {
       this.expandedSemesters.add(index);
     }
-    this.cd.markForCheck();
+    this.cd.detectChanges();
   }
 
   isSemesterExpanded(index: number): boolean {
@@ -632,7 +661,7 @@ export class GradeCalculatorComponent implements OnInit {
     } else {
       this.activeFaqIndex = index;
     }
-    this.cd.markForCheck();
+    this.cd.detectChanges();
   }
 
   loadCourseTemplate(template: string): void {
@@ -643,28 +672,38 @@ export class GradeCalculatorComponent implements OnInit {
     this.resetCalculator();
     const templateCourses = this.courseTemplates[template as keyof typeof this.courseTemplates];
     
-    templateCourses.forEach((course, index) => {
-      if (index > 0) {
-        this.addCourse(0);
-      }
-      
-      const semesterControl = this.semestersArray.at(0);
-      // if (!semesterControl) return;
+    // Use setTimeout to ensure form is properly initialized
+    setTimeout(() => {
+      templateCourses.forEach((course, index) => {
+        if (index > 0) {
+          this.addCourse(0);
+        }
+        
+        const semesterControl = this.semestersArray.at(0);
+        if (!semesterControl) return;
 
-      const coursesArray = semesterControl.get('courses') as FormArray;
-      if (!coursesArray || index >= coursesArray.length) return;
+        const coursesArray = semesterControl.get('courses') as FormArray;
+        if (!coursesArray || index >= coursesArray.length) return;
 
-      const courseControl = coursesArray.at(index);
-      if (!courseControl) return;
+        const courseControl = coursesArray.at(index);
+        if (!courseControl) return;
 
-      courseControl.patchValue({
-        name: course.name,
-        credits: course.credits,
-        marks: 0
+        courseControl.patchValue({
+          name: course.name,
+          credits: course.credits,
+          marks: 0
+        });
+        
+        // Force update validity and trigger change detection
+        courseControl.updateValueAndValidity({ emitEvent: true });
       });
-    });
-
-    this.cd.markForCheck();
+      
+      // Update the entire form
+      this.gradeCalculatorForm.updateValueAndValidity({ emitEvent: true });
+      
+      // Force change detection
+      this.cd.detectChanges();
+    }, 50);
   }
 
   loadDemoData(): void {
@@ -699,37 +738,53 @@ export class GradeCalculatorComponent implements OnInit {
         ]
       }
     ];
-    this.removeCourse(0, 0);
-    demoData.forEach((demoSemester, semesterIndex) => {
-      if (semesterIndex > 0) {
-        this.addSemester();
-      }
-      
-      const semesterControl = this.semestersArray.at(semesterIndex);
-      if (!semesterControl) return;
 
-      semesterControl.patchValue({
-        name: demoSemester.name
-      });
-      
-      const coursesArray = semesterControl.get('courses') as FormArray;
-      if (!coursesArray) return;
-
-      coursesArray.clear();
-      
-      demoSemester.courses.forEach(course => {
-        const courseGroup = this.fb.group({
-          name: [course.name, Validators.required],
-          credits: [course.credits, [Validators.required, Validators.min(1), Validators.max(10)]],
-          marks: [course.marks, [Validators.required, Validators.min(0), Validators.max(100)]]
-        });
-        coursesArray.push(courseGroup);
-      });
-    });
-    
+    // Use setTimeout to ensure form is properly initialized
     setTimeout(() => {
-      this.calculateResults();
-    }, 100);
+      demoData.forEach((demoSemester, semesterIndex) => {
+        if (semesterIndex > 0) {
+          this.addSemester();
+        }
+        
+        const semesterControl = this.semestersArray.at(semesterIndex);
+        if (!semesterControl) return;
+
+        semesterControl.patchValue({
+          name: demoSemester.name
+        });      
+        
+        const coursesArray = semesterControl.get('courses') as FormArray;
+        if (!coursesArray) return;
+
+        coursesArray.clear();
+        
+        demoSemester.courses.forEach(course => {
+          const courseGroup = this.fb.group({
+            name: [course.name, Validators.required],
+            credits: [course.credits, [Validators.required, Validators.min(1), Validators.max(10)]],
+            marks: [course.marks, [Validators.required, Validators.min(0), Validators.max(100)]]
+          });
+          coursesArray.push(courseGroup);
+        });
+        
+        // Force update validity and trigger change detection
+        coursesArray.updateValueAndValidity({ emitEvent: true });
+        semesterControl.updateValueAndValidity({ emitEvent: true });
+        
+        // Force change detection for this specific semester
+        this.cd.detectChanges();
+      });
+      
+      // Update the entire form
+      this.gradeCalculatorForm.updateValueAndValidity({ emitEvent: true });
+      
+      // Force change detection
+      this.cd.detectChanges();
+      
+      setTimeout(() => {
+        this.calculateResults();
+      }, 50);
+    }, 50);
   }
 
   resetCalculator(): void {
@@ -743,8 +798,14 @@ export class GradeCalculatorComponent implements OnInit {
     this.expandedSemesters.clear();
     this.activeFaqIndex = null;
     this.semestersArray.clear();
+    
+    // Force update validity and trigger change detection
+    this.gradeCalculatorForm.updateValueAndValidity({ emitEvent: true });
+    
+    // Force change detection
+    this.cd.detectChanges();
+    
     this.addSemester();
-    this.cd.markForCheck();
   }
 
   getGradeColor(grade: string): string {
@@ -776,6 +837,48 @@ export class GradeCalculatorComponent implements OnInit {
 
   trackByIndex(index: number): number {
     return index;
+  }
+
+  // Method to handle course value changes and ensure UI updates
+  onCourseValueChange(semesterIndex: number, courseIndex: number): void {
+    const semesterControl = this.semestersArray.at(semesterIndex);
+    if (!semesterControl) return;
+
+    const coursesArray = semesterControl.get('courses') as FormArray;
+    if (!coursesArray) return;
+
+    const courseControl = coursesArray.at(courseIndex);
+    if (!courseControl) return;
+
+    // Force update validity and trigger change detection
+    courseControl.updateValueAndValidity({ emitEvent: true });
+    coursesArray.updateValueAndValidity({ emitEvent: true });
+    semesterControl.updateValueAndValidity({ emitEvent: true });
+    
+    // Force change detection
+    this.cd.detectChanges();
+  }
+
+  // Method to handle semester value changes and ensure UI updates
+  onSemesterValueChange(semesterIndex: number): void {
+    const semesterControl = this.semestersArray.at(semesterIndex);
+    if (!semesterControl) return;
+
+    // Force update validity and trigger change detection
+    semesterControl.updateValueAndValidity({ emitEvent: true });
+    this.semestersArray.updateValueAndValidity({ emitEvent: true });
+    
+    // Force change detection
+    this.cd.detectChanges();
+  }
+
+  // Method to handle student info changes and ensure UI updates
+  onStudentInfoChange(): void {
+    // Force update validity and trigger change detection
+    this.gradeCalculatorForm.updateValueAndValidity({ emitEvent: true });
+    
+    // Force change detection
+    this.cd.detectChanges();
   }
 
   // Enhanced export functionality

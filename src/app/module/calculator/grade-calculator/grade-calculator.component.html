@@ -57,7 +57,8 @@
                 type="text" 
                 formControlName="studentName"
                 placeholder="Enter your full name"
-                class="form-input">
+                class="form-input"
+                (input)="onStudentInfoChange()">
             </div>
             
             <div class="form-group">
@@ -66,12 +67,13 @@
                 type="text" 
                 formControlName="studentId"
                 placeholder="Enter student ID (optional)"
-                class="form-input">
+                class="form-input"
+                (input)="onStudentInfoChange()">
             </div>
             
             <div class="form-group">
               <label>Academic Year</label>
-              <select formControlName="academicYear" class="form-input">
+              <select formControlName="academicYear" class="form-input" (change)="onStudentInfoChange()">
                 <option value="2024-25">2024-25</option>
                 <option value="2023-24">2023-24</option>
                 <option value="2022-23">2022-23</option>
@@ -84,13 +86,6 @@
 
       <!-- Course Templates -->
       <div class="course-templates-section">
-        <div class="step-header">
-          <div class="step-number">2</div>
-          <div class="step-info">
-            <h3>Quick Start Options</h3>
-            <p>Choose a template or start from scratch</p>
-          </div>
-        </div>
         
         <div class="template-buttons">
           <button 
@@ -115,7 +110,7 @@
       <!-- Semester Management -->
       <div class="semester-section">
         <div class="step-header">
-          <div class="step-number">3</div>
+          <div class="step-number">2</div>
           <div class="step-info">
             <h3>Semester Details</h3>
             <p>Add your semesters and courses</p>
@@ -155,7 +150,8 @@
                   type="text" 
                   formControlName="name"
                   placeholder="Semester Name"
-                  class="semester-name-input">
+                  class="semester-name-input"
+                  (input)="onSemesterValueChange(semesterIndex)">
               </div>
               
               <div class="semester-actions">
@@ -182,7 +178,8 @@
                       type="text" 
                       formControlName="name"
                       placeholder="Course Name"
-                      class="course-input">
+                      class="course-input"
+                      (input)="onCourseValueChange(semesterIndex, courseIndex)">
                   </div>
                   
                   <div class="course-credits">
@@ -192,7 +189,8 @@
                       placeholder="Credits"
                       min="1" 
                       max="10"
-                      class="course-input credits-input">
+                      class="course-input credits-input"
+                      (input)="onCourseValueChange(semesterIndex, courseIndex)">
                   </div>
                   
                   <div class="course-marks">
@@ -202,7 +200,8 @@
                       placeholder="Marks %"
                       min="0" 
                       max="100"
-                      class="course-input marks-input">
+                      class="course-input marks-input"
+                      (input)="onCourseValueChange(semesterIndex, courseIndex)">
                   </div>
                   
                   <div class="course-grade" *ngIf="course.get('marks')?.value > 0">
