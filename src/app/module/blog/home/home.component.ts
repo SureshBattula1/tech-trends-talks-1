@@ -1,9 +1,6 @@
 import { Component } from '@angular/core';
 import { SharedModule } from '../../shared/shared.module';
 import { Router, RouterModule } from '@angular/router';
-import { BlogCategoriesComponent } from '../blog-categories/blog-categories.component';
-import { BlogListItemComponent } from '../blog-list-item/blog-list-item.component';
-import { BlogListComponent } from '../blog-list/blog-list.component';
 import { BlogCardComponent } from '../blog-card/blog-card.component';
 import { ApiService, Blog, Category } from '../../../services/api.service';
 import { NgOptimizedImage } from '@angular/common';
@@ -11,7 +8,7 @@ import { NgOptimizedImage } from '@angular/common';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [SharedModule, RouterModule, BlogCategoriesComponent, BlogListComponent, BlogCardComponent],
+  imports: [SharedModule, RouterModule,   BlogCardComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })

@@ -52,6 +52,16 @@
                <mat-icon>calculate</mat-icon>
                <span>SIP Calculator</span>
              </button>
+
+             <button
+               mat-menu-item
+               routerLink="/calculator/grade-calculator"
+               routerLinkActive="active-menu-item"
+               [routerLinkActiveOptions]="{ exact: true }"
+             >
+               <mat-icon>grade</mat-icon>
+               <span>GRADE Calculator</span>
+             </button>
            </mat-menu>
 
              @if(!isAuthenticated){

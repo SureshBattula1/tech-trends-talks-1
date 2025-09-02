@@ -97,6 +97,12 @@ export class StructuredDataService {
         description: 'Check your loan eligibility instantly and get personalized loan recommendations.',
         category: 'Loan Eligibility Tool',
         keywords: ['loan eligibility calculator', 'loan approval chances', 'loan amount calculator']
+      },
+      'grade-calculator': {
+        name: 'Student Grade Calculator',
+        description: 'Calculate SGPA and CGPA using SASTRA grading system. Convert marks to grades and analyze academic performance.',
+        category: 'Educational Calculator',
+        keywords: ['grade calculator', 'SGPA calculator', 'CGPA calculator', 'student grade calculator']
       }
     };
 

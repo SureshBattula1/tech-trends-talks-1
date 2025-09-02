@@ -18,7 +18,7 @@ export interface MetaTags {
   canonicalUrl?: string;
 }
 
-export type CalculatorType = 'emi-calculator' | 'sip-calculator' | 'loan-eligibility';
+export type CalculatorType = 'emi-calculator' | 'sip-calculator' | 'loan-eligibility' | 'grade-calculator';
 
 @Injectable({
   providedIn: 'root'
@@ -167,19 +167,22 @@ export class MetaTagsService {
     const calculatorTitles: Record<CalculatorType, string> = {
       'emi-calculator': 'EMI Calculator - Calculate Loan EMI & Repayment Schedule',
       'sip-calculator': 'SIP Calculator - Calculate Mutual Fund Returns & Investment Growth | Free Online Tool',
-      'loan-eligibility': 'Loan Eligibility Calculator - Check Your Loan Approval Chances'
+      'loan-eligibility': 'Loan Eligibility Calculator - Check Your Loan Approval Chances',
+      'grade-calculator': 'Student Grade Calculator - Calculate SGPA & CGPA Online'
     };
 
-    const calculatorDescriptions: Record<CalculatorType, string> = {
-      'emi-calculator': 'Free EMI calculator for home, car, personal loans. Calculate monthly EMI, total interest, and view complete repayment schedule with PDF download.',
-      'sip-calculator': 'Free SIP calculator to estimate mutual fund returns and investment growth. Calculate monthly SIP amounts, track wealth creation, and plan your financial future with our comprehensive investment calculator.',
-      'loan-eligibility': 'Check your loan eligibility instantly. Calculate loan amount, EMI, and get personalized loan recommendations based on your income and credit score.'
-    };
+      const calculatorDescriptions: Record<CalculatorType, string> = {
+    'emi-calculator': 'Free EMI calculator for home, car, personal loans. Calculate monthly EMI, total interest, and view complete repayment schedule with PDF download.',
+    'sip-calculator': 'Free SIP calculator to estimate mutual fund returns and investment growth. Calculate monthly SIP amounts, track wealth creation, and plan your financial future with our comprehensive investment calculator.',
+    'loan-eligibility': 'Check your loan eligibility instantly. Calculate loan amount, EMI, and get personalized loan recommendations based on your income and credit score.',
+    'grade-calculator': 'Free online Grade Calculator for students to calculate SGPA and CGPA. Convert marks to grades using SASTRA grading system, calculate semester GPA, and cumulative GPA with detailed analysis.'
+  };
 
     const calculatorKeywords: Record<CalculatorType, string> = {
       'emi-calculator': 'emi calculator, loan calculator, home loan emi, car loan calculator, personal loan emi, interest calculator, loan repayment',
       'sip-calculator': 'sip calculator, mutual fund calculator, investment calculator, sip returns calculator, monthly investment calculator, wealth calculator, compound interest calculator, mutual fund sip',
-      'loan-eligibility': 'loan eligibility calculator, loan approval chances, loan amount calculator, credit score calculator, personal loan eligibility'
+      'loan-eligibility': 'loan eligibility calculator, loan approval chances, loan amount calculator, credit score calculator, personal loan eligibility',
+      'grade-calculator': 'grade calculator, SGPA calculator, CGPA calculator, GPA calculator, marks to grade converter, semester grade point average, cumulative grade point average, SASTRA grading system, student grade calculator'
     };
 
     return {

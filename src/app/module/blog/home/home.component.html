@@ -14,41 +14,9 @@
           Discover amazing stories, insights, and knowledge across various topics. 
           Stay informed and inspired with our curated content.
         </p>
-        <!-- <div class="hero-actions">
-          <button mat-raised-button color="primary" (click)="navigateToBlogs()">
-            <mat-icon>explore</mat-icon>
-            Explore All Blogs
-          </button>
-          <button mat-stroked-button color="primary" [routerLink]="['/blogs']" [queryParams]="{featured: true}">
-            <mat-icon>star</mat-icon>
-            Featured Content
-          </button>
-        </div> -->
       </div>
     </section>
-  
-    <!-- Featured Blogs Section -->
-    <!-- <section class="featured-section" *ngIf="featuredBlogs.length > 0">
-      <div class="section-header">
-        <h2>
-          <mat-icon>star</mat-icon>
-          Featured Articles
-        </h2>
-        <button mat-button color="primary" [routerLink]="['/blogs']" [queryParams]="{featured: true}">
-          View All Featured
-          <mat-icon>arrow_forward</mat-icon>
-        </button>
-      </div>
-  
-      <div class="featured-grid">
-        <app-blog-card 
-          *ngFor="let blog of featuredBlogs" 
-          [blogInput]="blog" 
-          [featuredInput]="true">
-        </app-blog-card>
-      </div>
-    </section> -->
-  
+
     <!-- Categories Section -->
     <section class="categories-section" *ngIf="categories.length > 0">
       <div class="section-header">
@@ -119,30 +87,7 @@
       </div>
     </section>
   
-    <!-- Newsletter Section -->
-    <!-- <section class="newsletter-section">
-      <mat-card class="newsletter-card">
-        <mat-card-content>
-          <div class="newsletter-content">
-            <div class="newsletter-info">
-              <h3>Stay Updated</h3>
-              <p>Subscribe to our newsletter and never miss the latest articles and updates.</p>
-            </div>
-            <div class="newsletter-form">
-              <mat-form-field appearance="outline">
-                <mat-label>Enter your email</mat-label>
-                <input matInput type="email" placeholder="your@email.com">
-              </mat-form-field>
-              <button mat-raised-button color="primary">
-                <mat-icon>mail</mat-icon>
-                Subscribe
-              </button>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
-    </section> -->
-  
+   
   </div>
 
 </div>
