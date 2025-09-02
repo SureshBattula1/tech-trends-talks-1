@@ -4,7 +4,7 @@ export const environment = {
   staging: true,
   
   // API Configuration
-  apiUrl: 'http://testing.api.techtrendstalks.com/api',
+  apiUrl: 'https://testing.api.techtrendstalks.com/api',
   apiVersion: 'v1',
   
   // App Configuration
@@ -17,8 +17,8 @@ export const environment = {
   enableAnalytics: true,
   
   // External Services
-  googleAnalyticsId: 'GA_MEASUREMENT_ID_STAGING', // Replace with staging GA ID
-  sentryDsn: 'SENTRY_DSN_STAGING', // Replace with staging Sentry DSN
+  googleAnalyticsId: 'G-XXXXXXXXXX', // Replace with staging GA ID
+  sentryDsn: 'https://xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx@xxxxx.ingest.sentry.io/xxxxx', // Replace with staging Sentry DSN
   
   // Cache Configuration
   cacheTimeout: 600000, // 10 minutes
