@@ -967,7 +967,7 @@ export class GradeCalculatorComponent implements OnInit {
 
     // Student Information
     doc.setFillColor(236, 240, 241);
-    doc.roundedRect(12, 40, pageWidth - 24, 30, 2, 2, 'F');
+    doc.roundedRect(12, 40, pageWidth - 24, 40, 2, 2, 'F');
     
     doc.setTextColor(44, 62, 80);
     doc.setFontSize(14);
@@ -1037,10 +1037,10 @@ export class GradeCalculatorComponent implements OnInit {
         halign: 'center',
       },
       columnStyles: {
-        0: { cellWidth: 40, halign: 'left' },
-        1: { cellWidth: 25, halign: 'center' },
-        2: { cellWidth: 25, halign: 'center' },
-        3: { cellWidth: 30, halign: 'center' },
+        0: { cellWidth: 60, halign: 'left' },
+        1: { cellWidth: 40, halign: 'center' },
+        2: { cellWidth: 40, halign: 'center' },
+        3: { cellWidth: 40, halign: 'center' },
       },
       didDrawPage: () => {
         doc.setFontSize(8);
@@ -1054,20 +1054,6 @@ export class GradeCalculatorComponent implements OnInit {
     doc.save(`Grade_Calculator_Report_${timestamp}.pdf`);
   }
 
-  shareResults(): void {
-    if (navigator.share) {
-      navigator.share({
-        title: 'My Grade Results',
-        text: `My CGPA: ${this.cgpa.toFixed(2)} (${this.percentage.toFixed(1)}%)`,
-        url: window.location.href
-      });
-    } else {
-      const text = `My CGPA: ${this.cgpa.toFixed(2)} (${this.percentage.toFixed(1)}%)`;
-      navigator.clipboard.writeText(text).then(() => {
-        alert('Results copied to clipboard!');
-      });
-    }
-  }
 
   // SEO Content Methods
   scrollToCalculator(): void {

@@ -7,6 +7,7 @@
 
             <a mat-list-item (click)="menuClose()"  routerLink="/calculator/emi-calculator" routerLinkActive="navbar-header-item-selected" [routerLinkActiveOptions]="{ exact: true }"> EMI Calculator </a>
             <a mat-list-item (click)="menuClose()"  routerLink="/calculator/sip-calculator" routerLinkActive="navbar-header-item-selected"  [routerLinkActiveOptions]="{ exact: true }"> SIP Calculator </a>
+            <a mat-list-item (click)="menuClose()"  routerLink="/calculator/grade-calculator" routerLinkActive="navbar-header-item-selected"  [routerLinkActiveOptions]="{ exact: true }"> GRADE Calculator </a>
              
             @if(!isAuthenticated){
               <a mat-list-item (click)="menuClose()" routerLink="/login" routerLinkActive="navbar-header-item-selected" [routerLinkActiveOptions]="{ exact: true }"> Login </a>
