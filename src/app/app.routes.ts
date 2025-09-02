@@ -6,6 +6,7 @@ import { UnauthorizedComponent } from './core/unauthorized/unauthorized.componen
 import { ForgotPasswordComponent } from './core/forgot-password/forgot-password.component';
 import { AuthGuard } from './core/auth/auth.guard';
 import { RoleGuard } from './core/auth/role.guard';
+import { SitemapGeneratorComponent } from './core/sitemap-generator/sitemap-generator.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
@@ -30,6 +31,10 @@ export const routes: Routes = [
     { 
         path: 'loan-eligibility-calculator', 
         loadChildren: () => import('./module/eligibility-checker/eligibility-checker.module').then(m => m.EligibilityCheckerModule) 
+    },
+    {
+        path: 'seo-tester',
+        component: SitemapGeneratorComponent
     },
     { path: '', redirectTo:'calculator', pathMatch: 'full' },
     { path: '**', component: PageNotFoundComponent}
