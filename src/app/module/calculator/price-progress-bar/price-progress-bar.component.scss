@@ -2,3 +2,22 @@ mat-slider {
     display: flex;
 }
 
+::ng-deep .mat-mdc-slider .mat-ripple {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  
+  ::ng-deep .mat-mdc-slider .mat-mdc-focus-indicator {
+    box-shadow: none !important;
+    outline: none !important;
+    background-color: transparent !important;
+  }
+  
+  ::ng-deep .mat-mdc-slider .mat-mdc-slider-thumb:focus,
+  ::ng-deep .mat-mdc-slider .mat-mdc-slider-thumb:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+  }
+  
