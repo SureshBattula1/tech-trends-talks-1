@@ -5,12 +5,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subject, takeUntil } from 'rxjs';
-import { Editor, Toolbar, toHTML, schema   } from 'ngx-editor';
 
 import { ApiService, Blog, Category, Subcategory, ApiResponse, PaginatedResponse } from '../../../services/api.service';
 import { PaginationService } from '../../../services/pagination.service';
 import { SearchFilterConfig, AdvancedSearchFilterComponent } from '../../shared/components/advanced-search-filter/advanced-search-filter.component';
 import { SharedModule } from '../../shared/shared.module';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-blogs',
@@ -23,22 +23,6 @@ export class BlogsComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   private destroy$ = new Subject<void>();
-
-  public editor!: Editor;
-  public toolbar: Toolbar = [
-    ['bold', 'italic'],
-    ['underline', 'strike'],
-    ['code', 'blockquote'],
-    
-    ['ordered_list', 'bullet_list'],
-    [{ heading: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }],
-    ['link', 'image'],
-    ['text_color', 'background_color'],
-    ['align_left', 'align_center', 'align_right', 'align_justify']
-  ];
-
-  // Image upload
-  @ViewChild('imageInput') imageInput!: ElementRef;
 
   // Data
   blogs: Blog[] = [];
@@ -95,17 +79,13 @@ export class BlogsComponent implements OnInit, OnDestroy {
     private paginationService: PaginationService,
     private fb: FormBuilder,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.editor = new Editor();
-    this.initializeForms();
-    this.loadCategories();
-    this.loadSubcategories();
     this.loadBlogs();
     this.setupPagination();
-    this.setupFormListeners();
   }
 
   ngAfterViewInit(): void {
@@ -113,40 +93,8 @@ export class BlogsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.editor.destroy();
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  /**
-   * Initialize forms
-   */
-  private initializeForms(): void {
-    this.blogForm = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(5)]],
-      excerpt: ['', [Validators.required, Validators.minLength(10)]],
-      content: ['', [Validators.required, Validators.minLength(50)]],
-      category_id: ['', Validators.required],
-      subcategory_id: ['', Validators.required],
-      author: ['', Validators.required],
-      tags: [''],
-      is_published: [false],
-      is_featured: [false],
-      featured_image: ['']
-    });
-
-    this.editForm = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(5)]],
-      excerpt: ['', [Validators.required, Validators.minLength(10)]],
-      content: ['', [Validators.required, Validators.minLength(50)]],
-      category_id: ['', Validators.required],
-      subcategory_id: ['',Validators.required],
-      author: ['', Validators.required],
-      tags: [''],
-      is_published: [false],
-      is_featured: [false],
-      featured_image: ['']
-    });
   }
 
   /**
@@ -157,90 +105,7 @@ export class BlogsComponent implements OnInit, OnDestroy {
     // Blogs will be loaded when filters change or pagination is manually triggered
   }
 
-  /**
-   * Setup form listeners for category-subcategory filtering
-   */
-  private setupFormListeners(): void {
-    // Listen to category changes in create form
-    this.blogForm.get('category_id')?.valueChanges.subscribe(categoryId => {
-      this.filterSubcategoriesByCategory(categoryId);
-      // Reset subcategory when category changes
-      this.blogForm.get('subcategory_id')?.setValue('');
-    });
-
-    // Listen to category changes in edit form
-    this.editForm.get('category_id')?.valueChanges.subscribe(categoryId => {
-      this.filterSubcategoriesByCategory(categoryId);
-      // Reset subcategory when category changes
-      this.editForm.get('subcategory_id')?.setValue('');
-    });
-  }
-
-  /**
-   * Filter subcategories based on selected category
-   */
-  private filterSubcategoriesByCategory(categoryId: number | string): void {
-    if (!categoryId || categoryId === '') {
-      this.filteredSubcategories = [];
-    } else {
-      this.filteredSubcategories = this.subcategories.filter(
-        subcategory => subcategory.category_id === Number(categoryId)
-      );
-    }
-  }
-
-  /**
-   * Load categories for filter options
-   */
-  loadCategories(): void {
-    this.apiService.getCategories().subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.categories = response.data;
-          // Update search filter options
-          this.searchFilterConfig.fields[1].options = this.categories.map(cat => ({
-            value: cat.id,
-            label: cat.name
-          }));
-          // console.log('Categories loaded for filters:', this.categories.length);
-        } else {
-          // console.error('Categories API returned success: false:', response.message);
-          this.showError(response.message || 'Failed to load categories for filters');
-        }
-      },
-      error: (error) => {
-        // console.error('Error loading categories for filters:', error);
-        this.showError(`Failed to load categories for filters: ${error.message || error.statusText || 'Unknown error'}`);
-      }
-    });
-  }
-
-  /**
-   * Load subcategories for filter options
-   */
-  loadSubcategories(): void {
-    this.apiService.getSubcategories().subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.subcategories = response.data;
-          // Update search filter options
-          this.searchFilterConfig.fields[2].options = this.subcategories.map(sub => ({
-            value: sub.id,
-            label: sub.name
-          }));
-          // console.log('Subcategories loaded for filters:', this.subcategories.length);
-        } else {
-          // console.error('Subcategories API returned success: false:', response.message);
-          this.showError(response.message || 'Failed to load subcategories for filters');
-        }
-      },
-      error: (error) => {
-        // console.error('Error loading subcategories for filters:', error);
-        this.showError(`Failed to load subcategories for filters: ${error.message || error.statusText || 'Unknown error'}`);
-      }
-    });
-  }
-
+ 
   /**
    * Load blogs with filters and pagination
    */
@@ -301,125 +166,8 @@ export class BlogsComponent implements OnInit, OnDestroy {
     this.paginationService.onPageChange(event);
   }
 
-  /**
-   * Open create blog dialog
-   */
-  openCreateDialog(): void {
-    this.showCreateDialog = true;
-    this.blogForm.reset({ 
-      is_published: false, 
-      is_featured: false 
-    });
-  }
-
-  /**
-   * Close create blog dialog
-   */
-  closeCreateDialog(): void {
-    this.showCreateDialog = false;
-    this.blogForm.reset();
-    this.filteredSubcategories = [];
-  }
-
-  /**
-   * Create new blog
-   */
-  createBlog(): void {
-    if (this.blogForm.valid) {
-      this.isCreating = true;
-      
-      const jsonContent = this.blogForm.value.content;
-      const htmlContent = toHTML(jsonContent, schema);
-      const blogData = {
-        ...this.blogForm.value,
-        content: htmlContent,
-        tags: this.blogForm.value.tags ? this.blogForm.value.tags.split(',').map((tag: string) => tag.trim()) : []
-      };
-
-      this.apiService.createBlog(blogData).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.showSuccess('Blog created successfully');
-            this.closeCreateDialog();
-            this.loadBlogs();
-          } else {
-            this.showError(response.message || 'Failed to create blog');
-          }
-          this.isCreating = false;
-        },
-        error: (error) => {
-          console.error('Error creating blog:', error);
-          this.showError('Failed to create blog');
-          this.isCreating = false;
-        }
-      });
-    }
-  }
-
-  /**
-   * Open edit blog dialog
-   */
   openEditDialog(blog: Blog): void {
-    this.selectedBlog = blog;
-    
-    // First set the category to filter subcategories
-    this.filterSubcategoriesByCategory(blog.category_id);
-    
-    this.editForm.patchValue({
-      title: blog.title,
-      excerpt: blog.excerpt,
-      content: blog.content,
-      category_id: blog.category_id,
-      subcategory_id: blog.subcategory_id,
-      author: blog.author,
-      tags: blog.tags.join(', '),
-      is_published: blog.is_published,
-      is_featured: blog.is_featured,
-      featured_image: blog.featured_image
-    });
-    this.showEditDialog = true;
-  }
-
-  /**
-   * Close edit blog dialog
-   */
-  closeEditDialog(): void {
-    this.showEditDialog = false;
-    this.selectedBlog = null;
-    this.editForm.reset();
-    this.filteredSubcategories = [];
-  }
-
-  /**
-   * Update blog
-   */
-  updateBlog(): void {
-    if (this.editForm.valid && this.selectedBlog) {
-      this.isUpdating = true;
-      
-      const updateData = {
-        ...this.editForm.value,
-        tags: this.editForm.value.tags ? this.editForm.value.tags.split(',').map((tag: string) => tag.trim()) : []
-      };
-
-      this.apiService.updateBlog(this.selectedBlog.id, updateData).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.showSuccess('Blog updated successfully');
-            this.closeEditDialog();
-            this.loadBlogs();
-          } else {
-            this.showError(response.message || 'Failed to update blog');
-          }
-          this.isUpdating = false;
-        },
-        error: (error) => {
-          console.error('Error updating blog:', error);
-          this.showError('Failed to update blog');
-          this.isUpdating = false;
-        }
-      });
-    }
+    this.router.navigate(['/blogs-admin/edit-post', blog.id]);
   }
 
   /**
@@ -556,90 +304,7 @@ export class BlogsComponent implements OnInit, OnDestroy {
     return item.id;
   }
 
-  /**
-   * Image upload functionality
-   */
-  onImageButtonClick() {
-    this.imageInput.nativeElement.click(); // Trigger the file input click
-  }
-
- onFileSelected(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      const maxSize = 5 * 1024 * 1024; // 5MB
-      if (file.size > maxSize) {
-        this.showError('Image size should be less than 5MB');
-        return;
-      }
-
-      this.isLoading = true;
-      // console.log('Starting image upload for file:', file);
-
-      this.apiService.uploadImage(file, 'blog').subscribe({
-        next: (response: any) => {
-          // console.log('Image upload response received:', response);
-          if (response.success) {
-            const imageUrl = response.data.full_url || response.data.url;
-                         // console.log('Image URL from response:', imageUrl);
-            this.insertImageToEditor(imageUrl);
-            this.showSuccess('Image uploaded successfully!');
-          } else {
-            console.error('Image upload failed:', response.message);
-            this.showError(response.message || 'Failed to upload image');
-          }
-          this.isLoading = false;
-        },
-        error: (error) => {
-          console.error('Error uploading image:', error);
-          this.showError('Failed to upload image. Please try again.');
-          this.isLoading = false;
-        }
-      });
-    } else {
-      this.showError('Please select a valid image file');
-    }
-  }
-
-
-  insertImageToEditor(imageUrl: string) {
-    try {
-      const selection = this.editor.view.state.selection;
-      const { schema, tr } = this.editor.view.state;
-
-      const node = schema.nodes['image'].create({
-        src: imageUrl,
-        alt: 'Uploaded Image'
-      });
-
-      const transaction = tr.replaceSelectionWith(node).scrollIntoView();
-      this.editor.view.dispatch(transaction);
-    } catch (error) {
-      console.error('Error inserting image to editor:', error);
-      // Fallback: insert as HTML link if image node creation fails
-      this.insertImageAsLink(imageUrl);
-    }
-  }
-
-  insertImageAsLink(imageUrl: string) {
-    try {
-      const selection = this.editor.view.state.selection;
-      const { schema, tr } = this.editor.view.state;
-
-      // Create a link node with the image URL
-      const linkNode = schema.nodes['paragraph'].create(
-        null,
-        schema.text('Image uploaded: '),
-        [schema.marks['link'].create({ href: imageUrl })]
-      );
-
-      const transaction = tr.replaceSelectionWith(linkNode).scrollIntoView();
-      this.editor.view.dispatch(transaction);
-    } catch (error) {
-      console.error('Error inserting image link:', error);
-      // Final fallback: show the URL to user
-      this.showError(`Image uploaded successfully. URL: ${imageUrl}`);
-    }
-  }
+  
 
  
 }

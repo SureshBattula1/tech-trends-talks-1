@@ -5,6 +5,7 @@ import { ApiService, Blog } from '../../../services/api.service';
 import { MatChipsModule } from '@angular/material/chips';
 import { MetaTagsService } from '../../../services/meta-tags.service';
 import { StructuredDataService } from '../../../services/structured-data.service';
+import { EnvironmentService } from '../../../services/environment.service';
 
 @Component({
   selector: 'app-blog-details',
@@ -61,13 +62,14 @@ export class BlogDetailsComponent implements OnInit {
     this.structuredDataService.addStructuredData(structuredData);
   }
 
+  private environmentService = inject(EnvironmentService);
   getImageUrl(image?: string): string {
     if (!image) {
       return `https://picsum.photos/800/400?random=${Math.floor(Math.random() * 1000)}`;
     }
     if (image.startsWith('http')) return image;
-    if (image.startsWith('/storage')) return `http://localhost:8000${image}`;
-    return `http://localhost:8000/storage/images/blog/${image}`;
+    if (image.startsWith('/storage')) return `${this.environmentService.apiBaseUrl}${image}`;
+    return `${this.environmentService.apiBaseUrl}/storage/images/blog/${image}`;
   }
 
   onImageError(event: Event) {

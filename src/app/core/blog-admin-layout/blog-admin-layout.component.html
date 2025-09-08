@@ -38,12 +38,12 @@
                         <mat-icon>dashboard</mat-icon>
                         <span>Dashboard</span>
                     </a>
-                    
-                    <!-- @if(authService.isAdmin()){ -->
+                 
                         <a mat-list-item (click)="menuClick()" routerLink="/blogs-admin/create-post" routerLinkActive="navbar-header-item-selected" [routerLinkActiveOptions]="{ exact: true }">
                             <mat-icon>add_circle</mat-icon>
                             <span>Create Post</span>
                         </a>
+                    @if(authService.isAdmin()){
                         <a mat-list-item (click)="menuClick()" routerLink="/blogs-admin/categories" routerLinkActive="navbar-header-item-selected" [routerLinkActiveOptions]="{ exact: true }">
                             <mat-icon>category</mat-icon>
                             <span>Categories</span>
@@ -52,7 +52,7 @@
                             <mat-icon>subdirectory_arrow_right</mat-icon>
                             <span>Subcategories</span>
                         </a>
-                    <!-- } -->
+                    }
                     
                     <a mat-list-item (click)="menuClick()" routerLink="/blogs-admin/blogs" routerLinkActive="navbar-header-item-selected" [routerLinkActiveOptions]="{ exact: true }">
                         <mat-icon>article</mat-icon>

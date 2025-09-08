@@ -283,6 +283,98 @@
       }
     }
   }
+
+  .existing-image-section {
+    width: 100%;
+    
+    .image-upload-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+    
+    .existing-image-preview {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: flex-start;
+      
+      img {
+        max-width: 200px;
+        max-height: 150px;
+        border-radius: 8px;
+        object-fit: cover;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      
+      .image-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        
+        button {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          min-width: 120px;
+        }
+      }
+    }
+  }
+
+  // New image preview section for edit mode
+  .image-upload-section {
+    width: 100%;
+    
+    .image-upload-label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+    
+    .image-input {
+      display: none;
+    }
+    
+    button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .image-preview {
+      margin-top: 16px;
+      position: relative;
+      display: inline-block;
+      
+      img {
+        max-width: 200px;
+        max-height: 150px;
+        border-radius: 8px;
+        object-fit: cover;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      
+      button {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: var(--warn-color);
+        color: white;
+        min-width: 24px;
+        width: 24px;
+        height: 24px;
+        
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+  }
   
   .editor-label {
     display: block;

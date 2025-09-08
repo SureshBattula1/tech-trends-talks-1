@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { SharedModule } from '../../shared/shared.module';
 import { Router, RouterModule } from '@angular/router';
 import { BlogCardComponent } from '../blog-card/blog-card.component';
 import { ApiService, Blog, Category } from '../../../services/api.service';
 import { NgOptimizedImage } from '@angular/common';
+import { EnvironmentService } from '../../../services/environment.service';
 
 @Component({
   selector: 'app-home',
@@ -79,6 +80,8 @@ export class HomeComponent {
     return 'https://picsum.photos/1200/600?random=' + Math.floor(Math.random() * 1000);
   }
 
+  private environmentService = inject(EnvironmentService);
+
   getCategoryImageUrl(image: string): string {
     if (!image) {
       return 'https://picsum.photos/300/200?random=' + Math.floor(Math.random() * 1000);
@@ -87,9 +90,9 @@ export class HomeComponent {
       return image;
     }
     if (image.startsWith('/storage')) {
-      return `http://localhost:8000${image}`;
+      return `${this.environmentService.apiBaseUrl}${image}`;
     }
-    return `http://localhost:8000/storage/images/category/${image}`;
+    return `${this.environmentService.apiBaseUrl}/storage/images/category/${image}`;
   }
 
   onImageError(event: any) {

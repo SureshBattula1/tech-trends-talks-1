@@ -1,7 +1,7 @@
 <div class="create-blog-container">
     <div class="page-header">
-      <h1>Create New Blog Post</h1>
-      <p>Write and publish your blog content</p>
+      <h1>{{ isEditMode ? 'Edit Blog Post' : 'Create New Blog Post' }}</h1>
+      <p>{{ isEditMode ? 'Update your blog content' : 'Write and publish your blog content' }}</p>
     </div>
   
     <mat-card class="blog-form-card">
@@ -81,12 +81,12 @@
           </div>
   
           <!-- Featured Image Upload -->
-          <!-- <div class="form-row">
+          <div class="form-row" *ngIf="!isEditMode">
             <div class="image-upload-section">
               <label class="image-upload-label">Featured Image</label>
               <input type="file" (change)="onImageSelected($event)" 
-                     accept="image/*" class="image-input" #imageInput>
-              <button type="button" mat-stroked-button (click)="imageInput.click()">
+                     accept="image/*" class="image-input" #imageFeatureInput>
+              <button type="button" mat-stroked-button (click)="imageFeatureInput.click()">
                 <mat-icon>cloud_upload</mat-icon>
                 Choose Image
               </button>
@@ -99,7 +99,56 @@
                 </button>
               </div>
             </div>
-          </div> -->
+          </div>
+
+          <!-- Existing Featured Image Display (Edit Mode) -->
+          <div class="form-row" *ngIf="isEditMode && existingFeaturedImage && !imagePreview">
+            <div class="existing-image-section">
+              <label class="image-upload-label">Current Featured Image</label>
+              <input type="file" (change)="onImageSelected($event)" 
+                     accept="image/*" class="image-input" #imageFeatureInput style="display: none;">
+              <div class="existing-image-preview">
+                <img [src]="getImageUrl(existingFeaturedImage)" alt="Current featured image">
+                <div class="image-actions">
+                  <button type="button" mat-stroked-button (click)="imageFeatureInput.click()">
+                    <mat-icon>edit</mat-icon>
+                    Change Image
+                  </button>
+                  <button type="button" mat-stroked-button color="warn" (click)="removeExistingImage()">
+                    <mat-icon>delete</mat-icon>
+                    Remove Image
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- New Image Preview (Edit Mode) -->
+          <div class="form-row" *ngIf="isEditMode && imagePreview">
+            <div class="image-upload-section">
+              <label class="image-upload-label">New Featured Image Preview</label>
+              <div class="image-preview">
+                <img [src]="imagePreview" alt="New image preview">
+                <button type="button" mat-icon-button (click)="clearSelectedImage()" 
+                        class="remove-image-btn" matTooltip="Remove new image">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- No Image Section (Edit Mode) -->
+          <div class="form-row" *ngIf="isEditMode && !existingFeaturedImage && !imagePreview">
+            <div class="image-upload-section">
+              <label class="image-upload-label">Featured Image</label>
+              <input type="file" (change)="onImageSelected($event)" 
+                     accept="image/*" class="image-input" #imageFeatureInput>
+              <button type="button" mat-stroked-button (click)="imageFeatureInput.click()">
+                <mat-icon>cloud_upload</mat-icon>
+                Choose Image
+              </button>
+            </div>
+          </div>
   
           <!-- Content Editor -->
           <div class="form-row custom-editor-container">
@@ -139,7 +188,7 @@
             
             <mat-checkbox formControlName="is_published" color="primary">
               <mat-icon>publish</mat-icon>
-              Publish Immediately
+              {{ isEditMode ? 'Update and Publish' : 'Publish Immediately' }}
             </mat-checkbox>
           </div>
   
@@ -151,13 +200,13 @@
             
             <button type="button" mat-stroked-button [disabled]="isLoading" (click)="saveDraft()">
               <mat-icon>save</mat-icon>
-              Save Draft
+              {{ isEditMode ? 'Save Changes' : 'Save Draft' }}
             </button>
             
             <button type="submit" mat-raised-button color="primary" [disabled]="isLoading">
               <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
-              <mat-icon *ngIf="!isLoading">publish</mat-icon>
-              {{ isLoading ? 'Creating...' : 'Create Blog' }}
+              <mat-icon *ngIf="!isLoading">{{ isEditMode ? 'update' : 'publish' }}</mat-icon>
+              {{ isLoading ? (isEditMode ? 'Updating...' : 'Creating...') : (isEditMode ? 'Update Blog' : 'Create Blog') }}
             </button>
           </div>
         </form>

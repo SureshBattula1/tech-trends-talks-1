@@ -33,6 +33,13 @@ export class EnvironmentService {
   get isStaging(): boolean {
     return environment.staging;
   }
+
+    /**
+   * Get the API base URL
+   */
+    get apiBaseUrl(): string {
+      return environment.baseUrl;
+    }
   
   /**
    * Get the API base URL

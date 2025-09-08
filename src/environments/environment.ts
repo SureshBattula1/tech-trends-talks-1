@@ -3,6 +3,9 @@ export const environment = {
   development: true,
   staging: false,
   
+  // BASE URL
+  baseUrl: 'http://127.0.0.1:8000',
+
   // API Configuration
   apiUrl: 'http://127.0.0.1:8000/api',
   apiVersion: 'v1',

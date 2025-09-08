@@ -3,6 +3,10 @@ export const environment = {
   development: false,
   staging: true,
   
+  
+  // BASE URL
+  baseUrl: 'https://testing.api.techtrendstalks.com',
+
   // API Configuration
   apiUrl: 'https://testing.api.techtrendstalks.com/api',
   apiVersion: 'v1',

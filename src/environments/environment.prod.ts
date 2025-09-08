@@ -2,6 +2,9 @@ export const environment = {
   production: true,
   development: false,
   staging: false,
+
+  // BASE URL
+  baseUrl: 'https://api.techtrendstalks.com',
   
   // API Configuration
   apiUrl: 'https://api.techtrendstalks.com/api',

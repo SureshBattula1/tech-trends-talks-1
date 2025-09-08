@@ -1,8 +1,9 @@
-import { Component, Input, signal } from '@angular/core';
+import { Component, inject, Input, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
 import { SharedModule } from '../../shared/shared.module';
 import { Blog } from '../../../services/api.service';
+import { EnvironmentService } from '../../../services/environment.service';
 
 @Component({
   selector: 'app-blog-card',
@@ -27,6 +28,8 @@ export class BlogCardComponent {
     this.featured.set(value);
   }
 
+  private environmentService = inject(EnvironmentService);
+
   // Helper functions
   getImageUrl(image: string): string {
     if (!image) {
@@ -36,9 +39,9 @@ export class BlogCardComponent {
       return image;
     }
     if (image.startsWith('/storage')) {
-      return `http://localhost:8000${image}`;
+      return `${this.environmentService.apiBaseUrl}${image}`;
     }
-    return `http://localhost:8000/storage/images/blog/${image}`;
+    return `${this.environmentService.apiBaseUrl}/storage/images/blog/${image}`;
   }
 
   formatDate(date: string): string {
