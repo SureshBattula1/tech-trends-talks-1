@@ -117,6 +117,10 @@ mat-sidenav-content.mat-drawer-content.mat-sidenav-content {
   .flex-row { 
     flex-flow: column!important;
   }
+
+  .app-menu{
+    min-width: unset!important;
+  }
 }
 
 
@@ -133,6 +137,10 @@ mat-sidenav-content.mat-drawer-content.mat-sidenav-content {
    .flex-row{
     flex-flow: column!important;
   }
+
+  .app-menu{
+    min-width: unset!important;
+  }
 }
 
 /* Large tablets (768px to 1024px) */
@@ -145,6 +153,10 @@ mat-sidenav-content.mat-drawer-content.mat-sidenav-content {
    }
    .flex-row{
     flex-flow: row nowrap!important;
+  }
+
+  .app-menu{
+    min-width: unset!important;
   }
 }
 

@@ -7,6 +7,7 @@ import { ForgotPasswordComponent } from './core/forgot-password/forgot-password.
 import { AuthGuard } from './core/auth/auth.guard';
 import { RoleGuard } from './core/auth/role.guard';
 import { SitemapGeneratorComponent } from './core/sitemap-generator/sitemap-generator.component';
+import { PageComingSoonComponent } from './core/page-coming-soon/page-coming-soon.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
@@ -35,6 +36,26 @@ export const routes: Routes = [
     {
         path: 'seo-tester',
         component: SitemapGeneratorComponent
+    },
+    {
+        path: 'about',
+        component: PageComingSoonComponent
+    },
+    {
+        path: 'contact',
+        component: PageComingSoonComponent
+    },
+    {
+        path: 'privacy-policy',
+        component: PageComingSoonComponent
+    },
+    {
+        path: 'terms-of-service',
+        component: PageComingSoonComponent
+    },
+    {
+        path: 'disclaimer',
+        component: PageComingSoonComponent
     },
     { path: '', redirectTo:'calculator', pathMatch: 'full' },
     { path: '**', component: PageNotFoundComponent}
