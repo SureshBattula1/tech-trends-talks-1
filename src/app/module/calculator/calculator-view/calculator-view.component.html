@@ -414,7 +414,7 @@
                       class="expand-btn"
                       (click)="toggleYearExpansion(yearData.year)"
                       [attr.aria-label]="isYearExpanded(yearData.year) ? 'Collapse monthly details' : 'Expand monthly details'">
-                      <mat-icon [class.rotated]="isYearExpanded(yearData.year)">
+                      <mat-icon class="expand-btn-icon" [class.rotated]="isYearExpanded(yearData.year)">
                         {{ isYearExpanded(yearData.year) ? 'expand_less' : 'expand_more' }}
                       </mat-icon>
                     </button>
