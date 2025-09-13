@@ -11,7 +11,7 @@
             @if(!isAuthenticated){
               <a mat-list-item (click)="menuClose()" routerLink="/login" routerLinkActive="navbar-header-item-selected" [routerLinkActiveOptions]="{ exact: true }"> Login </a>
             } @else {
-              <a mat-list-item (click)="menuClose()" routerLink="/blogs-admin/dashboard" routerLinkActive="navbar-header-item-selected" [routerLinkActiveOptions]="{ exact: true }"> Admin Dashboard </a>
+              <a mat-list-item (click)="menuClose()" routerLink="/blogs-admin/dashboard" routerLinkActive="navbar-header-item-selected" [routerLinkActiveOptions]="{ exact: true }"> Dashboard </a>
               <a mat-list-item (click)="logout()" routerLinkActive="navbar-header-item-selected" [routerLinkActiveOptions]="{ exact: true }"> Logout </a>
               }
         </mat-nav-list>
