@@ -721,3 +721,12 @@
   }
 
   
+  ::ng-deep code {
+    display: block;
+    width: 100%;
+    background-color: rgba(27,31,35,0.05);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-family: 'SFMono-Regular', monospace;
+    font-size: 0.9em;
+}
