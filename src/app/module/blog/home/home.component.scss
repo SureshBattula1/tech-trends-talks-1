@@ -2,13 +2,13 @@
     min-height: 600px;
     background: var(--surface-color);
     border-radius: 12px;
-    padding: 32px;
+    padding: 8px 32px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.3s ease;
     margin-top: 1rem;
     
     @media (max-width: 768px) {
-      padding: 20px;
+      padding: 8px 20px;
       border-radius: 8px;
     }
   }
@@ -426,6 +426,469 @@
     }
   }
   
+  // Categories Tabs Section
+  .categories-tabs-section {
+    margin-bottom: 8px;
+    
+    .categories-tabs-container {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+      
+      @media (max-width: 768px) {
+        gap: 12px;
+      }
+    }
+    
+    .category-scroll-arrow {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--text-primary);
+      z-index: 2;
+      
+      &:hover:not(.disabled) {
+        background: var(--primary-custom-dark);
+        color: white;
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(var(--primary-custom-light), 0.3);
+      }
+      
+      &.disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        background: var(--surface-color);
+        color: var(--text-secondary);
+      }
+      
+      &:not(.disabled) {
+        // Add subtle glow to indicate scrollability
+        box-shadow: 0 0 0 1px rgba(var(--primary-color), 0.2);
+        
+        @media (max-width: 768px) {
+          // More prominent on mobile for better visibility
+          box-shadow: 0 0 0 2px rgba(var(--primary-color), 0.3);
+        }
+      }
+      
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+      
+      @media (max-width: 768px) {
+        width: 36px;
+        height: 36px;
+        min-width: 44px; // Minimum touch target size
+        min-height: 44px;
+        
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
+    
+    .categories-tabs {
+      flex: 1;
+      display: flex;
+      gap: 8px;
+      padding: 8px;
+      background: var(--surface-color);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
+      position: relative;
+      
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      
+      // Add gradient hints for overflow content
+      &::before,
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 20px;
+        pointer-events: none;
+        z-index: 1;
+        transition: opacity 0.2s ease;
+      }
+      
+      &::before {
+        left: 0;
+        background: linear-gradient(to right, var(--surface-color), transparent);
+        opacity: 0;
+      }
+      
+      &::after {
+        right: 0;
+        background: linear-gradient(to left, var(--surface-color), transparent);
+        opacity: 0;
+      }
+      
+      @media (max-width: 768px) {
+        gap: 6px;
+        padding: 6px;
+        
+        &::before,
+        &::after {
+          width: 15px;
+        }
+      }
+    }
+    
+    .category-tab {
+      flex-shrink: 0;
+      padding: 4px 12px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-weight: 400;
+      font-size: 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      
+      &:hover {
+        background: var(--primary-color-light);
+        color: var(--primary-custom-dark);
+        transform: translateY(-1px);
+      }
+      
+      &.active {
+        background: var(--primary-custom-dark);
+        color: white;
+        box-shadow: 0 2px 8px rgba(var(--primary-custom-light), 0.3);
+      }
+      
+      &:focus {
+        outline: 2px solid var(--primary-custom-light);
+        outline-offset: 2px;
+      }
+      
+      @media (max-width: 768px) {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+      }
+      
+      @media (max-width: 480px) {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+      }
+    }
+  }
+  
+  // Subcategories Chips Section
+  .subcategories-section {
+    margin-bottom: 8px;
+    
+    .subcategories-container {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+      
+      @media (max-width: 768px) {
+        gap: 12px;
+      }
+    }
+    
+    .scroll-arrow {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--text-primary);
+      z-index: 2;
+      
+      &:hover:not(.disabled) {
+        background: var(--primary-custom-dark);
+        color: white;
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(var(--primary-color-custom-dark), 0.3);
+      }
+      
+      &.disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        background: var(--surface-color);
+        color: var(--text-secondary);
+      }
+      
+      &:not(.disabled) {
+        // Add subtle glow to indicate scrollability
+        box-shadow: 0 0 0 1px rgba(var(--primary-color), 0.2);
+        
+        @media (max-width: 768px) {
+          // More prominent on mobile for better visibility
+          box-shadow: 0 0 0 2px rgba(var(--primary-color), 0.3);
+        }
+      }
+      
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+      
+      @media (max-width: 768px) {
+        width: 36px;
+        height: 36px;
+        min-width: 44px; // Minimum touch target size
+        min-height: 44px;
+        
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
+    
+    .subcategories-scroll-container {
+      flex: 1;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
+      
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      
+      // Add some padding for better touch targets on mobile
+      @media (max-width: 768px) {
+        padding: 4px 0;
+      }
+    }
+    
+    .subcategories-chips {
+      display: flex;
+      gap: 12px;
+      padding: 8px 0;
+      
+      @media (max-width: 768px) {
+        gap: 8px;
+      }
+    }
+    
+    .subcategory-chip {
+      flex-shrink: 0;
+      padding: 6px 10px;
+      border: 1px solid var(--border-color);
+      background: var(--surface-color);
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-size: 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      
+      &:hover {
+        border-color: var(--primary-custom-light);
+        color: var(--primary-custom-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(var(--primary-custom-light), 0.1);
+      }
+      
+      &.active {
+        background: var(--primary-custom-dark);
+        border-color: var(--primary-custom-light);
+        color: white;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(var(--primary-custom-light), 0.3);
+      }
+      
+      &:focus {
+        outline: 2px solid var(--primary-custom-light);
+        outline-offset: 2px;
+      }
+      
+      @media (max-width: 768px) {
+        padding: 6px 14px;
+        font-size: 0.85rem;
+      }
+      
+      @media (max-width: 480px) {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+      }
+    }
+  }
+  
+  // Filtered Blogs Section
+  .filtered-blogs-section {
+    .section-header {
+      h2 {
+        color: var(--text-primary);
+        transition: color 0.2s ease;
+      }
+    }
+  }
+  
+  // No Blogs Section
+  .no-blogs-section {
+    padding: 60px 20px;
+    text-align: center;
+    
+    .no-blogs-content {
+      max-width: 400px;
+      margin: 0 auto;
+      
+      .no-blogs-icon {
+        font-size: 64px;
+        width: 64px;
+        height: 64px;
+        color: var(--text-secondary);
+        margin-bottom: 24px;
+        opacity: 0.6;
+      }
+      
+      h3 {
+        margin: 0 0 16px;
+        font-size: 1.5rem;
+        color: var(--text-primary);
+      }
+      
+      p {
+        margin: 0 0 32px;
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+      
+      button {
+        mat-icon {
+          margin-right: 8px;
+        }
+      }
+    }
+  }
+  
+  // Mobile Optimizations
+  @media (max-width: 768px) {
+    .categories-tabs-section {
+      margin-bottom: 8px;
+    }
+    
+    .subcategories-section {
+      margin-bottom: 8px;
+      
+      .subcategories-container {
+        .scroll-arrow {
+          &.left-arrow {
+            margin-right: 4px;
+          }
+          
+          &.right-arrow {
+            margin-left: 4px;
+          }
+        }
+      }
+    }
+  }
+  
+  // Very small screens - make arrows smaller but keep them visible
+  @media (max-width: 480px) {
+    .categories-tabs-section {
+      .categories-tabs-container {
+        gap: 6px;
+        
+        .category-scroll-arrow {
+          width: 32px;
+          height: 32px;
+          min-width: 44px; // Maintain touch target
+          min-height: 44px;
+          
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
+    }
+    
+    .subcategories-section {
+      .subcategories-container {
+        gap: 6px;
+        
+        .scroll-arrow {
+          width: 32px;
+          height: 32px;
+          min-width: 44px; // Maintain touch target
+          min-height: 44px;
+          
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
+    }
+    
+    .no-blogs-section {
+      padding: 40px 16px;
+      
+      .no-blogs-content {
+        .no-blogs-icon {
+          font-size: 48px;
+          width: 48px;
+          height: 48px;
+        }
+        
+        h3 {
+          font-size: 1.3rem;
+        }
+      }
+    }
+  }
+  
+  // Tablet Optimizations
+  @media (max-width: 1024px) and (min-width: 769px) {
+    .categories-tabs {
+      .category-tab {
+        padding: 11px 22px;
+      }
+    }
+    
+    .subcategory-chip {
+      padding: 7px 15px;
+    }
+  }
+  
   // Dark theme adjustments
   [data-theme="dark"] {
     .category-card:hover {
@@ -434,5 +897,29 @@
   
     .hero-section {
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .category-tab {
+      &:hover {
+        background: rgba(var(--primary-color), 0.1);
+      }
+    }
+    
+    .category-scroll-arrow {
+      &:hover:not(.disabled) {
+        box-shadow: 0 2px 12px rgba(var(--primary-color), 0.4);
+      }
+    }
+    
+    .subcategory-chip {
+      &:hover {
+        background: rgba(var(--primary-color), 0.05);
+      }
+    }
+    
+    .scroll-arrow {
+      &:hover:not(.disabled) {
+        box-shadow: 0 2px 12px rgba(var(--primary-color), 0.4);
+      }
     }
   }

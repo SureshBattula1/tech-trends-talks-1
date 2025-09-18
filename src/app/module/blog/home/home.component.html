@@ -1,86 +1,144 @@
 <div class="app-blog-container">
-  <!-- Main Content -->
-  <div  class="home-content">
+  <div class="home-content">
     
-    <!-- Hero Section -->
-    <!-- <section class="hero-section">
-      <div class="hero-background">
-        <img src="assets/blogs/blog-home.gif" alt="Blog Hero" (error)="onImageError($event)">
-        <div class="hero-overlay"></div>
-      </div>
-      <div class="hero-content">
-        <h1 class="hero-title">Welcome to Our Blog</h1>
-        <p class="hero-subtitle">
-          Discover amazing stories, insights, and knowledge across various topics. 
-          Stay informed and inspired with our curated content.
-        </p>
-      </div>
-    </section> -->
+    <!-- Categories Tabs Section -->
+    <section class="categories-tabs-section" *ngIf="categories.length > 0">
+      <div class="categories-tabs-container">
+        <!-- Left Arrow for Categories -->
+        <button 
+          class="scroll-arrow category-scroll-arrow left-arrow"
+          [class.disabled]="!canScrollCategoriesLeft"
+          (click)="scrollCategories('left')"
+          (keydown)="onCategoryKeyDown($event, 'left')"
+          [disabled]="!canScrollCategoriesLeft"
+          [attr.aria-label]="'Scroll categories left'">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
 
-    <!-- Categories Section -->
-    <!-- <section class="categories-section" *ngIf="categories.length > 0">
+        <div 
+          class="categories-tabs"
+          (scroll)="onCategoriesScroll()"
+          (touchstart)="onCategoryTouchStart($event)"
+          (touchend)="onCategoryTouchEnd($event)">
+          <!-- All Categories Tab -->
+          <button 
+            class="category-tab"
+            [class.active]="selectedCategoryId === null"
+            (click)="onCategorySelect(null)">
+            All
+          </button>
+          
+          <!-- Individual Category Tabs -->
+          <button 
+            *ngFor="let category of categories"
+            class="category-tab"
+            [class.active]="selectedCategoryId === category.id"
+            (click)="onCategorySelect(category.id)">
+            {{ category.name }}
+          </button>
+        </div>
+
+        <!-- Right Arrow for Categories -->
+        <button 
+          class="scroll-arrow category-scroll-arrow right-arrow"
+          [class.disabled]="!canScrollCategoriesRight"
+          (click)="scrollCategories('right')"
+          (keydown)="onCategoryKeyDown($event, 'right')"
+          [disabled]="!canScrollCategoriesRight"
+          [attr.aria-label]="'Scroll categories right'">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </section>
+
+    <!-- Subcategories Chips Section -->
+    <section class="subcategories-section" *ngIf="subcategories.length > 0">
+      <div class="subcategories-container">
+        <!-- Left Arrow -->
+        <button 
+          class="scroll-arrow left-arrow"
+          [class.disabled]="!canScrollLeft"
+          (click)="scrollSubcategories('left')"
+          (keydown)="onKeyDown($event, 'left')"
+          [disabled]="!canScrollLeft"
+          [attr.aria-label]="'Scroll subcategories left'">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+
+        <!-- Subcategories Chips -->
+        <div 
+          class="subcategories-scroll-container"
+          (scroll)="onSubcategoriesScroll()"
+          (touchstart)="onTouchStart($event)"
+          (touchend)="onTouchEnd($event)">
+          <div class="subcategories-chips">
+            <!-- All Subcategories Chip -->
+            <button 
+              class="subcategory-chip"
+              [class.active]="selectedSubcategoryId === null"
+              (click)="onSubcategorySelect(null)">
+              All
+            </button>
+            
+            <!-- Individual Subcategory Chips -->
+            <button 
+              *ngFor="let subcategory of subcategories"
+              class="subcategory-chip"
+              [class.active]="selectedSubcategoryId === subcategory.id"
+              (click)="onSubcategorySelect(subcategory.id)">
+              {{ subcategory.name }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Arrow -->
+        <button 
+          class="scroll-arrow right-arrow"
+          [class.disabled]="!canScrollRight"
+          (click)="scrollSubcategories('right')"
+          (keydown)="onKeyDown($event, 'right')"
+          [disabled]="!canScrollRight"
+          [attr.aria-label]="'Scroll subcategories right'">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </section>
+
+    <!-- Loading State for Filtered Blogs -->
+    <div class="loading-container" *ngIf="isLoadingBlogs">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading blogs...</p>
+    </div>
+
+    <!-- Filtered Blogs Section -->
+    <section class="filtered-blogs-section" *ngIf="!isLoadingBlogs && filteredBlogs.length > 0">
       <div class="section-header">
         <h2>
-          <mat-icon>category</mat-icon>
-          Browse Categories
-        </h2>
-       
-      </div>
-  
-      <div class="categories-grid">
-        <mat-card 
-          *ngFor="let category of categories" 
-          class="category-card"
-          (click)="navigateToCategory(category.id)"
-          role="button"
-          tabindex="0">
-          <div class="category-image">
-            <img [src]="getCategoryImageUrl(category.image)" 
-                 [alt]="category.name"
-                 (error)="onImageError($event)"
-                 loading="lazy">
-          </div>
-          <mat-card-content>
-            <div class="category-content">
-              <div class="category-info">
-                <h3>{{ category.name }}</h3>
-                <p>{{ category.description || 'Explore articles in this category' }}</p>
-                <div class="category-stats">
-                  <span *ngIf="category.blogs">
-                    <mat-icon>article</mat-icon>
-                    {{ category.blogs.length }} articles
-                  </span>
-                  <span *ngIf="category.subcategories">
-                    <mat-icon>folder</mat-icon>
-                    {{ category.subcategories.length }} subcategories
-                  </span>
-                </div>
-              </div>
-              <mat-icon class="category-arrow">arrow_forward</mat-icon>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      </div>
-    </section> -->
-  
-    <!-- Latest Blogs Section -->
-    <section class="latest-section" *ngIf="latestBlogs.length > 0">
-      <!-- <div class="section-header">
-        <h2>
-          <mat-icon>schedule</mat-icon>
-          Latest Articles
+          <mat-icon>article</mat-icon>
+          {{ selectedCategoryId ? 'Filtered' : 'Latest' }} Blogs
         </h2>
       </div>
-   -->
       <div class="latest-grid">
         <app-blog-card 
-          *ngFor="let blog of latestBlogs" 
+          *ngFor="let blog of filteredBlogs" 
           [blogInput]="blog">
         </app-blog-card>
       </div>
     </section>
-   
-  </div>
 
+    <!-- No Blogs Found -->
+    <section class="no-blogs-section" *ngIf="!isLoadingBlogs && filteredBlogs.length === 0 && selectedCategoryId">
+      <div class="no-blogs-content">
+        <mat-icon class="no-blogs-icon">article</mat-icon>
+        <h3>No blogs found</h3>
+        <p>No blogs available for the selected category/subcategory.</p>
+        <button mat-raised-button color="primary" (click)="onCategorySelect(null)">
+          <mat-icon>refresh</mat-icon>
+          Show All Blogs
+        </button>
+      </div>
+    </section>
+
+  </div>
 </div>
   
