@@ -28,4 +28,25 @@ export class BreadcrumbService {
 
     return breadcrumbs;
   }
+
+  public shouldHideBreadcrumbs(route: ActivatedRoute): boolean {
+    // Check route data by traversing the entire route tree
+    const checkRouteData = (routeToCheck: ActivatedRoute): boolean => {
+      // Check current route data
+      if (routeToCheck.snapshot.data['hideBreadcrumb']) {
+        return true;
+      }
+      
+      // Check all children
+      for (const child of routeToCheck.children) {
+        if (checkRouteData(child)) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    // Start checking from root
+    return checkRouteData(route.root);
+  }
 }

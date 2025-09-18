@@ -11,5 +11,5 @@ import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
   styleUrl: './component-viewer.component.scss'
 })
 export class ComponentViewerComponent {
-
+  shouldHideBreadcrumbs = false; // Set this to true if you want to hide breadcrumbs for specific components
 }

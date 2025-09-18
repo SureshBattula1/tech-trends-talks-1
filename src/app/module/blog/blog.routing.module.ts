@@ -9,7 +9,7 @@ import { BlogFormComponent } from './create-blog/create-blog.component';
 const routes: Routes = [
   { 
     path: '', component: BlogLayoutComponent, children: [
-      { path: 'home', component: HomeComponent,data: { breadcrumb: 'Home' } },
+      { path: 'home', component: HomeComponent, data: { breadcrumb: 'Home', hideBreadcrumb: true } },
       { path: 'category/:id', component: BlogCategoryViewComponent , data: { breadcrumb: 'Category' } },
       { path: 'create-post', component: BlogFormComponent, data: { breadcrumb: 'Create Post' } },
       { path: ':id', component: BlogDetailsComponent, data: { breadcrumb: 'Details' } },

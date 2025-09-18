@@ -1,4 +1,4 @@
-<mat-toolbar color="primary">
+<mat-toolbar color="primary" *ngIf="shouldShowBreadcrumbs">
   <nav aria-label="Breadcrumb navigation" class="app-breadcrumb">
     <mat-icon >home</mat-icon>
     <ng-container *ngFor="let crumb of breadcrumbs; let last = last">
