@@ -889,6 +889,185 @@
     }
   }
   
+  // Pagination Styles
+  .pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 32px;
+    padding: 24px 16px;
+    
+    @media (max-width: 768px) {
+      margin-top: 24px;
+      padding: 20px 12px;
+    }
+    
+    .blog-pagination {
+      background: var(--surface-color);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      
+      ::ng-deep {
+        .mat-mdc-paginator {
+          background: transparent;
+          color: var(--text-primary);
+          
+          .mat-mdc-paginator-range-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            
+            @media (max-width: 768px) {
+              flex-wrap: wrap;
+              gap: 4px;
+            }
+          }
+          
+          .mat-mdc-paginator-range-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin: 0 16px;
+            
+            @media (max-width: 768px) {
+              margin: 0 8px;
+              font-size: 0.8rem;
+            }
+            
+            @media (max-width: 480px) {
+              margin: 0 4px;
+              font-size: 0.75rem;
+            }
+          }
+          
+          .mat-mdc-icon-button {
+            width: 40px;
+            height: 40px;
+            color: var(--text-primary);
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            
+            &:hover:not([disabled]) {
+              background: var(--primary-color-light);
+              color: var(--primary-custom-dark);
+              transform: scale(1.05);
+            }
+            
+            &[disabled] {
+              color: var(--text-disabled);
+              opacity: 0.5;
+            }
+            
+            @media (max-width: 768px) {
+              width: 36px;
+              height: 36px;
+            }
+            
+            @media (max-width: 480px) {
+              width: 32px;
+              height: 32px;
+            }
+            
+            mat-icon {
+              font-size: 20px;
+              width: 20px;
+              height: 20px;
+              
+              @media (max-width: 768px) {
+                font-size: 18px;
+                width: 18px;
+                height: 18px;
+              }
+              
+              @media (max-width: 480px) {
+                font-size: 16px;
+                width: 16px;
+                height: 16px;
+              }
+            }
+          }
+          
+          .mat-mdc-form-field {
+            margin: 0 8px;
+            
+            @media (max-width: 768px) {
+              margin: 0 4px;
+            }
+            
+            .mat-mdc-form-field-wrapper {
+              padding-bottom: 0;
+            }
+            
+            .mat-mdc-text-field-wrapper {
+              background: var(--surface-color);
+              border-radius: 6px;
+              border: 1px solid var(--border-color);
+              
+              &:hover {
+                border-color: var(--primary-color-light);
+              }
+            }
+            
+            .mat-mdc-select {
+              color: var(--text-primary);
+              font-size: 0.875rem;
+              
+              @media (max-width: 768px) {
+                font-size: 0.8rem;
+              }
+            }
+          }
+        }
+        
+        // Mobile specific adjustments
+        @media (max-width: 600px) {
+          .mat-mdc-paginator {
+            .mat-mdc-paginator-container {
+              flex-direction: column;
+              gap: 12px;
+              padding: 16px 12px;
+            }
+            
+            .mat-mdc-paginator-page-size {
+              align-items: center;
+              justify-content: center;
+              margin-bottom: 8px;
+              
+              .mat-mdc-paginator-page-size-label {
+                font-size: 0.8rem;
+                margin-right: 8px;
+              }
+            }
+            
+            .mat-mdc-paginator-range-actions {
+              justify-content: center;
+              width: 100%;
+            }
+          }
+        }
+        
+        // Very small screens
+        @media (max-width: 480px) {
+          .mat-mdc-paginator {
+            .mat-mdc-paginator-container {
+              padding: 12px 8px;
+            }
+            
+            .mat-mdc-paginator-page-size-label {
+              display: none; // Hide "Items per page" label on very small screens
+            }
+            
+            .mat-mdc-paginator-range-label {
+              display: none; // Hide range label on very small screens
+            }
+          }
+        }
+      }
+    }
+  }
+  
   // Dark theme adjustments
   [data-theme="dark"] {
     .category-card:hover {
@@ -920,6 +1099,32 @@
     .scroll-arrow {
       &:hover:not(.disabled) {
         box-shadow: 0 2px 12px rgba(var(--primary-color), 0.4);
+      }
+    }
+    
+    .pagination-container {
+      .blog-pagination {
+        ::ng-deep {
+          .mat-mdc-paginator {
+            .mat-mdc-icon-button {
+              &:hover:not([disabled]) {
+                background: rgba(var(--primary-color), 0.1);
+                color: var(--primary-color);
+              }
+            }
+            
+            .mat-mdc-form-field {
+              .mat-mdc-text-field-wrapper {
+                background: var(--background-color);
+                border-color: var(--border-color);
+                
+                &:hover {
+                  border-color: var(--primary-color);
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

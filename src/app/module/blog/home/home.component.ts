@@ -1,10 +1,12 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { SharedModule } from '../../shared/shared.module';
 import { Router, RouterModule } from '@angular/router';
 import { BlogCardComponent } from '../blog-card/blog-card.component';
 import { ApiService, Blog, Category, Subcategory, BlogFilters } from '../../../services/api.service';
 import { NgOptimizedImage } from '@angular/common';
 import { EnvironmentService } from '../../../services/environment.service';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { PaginationService, PaginationState } from '../../../services/pagination.service';
 
 @Component({
   selector: 'app-home',
@@ -13,7 +15,8 @@ import { EnvironmentService } from '../../../services/environment.service';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent {
+export class HomeComponent implements AfterViewInit {
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   featuredBlogs: Blog[] = [];
   latestBlogs: Blog[] = [];
@@ -25,6 +28,12 @@ export class HomeComponent {
   isLoading = true;
   isLoadingBlogs = false;
   error: string | null = null;
+
+  // Pagination properties
+  totalBlogs = 0;
+  pageSize = 8;
+  pageSizeOptions = [4, 8, 12, 20];
+  currentPageIndex = 0;
   
   // Category tabs scroll state
   canScrollCategoriesLeft = false;
@@ -42,11 +51,24 @@ export class HomeComponent {
 
   constructor(
     private apiService: ApiService,
-    private router: Router
+    private router: Router,
+    private paginationService: PaginationService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     this.loadHomeData();
+  }
+
+  ngAfterViewInit() {
+    // Initialize pagination service after view is ready
+    setTimeout(() => {
+      this.paginationService.updatePaginationState({
+        pageIndex: this.currentPageIndex,
+        pageSize: this.pageSize,
+        length: this.totalBlogs
+      });
+    });
   }
 
 
@@ -64,6 +86,7 @@ export class HomeComponent {
       if (latestResponse?.success) {
         this.latestBlogs = latestResponse.data.data;
         this.filteredBlogs = [...this.latestBlogs]; // Initialize filtered blogs
+        this.totalBlogs = latestResponse.data.total || this.latestBlogs.length; // Initialize total count
       }
       
       if (categoriesResponse?.success) {
@@ -119,23 +142,56 @@ export class HomeComponent {
     event.target.src = 'https://picsum.photos/300/200?random=' + Math.floor(Math.random() * 1000);
   }
 
+  // Pagination methods
+  onPageChange(event: PageEvent) {
+    this.currentPageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadFilteredBlogs();
+  }
+
+  shouldShowPagination(): boolean {
+    const hasBlogs = this.filteredBlogs.length > 0;
+    const notLoading = !this.isLoadingBlogs;
+    const hasFilters = !!(this.selectedCategoryId || this.selectedSubcategoryId);
+    const hasMultiplePages = this.totalBlogs > this.pageSize;
+    
+    return hasBlogs && notLoading && (hasFilters || hasMultiplePages);
+  }
+
   // Category selection methods
   onCategorySelect(categoryId: number | null) {
     this.selectedCategoryId = categoryId;
     this.selectedSubcategoryId = null; // Reset subcategory selection
+    this.resetPagination(); // Reset pagination when filters change
     
     if (categoryId) {
       this.loadSubcategories(categoryId);
       this.loadFilteredBlogs();
     } else {
       this.subcategories = [];
-      this.filteredBlogs = [...this.latestBlogs];
+      // For "All" category, load all blogs with pagination
+      this.loadFilteredBlogs();
     }
   }
 
   onSubcategorySelect(subcategoryId: number | null) {
+    console.log('Subcategory selected:', subcategoryId);
+    console.log('Current page before reset:', this.currentPageIndex);
     this.selectedSubcategoryId = subcategoryId;
-    this.loadFilteredBlogs();
+    this.resetPagination(); // Reset pagination when filters change
+    console.log('Current page after reset:', this.currentPageIndex);
+    // Add a small delay to ensure the pagination reset is processed
+    setTimeout(() => {
+      this.loadFilteredBlogs();
+    }, 10);
+  }
+
+  private resetPagination() {
+    this.currentPageIndex = 0;
+    // Use setTimeout to ensure the change is detected properly
+    setTimeout(() => {
+      this.cdr.detectChanges();
+    });
   }
 
   private loadSubcategories(categoryId: number) {
@@ -158,7 +214,8 @@ export class HomeComponent {
     this.isLoadingBlogs = true;
     
     const filters: BlogFilters = {
-      per_page: 20
+      per_page: this.pageSize,
+      page: this.currentPageIndex + 1
     };
     
     if (this.selectedCategoryId) {
@@ -169,16 +226,57 @@ export class HomeComponent {
       filters.subcategory_id = this.selectedSubcategoryId;
     }
     
+    console.log('Loading blogs with filters:', filters);
+    console.log('Selected category ID:', this.selectedCategoryId);
+    console.log('Selected subcategory ID:', this.selectedSubcategoryId);
+    
     this.apiService.getBlogs(filters).subscribe({
       next: (response) => {
         if (response.success) {
           this.filteredBlogs = response.data.data;
+          // Handle total count - if API doesn't provide total for filtered results, estimate it
+          if (response.data.total !== undefined) {
+            this.totalBlogs = response.data.total;
+          } else {
+            // If no total provided and we got a full page of results, assume there might be more
+            this.totalBlogs = response.data.data.length === this.pageSize ? 
+              response.data.data.length + 1 : response.data.data.length;
+          }
+          
+          console.log('API Response data:', response.data);
+          console.log('Total blogs from API:', response.data.total);
+          console.log('Blogs count:', response.data.data.length);
+          console.log('Final totalBlogs:', this.totalBlogs);
+          console.log('Page size:', this.pageSize);
+          console.log('Should show pagination:', this.totalBlogs > this.pageSize);
+          console.log('Pagination visibility conditions:');
+          console.log('- filteredBlogs.length > 0:', this.filteredBlogs.length > 0);
+          console.log('- !isLoadingBlogs:', !this.isLoadingBlogs);
+          console.log('- selectedCategoryId:', this.selectedCategoryId);
+          console.log('- selectedSubcategoryId:', this.selectedSubcategoryId);
+          console.log('- totalBlogs > pageSize:', this.totalBlogs > this.pageSize);
+          
+          // Update pagination service
+          this.paginationService.updatePaginationState({
+            pageIndex: this.currentPageIndex,
+            pageSize: this.pageSize,
+            length: this.totalBlogs
+          });
+
+          // Trigger change detection and reset paginator if needed
+          setTimeout(() => {
+            if (this.paginator && this.paginator.pageIndex !== this.currentPageIndex) {
+              this.paginator.pageIndex = this.currentPageIndex;
+            }
+            this.cdr.detectChanges();
+          });
         }
         this.isLoadingBlogs = false;
       },
       error: (error) => {
         console.error('Error loading filtered blogs:', error);
         this.filteredBlogs = [];
+        this.totalBlogs = 0;
         this.isLoadingBlogs = false;
       }
     });

@@ -124,6 +124,20 @@
           [blogInput]="blog">
         </app-blog-card>
       </div>
+
+      <!-- Pagination -->
+      <div class="pagination-container" *ngIf="shouldShowPagination()">
+        <mat-paginator 
+          #paginator
+          [length]="totalBlogs"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="pageSizeOptions"
+          [pageIndex]="currentPageIndex"
+          (page)="onPageChange($event)"
+          showFirstLastButtons
+          class="blog-pagination">
+        </mat-paginator>
+      </div>
     </section>
 
     <!-- No Blogs Found -->
