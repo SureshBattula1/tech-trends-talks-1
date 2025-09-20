@@ -31,8 +31,8 @@ export class HomeComponent implements AfterViewInit {
 
   // Pagination properties
   totalBlogs = 0;
-  pageSize = 8;
-  pageSizeOptions = [4, 8, 12, 20];
+  pageSize = 25;
+  pageSizeOptions = [5, 10, 25, 50]
   currentPageIndex = 0;
   
   // Category tabs scroll state
