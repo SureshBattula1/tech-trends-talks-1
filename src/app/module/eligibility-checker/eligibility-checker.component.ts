@@ -5,7 +5,9 @@ import { ChartConfiguration, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
-import { Meta, Title } from '@angular/platform-browser';
+import { Router } from '@angular/router';
+import { MetaTagsService, CalculatorType } from '../../services/meta-tags.service';
+import { StructuredDataService } from '../../services/structured-data.service';
 
 @Component({
   selector: 'app-eligibility-checker',
@@ -161,13 +163,17 @@ export class EligibilityCheckerComponent implements OnInit {
 ];
 
 
-  constructor(private meta: Meta, private title: Title, private cdr: ChangeDetectorRef) {}
+  private metaTagsService = inject(MetaTagsService);
+  private structuredDataService = inject(StructuredDataService);
+  private router = inject(Router);
+
+  constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.updateFormProgress();
     this.updateTenureMonths();
     this.updateTenurePlaceholder();
-    this.updateSEO();
+    this.updateMetaTags();
     this.initializeFAQ();
     this.generateSitemapData();
     this.calculateDefaultVisibleLoanTypes();
@@ -316,23 +322,25 @@ export class EligibilityCheckerComponent implements OnInit {
 
     const loanType = this.selectedLoanType.label;
     const interestRate = this.selectedLoanType.interest;
+    const currentUrl = `${window.location.origin}${this.router.url}`;
     
-    // Update title dynamically
-    this.title.setTitle(`${loanType} Eligibility Checker - Check ${loanType} Eligibility Online`);
+    // Generate dynamic meta tags using the service
+    const metaTags = {
+      title: `${loanType} Eligibility Checker - Check ${loanType} Eligibility Online`,
+      description: `Check your ${loanType} eligibility online. Get instant eligibility results for ${loanType} with ${interestRate}% interest rate. Know your chances of ${loanType} approval.`,
+      keywords: `${loanType.toLowerCase()} eligibility, ${loanType.toLowerCase()} eligibility checker, ${loanType.toLowerCase()} approval, loan eligibility calculator, ${loanType.toLowerCase()} interest rate ${interestRate}%`,
+      ogTitle: `${loanType} Eligibility Checker - Check ${loanType} Eligibility Online`,
+      ogDescription: `Check your ${loanType} eligibility online. Get instant eligibility results for ${loanType} with ${interestRate}% interest rate.`,
+      ogUrl: currentUrl,
+      twitterTitle: `${loanType} Eligibility Checker - Check ${loanType} Eligibility Online`,
+      twitterDescription: `Check your ${loanType} eligibility online. Get instant eligibility results for ${loanType} with ${interestRate}% interest rate.`
+    };
     
-    // Update meta description
-    this.meta.updateTag({ name: 'description', content: `Check your ${loanType} eligibility online. Get instant eligibility results for ${loanType} with ${interestRate}% interest rate. Know your chances of ${loanType} approval.` });
+    this.metaTagsService.updateMetaTags(metaTags);
     
-    // Update Open Graph tags
-    this.meta.updateTag({ name: 'og:title', content: `${loanType} Eligibility Checker - Check ${loanType} Eligibility Online` });
-    this.meta.updateTag({ name: 'og:description', content: `Check your ${loanType} eligibility online. Get instant eligibility results for ${loanType} with ${interestRate}% interest rate.` });
-    
-    // Update Twitter tags
-    this.meta.updateTag({ name: 'twitter:title', content: `${loanType} Eligibility Checker - Check ${loanType} Eligibility Online` });
-    this.meta.updateTag({ name: 'twitter:description', content: `Check your ${loanType} eligibility online. Get instant eligibility results for ${loanType} with ${interestRate}% interest rate.` });
-    
-    // Update keywords
-    this.meta.updateTag({ name: 'keywords', content: `${loanType.toLowerCase()} eligibility, ${loanType.toLowerCase()} eligibility checker, ${loanType.toLowerCase()} approval, loan eligibility calculator, ${loanType.toLowerCase()} interest rate ${interestRate}%` });
+    // Add dynamic structured data
+    const structuredData = this.structuredDataService.generateCalculatorStructuredData('loan-eligibility' as CalculatorType, currentUrl);
+    this.structuredDataService.addStructuredData(structuredData);
   }
 
   // Update tenure months when tenure value or unit changes
@@ -981,141 +989,20 @@ export class EligibilityCheckerComponent implements OnInit {
     XLSX.writeFile(workbook, 'loan-eligibility-report.xlsx');
   }
 
-  // Update SEO meta tags and title
-  updateSEO() {
-    this.title.setTitle('Loan Eligibility Checker - Check Your Loan Eligibility Online');
-    this.meta.addTags([
-      { name: 'description', content: 'Check your loan eligibility online. Get instant eligibility results for home loans, personal loans, car loans, and more. Know your chances of loan approval.' },
-      { name: 'keywords', content: 'loan eligibility, home loan eligibility, personal loan eligibility, car loan eligibility, loan eligibility calculator, eligibility check, loan approval, loan eligibility criteria' },
-      { name: 'author', content: 'Tech Trends Talks' },
-      { name: 'robots', content: 'index, follow' },
-      { name: 'og:title', content: 'Loan Eligibility Checker - Check Your Loan Eligibility Online' },
-      { name: 'og:description', content: 'Check your loan eligibility online. Get instant eligibility results for home loans, personal loans, car loans, and more. Know your chances of loan approval.' },
-      { name: 'og:url', content: `${window.location.origin}${window.location.pathname}` },
-      { name: 'og:type', content: 'website' },
-      { name: 'og:image', content: `${window.location.origin}/assets/images/loan-eligibility.jpg` },
-      { name: 'twitter:card', content: 'summary_large_image' },
-      { name: 'twitter:title', content: 'Loan Eligibility Checker - Check Your Loan Eligibility Online' },
-      { name: 'twitter:description', content: 'Check your loan eligibility online. Get instant eligibility results for home loans, personal loans, car loans, and more. Know your chances of loan approval.' },
-      { name: 'twitter:image', content: `${window.location.origin}/assets/images/loan-eligibility.jpg` },
-      { name: 'article:author', content: 'Tech Trends Talks' },
-      { name: 'article:section', content: 'Finance' },
-      { name: 'article:tag', content: 'Loan Eligibility, Loan Eligibility Checker, Loan Approval, Loan Eligibility Calculator' },
-      { name: 'article:published_time', content: new Date().toISOString() },
-      { name: 'article:modified_time', content: new Date().toISOString() }
-    ]);
-
-    // Add structured data for better SEO
-    this.addStructuredData();
+  // Update SEO meta tags using modern services
+  private updateMetaTags(): void {
+    const currentUrl = `${window.location.origin}${this.router.url}`;
+    const calculatorType: CalculatorType = 'loan-eligibility';
+    const metaTags = this.metaTagsService.generateCalculatorMetaTags(calculatorType, currentUrl);
+    this.metaTagsService.updateMetaTags(metaTags);
+    
+    // Add structured data
+    const structuredData = this.structuredDataService.generateCalculatorStructuredData(calculatorType, currentUrl);
+    this.structuredDataService.addStructuredData(structuredData);
   }
 
-  // Add structured data (JSON-LD) for better SEO
-  addStructuredData() {
-    const structuredData = {
-      '@context': 'https://schema.org',
-      '@type': 'WebApplication',
-      'name': 'Loan Eligibility Checker',
-      'description': 'Check your loan eligibility online. Get instant eligibility results for home loans, personal loans, car loans, and more. Know your chances of loan approval.',
-      'url': window.location.href,
-      'applicationCategory': 'FinanceApplication',
-      'operatingSystem': 'Web Browser',
-      'offers': {
-        '@type': 'Offer',
-        'price': '0',
-        'priceCurrency': 'INR',
-        'description': 'Free loan eligibility checker'
-      },
-      'featureList': [
-        'Home Loan Eligibility Check',
-        'Personal Loan Eligibility Check',
-        'Car Loan Eligibility Check',
-        'Business Loan Eligibility Check',
-        'Education Loan Eligibility Check',
-        'Instant EMI Calculation',
-        'Eligibility Score',
-        'Alternative Loan Suggestions'
-      ],
-      'screenshot': `${window.location.origin}/assets/images/loan-eligibility.jpg`,
-      'softwareVersion': '1.0',
-      'author': {
-        '@type': 'Organization',
-        'name': 'Tech Trends Talks',
-        'url': 'https://techtrendstalks.com'
-      },
-      'publisher': {
-        '@type': 'Organization',
-        'name': 'Tech Trends Talks',
-        'url': 'https://techtrendstalks.com'
-      },
-      'datePublished': new Date().toISOString(),
-      'dateModified': new Date().toISOString()
-    };
-
-    // Create and inject the structured data script
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.text = JSON.stringify(structuredData);
-    document.head.appendChild(script);
-
-    // Add FAQ structured data
-    this.addFAQStructuredData();
-  }
-
-  // Add FAQ structured data for better SEO
-  addFAQStructuredData() {
-    const faqData = {
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      'mainEntity': [
-        {
-          '@type': 'Question',
-          'name': 'How to check loan eligibility?',
-          'acceptedAnswer': {
-            '@type': 'Answer',
-            'text': 'To check loan eligibility, enter your monthly income, desired loan amount, tenure, existing EMIs, and select loan type. Our calculator will instantly show your eligibility status and EMI.'
-          }
-        },
-        {
-          '@type': 'Question',
-          'name': 'What is the minimum salary required for loan eligibility?',
-          'acceptedAnswer': {
-            '@type': 'Answer',
-            'text': 'The minimum salary requirement varies by loan type. Generally, ₹5,000 monthly income is required for basic eligibility, but specific loan types may have higher requirements.'
-          }
-        },
-        {
-          '@type': 'Question',
-          'name': 'How is loan eligibility calculated?',
-          'acceptedAnswer': {
-            '@type': 'Answer',
-            'text': 'Loan eligibility is calculated based on your monthly income, existing EMIs, loan amount, tenure, and interest rate. We use the EMI formula and check if the EMI ratio is within acceptable limits.'
-          }
-        },
-        {
-          '@type': 'Question',
-          'name': 'What is a good EMI to income ratio?',
-          'acceptedAnswer': {
-            '@type': 'Answer',
-            'text': 'A good EMI to income ratio is below 50%. Below 40% is excellent, 40-50% is good, and 50-60% is moderate. Above 60% may strain your finances.'
-          }
-        },
-        {
-          '@type': 'Question',
-          'name': 'Can I get a loan with low credit score?',
-          'acceptedAnswer': {
-            '@type': 'Answer',
-            'text': 'Yes, you can get loans with a low credit score, but you may face higher interest rates or need to provide additional security. Consider secured loans like gold loans for better approval chances.'
-          }
-        }
-      ]
-    };
-
-    // Create and inject the FAQ structured data script
-    const faqScript = document.createElement('script');
-    faqScript.type = 'application/ld+json';
-    faqScript.text = JSON.stringify(faqData);
-    document.head.appendChild(faqScript);
-  }
+  // Legacy method - now handled by StructuredDataService
+  // Keeping for backward compatibility but functionality moved to service
 
   // Generate sitemap data for SEO
   generateSitemapData() {

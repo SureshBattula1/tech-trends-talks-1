@@ -30,7 +30,7 @@ export class MetaTagsService {
   private readonly defaultTags: MetaTags = {
     title: 'Tech Trends Talks - EMI Calculators & Smart Loan Insights',
     description: 'EMI calculators for home, car, personal, gold, and more loans. Fast approvals, flexible repayment, and PDF download of EMI breakdowns and sip calculator',
-    keywords: 'emi calculator, sip calculator, loan calculator, mutual fund calculator, sip return calculator, समान मासिक किस्त, personal loan, home loan, car loan, emi download',
+    keywords: 'emi calculator, sip calculator, loan calculator, mutual fund calculator, sip return calculator, mortgage calculator, home loan calculator, personal loan calculator, car loan calculator, business loan calculator, education loan calculator, loan eligibility calculator, interest rate calculator, compound interest calculator, investment calculator, financial calculator, loan repayment calculator, समान मासिक किस्त, emi download, loan approval, credit score calculator, debt consolidation calculator, refinance calculator, mortgage rates, loan amount calculator',
     author: 'Tech Trends Talks',
     ogType: 'website',
     twitterCard: 'summary_large_image'
@@ -179,10 +179,10 @@ export class MetaTagsService {
   };
 
     const calculatorKeywords: Record<CalculatorType, string> = {
-      'emi-calculator': 'emi calculator, loan calculator, home loan emi, car loan calculator, personal loan emi, interest calculator, loan repayment',
-      'sip-calculator': 'sip calculator, mutual fund calculator, investment calculator, sip returns calculator, monthly investment calculator, wealth calculator, compound interest calculator, mutual fund sip',
-      'loan-eligibility': 'loan eligibility calculator, loan approval chances, loan amount calculator, credit score calculator, personal loan eligibility',
-      'grade-calculator': 'grade calculator, SGPA calculator, CGPA calculator, GPA calculator, marks to grade converter, semester grade point average, cumulative grade point average, SASTRA grading system, student grade calculator'
+      'emi-calculator': 'emi calculator, loan calculator, home loan emi, car loan calculator, personal loan emi, business loan emi, education loan emi, mortgage calculator, mortgage payment calculator, loan repayment calculator, interest calculator, loan amortization, equated monthly installment, loan tenure calculator, principal interest calculator, prepayment calculator, loan comparison calculator, refinance calculator, debt consolidation calculator, loan affordability calculator',
+      'sip-calculator': 'sip calculator, mutual fund calculator, investment calculator, sip returns calculator, monthly investment calculator, wealth calculator, compound interest calculator, mutual fund sip, systematic investment plan, investment growth calculator, retirement planning calculator, goal based investing, lumpsum calculator, step up sip calculator, portfolio calculator, mutual fund returns, equity calculator, debt fund calculator, hybrid fund calculator, tax saving calculator, elss calculator',
+      'loan-eligibility': 'loan eligibility calculator, loan approval chances, loan amount calculator, credit score calculator, personal loan eligibility, home loan eligibility, car loan eligibility, business loan eligibility, education loan eligibility, mortgage eligibility, loan qualification calculator, debt to income ratio calculator, affordability calculator, loan pre approval calculator, credit worthiness calculator, income based loan calculator, salary based loan eligibility, employment verification loan, collateral based loan eligibility',
+      'grade-calculator': 'grade calculator, SGPA calculator, CGPA calculator, GPA calculator, marks to grade converter, semester grade point average, cumulative grade point average, SASTRA grading system, student grade calculator, academic performance calculator, transcript calculator, credit point calculator, percentage to grade converter, grading scale calculator, weighted grade calculator, final grade calculator, course grade calculator, university grade calculator, college grade calculator, grade point system'
     };
 
     return {
