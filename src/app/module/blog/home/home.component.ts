@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, ViewChild, AfterViewInit, ChangeDetectorRef, signal, computed, effect, DestroyRef } from '@angular/core';
 import { SharedModule } from '../../shared/shared.module';
 import { Router, RouterModule } from '@angular/router';
 import { BlogCardComponent } from '../blog-card/blog-card.component';
@@ -7,123 +7,304 @@ import { NgOptimizedImage } from '@angular/common';
 import { EnvironmentService } from '../../../services/environment.service';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { PaginationService, PaginationState } from '../../../services/pagination.service';
+import { Observable, combineLatest, of, EMPTY, BehaviorSubject } from 'rxjs';
+import { catchError, switchMap, tap, startWith, distinctUntilChanged, shareReplay, filter, map } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [SharedModule, RouterModule,   BlogCardComponent],
+  imports: [SharedModule, RouterModule, BlogCardComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  featuredBlogs: Blog[] = [];
-  latestBlogs: Blog[] = [];
-  filteredBlogs: Blog[] = [];
-  categories: Category[] = [];
-  subcategories: Subcategory[] = [];
-  selectedCategoryId: number | null = null;
-  selectedSubcategoryId: number | null = null;
-  isLoading = true;
-  isLoadingBlogs = false;
-  error: string | null = null;
+  // Signals for reactive state management
+  private readonly apiService = inject(ApiService);
+  private readonly router = inject(Router);
+  private readonly paginationService = inject(PaginationService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly environmentService = inject(EnvironmentService);
 
-  // Pagination properties
-  totalBlogs = 0;
-  pageSize = 25;
-  pageSizeOptions = [5, 10, 25, 50]
-  currentPageIndex = 0;
+  // Data signals
+  readonly featuredBlogs = signal<Blog[]>([]);
+  readonly latestBlogs = signal<Blog[]>([]);
+  readonly filteredBlogs = signal<Blog[]>([]);
+  readonly categories = signal<Category[]>([]);
+  readonly subcategories = signal<Subcategory[]>([]);
   
-  // Category tabs scroll state
-  canScrollCategoriesLeft = false;
-  canScrollCategoriesRight = false;
+  // Filter signals
+  readonly selectedCategoryId = signal<number | null>(null);
+  readonly selectedSubcategoryId = signal<number | null>(null);
   
-  // Subcategory chips scroll state
-  canScrollLeft = false;
-  canScrollRight = false;
+  // Loading signals
+  readonly isLoading = signal(true);
+  readonly isLoadingBlogs = signal(false);
+  readonly error = signal<string | null>(null);
   
+  // Pagination signals
+  readonly totalBlogs = signal(0);
+  readonly pageSize = signal(25);
+  readonly pageSizeOptions = signal([5, 10, 25, 50]);
+  readonly currentPageIndex = signal(0);
+  
+  // UI state signals
+  readonly canScrollCategoriesLeft = signal(false);
+  readonly canScrollCategoriesRight = signal(false);
+  readonly canScrollLeft = signal(false);
+  readonly canScrollRight = signal(false);
+  
+  // Computed signals for derived state
+  readonly hasFilters = computed(() => 
+    this.selectedCategoryId() !== null || this.selectedSubcategoryId() !== null
+  );
+  
+  readonly shouldShowPagination = computed(() => {
+    const hasBlogs = this.filteredBlogs().length > 0;
+    const notLoading = !this.isLoadingBlogs();
+    const hasMultiplePages = this.totalBlogs() > this.pageSize();
+    const result = hasBlogs && notLoading && hasMultiplePages;
+    
+    // Debug logging
+    console.log('Pagination visibility check:', {
+      hasBlogs,
+      notLoading,
+      hasMultiplePages,
+      totalBlogs: this.totalBlogs(),
+      pageSize: this.pageSize(),
+      filteredBlogsLength: this.filteredBlogs().length,
+      result
+    });
+    
+    // Temporarily force pagination to show for testing
+    return hasBlogs && notLoading;
+  });
+  
+  readonly sectionTitle = computed(() => 
+    this.selectedCategoryId() ? 'Filtered Blogs' : 'Latest Blogs'
+  );
+
+  // Reactive streams for data loading
+  private readonly filterTrigger$ = new BehaviorSubject<{categoryId: number | null, subcategoryId: number | null}>({
+    categoryId: null,
+    subcategoryId: null
+  });
+
+  private readonly paginationTrigger$ = new BehaviorSubject<{pageIndex: number, pageSize: number}>({
+    pageIndex: 0,
+    pageSize: 25
+  });
+
   // Touch/swipe support for mobile
   private touchStartX = 0;
   private touchEndX = 0;
   private categoryTouchStartX = 0;
   private categoryTouchEndX = 0;
 
-  constructor(
-    private apiService: ApiService,
-    private router: Router,
-    private paginationService: PaginationService,
-    private cdr: ChangeDetectorRef
-  ) {}
+  constructor() {
+    this.setupReactiveDataStreams();
+    this.setupEffects();
+  }
 
   ngOnInit() {
-    this.loadHomeData();
+    // Initial data loading is handled by reactive streams
   }
 
   ngAfterViewInit() {
     // Initialize pagination service after view is ready
     setTimeout(() => {
       this.paginationService.updatePaginationState({
-        pageIndex: this.currentPageIndex,
-        pageSize: this.pageSize,
-        length: this.totalBlogs
+        pageIndex: this.currentPageIndex(),
+        pageSize: this.pageSize(),
+        length: this.totalBlogs()
       });
     });
   }
 
-
-  private loadHomeData() {
-    // Load featured blogs, latest blogs, and categories in parallel
-    Promise.all([
-      this.apiService.getFeaturedBlogs().toPromise(),
-      this.apiService.getLatestBlogs(8).toPromise(),
-      this.apiService.getCategories().toPromise()
-    ]).then(([featuredResponse, latestResponse, categoriesResponse]) => {
+  private setupReactiveDataStreams(): void {
+    // Initial data loading with combineLatest for parallel requests
+    combineLatest([
+      this.apiService.getFeaturedBlogs(),
+      this.apiService.getLatestBlogs(8),
+      this.apiService.getCategories()
+    ]).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      catchError(error => {
+        console.error('Error loading home data:', error);
+        this.error.set('Failed to load content. Please try again later.');
+        this.isLoading.set(false);
+        return EMPTY;
+      })
+    ).subscribe(([featuredResponse, latestResponse, categoriesResponse]: any[]) => {
+      // Update featured blogs
       if (featuredResponse?.success) {
-        this.featuredBlogs = featuredResponse.data.data;
+        this.featuredBlogs.set(featuredResponse.data.data);
       }
       
+      // Update latest blogs and initialize filtered blogs
       if (latestResponse?.success) {
-        this.latestBlogs = latestResponse.data.data;
-        this.filteredBlogs = [...this.latestBlogs]; // Initialize filtered blogs
-        this.totalBlogs = latestResponse.data.total || this.latestBlogs.length; // Initialize total count
+        console.log('Latest blogs response:', latestResponse.data);
+        this.latestBlogs.set(latestResponse.data.data);
+        this.filteredBlogs.set([...latestResponse.data.data]);
+        this.totalBlogs.set(latestResponse.data.total || latestResponse.data.data.length);
+        
+        console.log('Set total blogs to:', this.totalBlogs());
+        console.log('Page size:', this.pageSize());
+        console.log('Should show pagination:', this.shouldShowPagination());
+        
+        // Trigger initial pagination state update
+        this.paginationTrigger$.next({
+          pageIndex: 0,
+          pageSize: this.pageSize()
+        });
       }
       
+      // Update categories
       if (categoriesResponse?.success) {
-        this.categories = categoriesResponse.data;
+        this.categories.set(categoriesResponse.data);
         // Initialize category scroll buttons after categories are loaded
         setTimeout(() => this.updateCategoryScrollButtons(), 200);
       }
       
-      this.isLoading = false;
-    }).catch(error => {
-      console.error('Error loading home data:', error);
-      this.error = 'Failed to load content. Please try again later.';
-      this.isLoading = false;
+      this.isLoading.set(false);
+    });
+
+    // Reactive filtered blogs loading
+    combineLatest([
+      this.filterTrigger$.pipe(distinctUntilChanged()),
+      this.paginationTrigger$.pipe(distinctUntilChanged())
+    ]).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      tap(() => this.isLoadingBlogs.set(true)),
+      switchMap(([filter, pagination]: any[]) => {
+        const filters: BlogFilters = {
+          per_page: pagination.pageSize,
+          page: pagination.pageIndex + 1
+        };
+        
+        if (filter.categoryId) {
+          filters.category_id = filter.categoryId;
+        }
+        
+        if (filter.subcategoryId) {
+          filters.subcategory_id = filter.subcategoryId;
+        }
+        
+        return this.apiService.getBlogs(filters).pipe(
+          catchError(error => {
+            console.error('Error loading filtered blogs:', error);
+            this.filteredBlogs.set([]);
+            this.totalBlogs.set(0);
+            this.isLoadingBlogs.set(false);
+            return EMPTY;
+          })
+        );
+      }),
+      tap(() => this.isLoadingBlogs.set(false))
+    ).subscribe(response => {
+      if (response?.success) {
+        console.log('Filtered blogs response:', response.data);
+        this.filteredBlogs.set(response.data.data);
+        
+        // Handle total count - if API doesn't provide total for filtered results, estimate it
+        if (response.data.total !== undefined) {
+          this.totalBlogs.set(response.data.total);
+          console.log('Set total blogs from API to:', response.data.total);
+        } else {
+          // If no total provided and we got a full page of results, assume there might be more
+          const estimatedTotal = response.data.data.length === this.pageSize() ? 
+            response.data.data.length + 1 : response.data.data.length;
+          this.totalBlogs.set(estimatedTotal);
+          console.log('Estimated total blogs to:', estimatedTotal);
+        }
+        
+        // Update pagination service
+        this.paginationService.updatePaginationState({
+          pageIndex: this.currentPageIndex(),
+          pageSize: this.pageSize(),
+          length: this.totalBlogs()
+        });
+
+        // Trigger change detection and reset paginator if needed
+        setTimeout(() => {
+          if (this.paginator && this.paginator.pageIndex !== this.currentPageIndex()) {
+            this.paginator.pageIndex = this.currentPageIndex();
+          }
+          this.cdr.detectChanges();
+        });
+      }
+    });
+
+    // Subcategories loading when category changes - handled by effect instead
+  }
+
+  private setupEffects(): void {
+    // Effect to update scroll buttons when categories change
+    effect(() => {
+      const categories = this.categories();
+      if (categories.length > 0) {
+        setTimeout(() => this.updateCategoryScrollButtons(), 200);
+      }
+    });
+
+    // Effect to load subcategories when category changes
+    effect(() => {
+      const categoryId = this.selectedCategoryId();
+      if (categoryId) {
+        this.apiService.getCategorySubcategories(categoryId).pipe(
+          takeUntilDestroyed(this.destroyRef),
+          catchError(error => {
+            console.error('Error loading subcategories:', error);
+            this.subcategories.set([]);
+            return EMPTY;
+          })
+        ).subscribe((response: any) => {
+          if (response?.success) {
+            this.subcategories.set(response.data);
+            // Initialize scroll buttons after subcategories are loaded
+            setTimeout(() => this.updateScrollButtons(), 200);
+          }
+        });
+      } else {
+        this.subcategories.set([]);
+      }
+    });
+
+    // Effect to update pagination state when relevant signals change
+    effect(() => {
+      this.paginationService.updatePaginationState({
+        pageIndex: this.currentPageIndex(),
+        pageSize: this.pageSize(),
+        length: this.totalBlogs()
+      });
     });
   }
 
-  navigateToBlogs() {
+  navigateToBlogs(): void {
     this.router.navigate(['/blogs']);
   }
 
-  navigateToCategory(categoryId: number) {
+  navigateToCategory(categoryId: number): void {
     this.router.navigate(['/blogs/category', categoryId]);
   }
 
-  navigateToBlog(blogId: number) {
+  navigateToBlog(blogId: number): void {
     this.router.navigate(['/blogs', blogId]);
   }
 
-  retryLoad() {
-    this.loadHomeData();
+  retryLoad(): void {
+    this.error.set(null);
+    this.isLoading.set(true);
+    // Retrigger data loading by recreating the streams
+    this.setupReactiveDataStreams();
   }
 
   getHeroImageUrl(): string {
     return 'https://picsum.photos/1200/600?random=' + Math.floor(Math.random() * 1000);
   }
-
-  private environmentService = inject(EnvironmentService);
 
   getCategoryImageUrl(image: string): string {
     if (!image) {
@@ -138,152 +319,56 @@ export class HomeComponent implements AfterViewInit {
     return `${this.environmentService.apiBaseUrl}/storage/images/category/${image}`;
   }
 
-  onImageError(event: any) {
-    event.target.src = 'https://picsum.photos/300/200?random=' + Math.floor(Math.random() * 1000);
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.src = 'https://picsum.photos/300/200?random=' + Math.floor(Math.random() * 1000);
   }
 
   // Pagination methods
-  onPageChange(event: PageEvent) {
-    this.currentPageIndex = event.pageIndex;
-    this.pageSize = event.pageSize;
-    this.loadFilteredBlogs();
-  }
-
-  shouldShowPagination(): boolean {
-    const hasBlogs = this.filteredBlogs.length > 0;
-    const notLoading = !this.isLoadingBlogs;
-    const hasFilters = !!(this.selectedCategoryId || this.selectedSubcategoryId);
-    const hasMultiplePages = this.totalBlogs > this.pageSize;
-    
-    return hasBlogs && notLoading && (hasFilters || hasMultiplePages);
+  onPageChange(event: PageEvent): void {
+    this.currentPageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
+    this.paginationTrigger$.next({
+      pageIndex: event.pageIndex,
+      pageSize: event.pageSize
+    });
   }
 
   // Category selection methods
-  onCategorySelect(categoryId: number | null) {
-    this.selectedCategoryId = categoryId;
-    this.selectedSubcategoryId = null; // Reset subcategory selection
+  onCategorySelect(categoryId: number | null): void {
+    this.selectedCategoryId.set(categoryId);
+    this.selectedSubcategoryId.set(null); // Reset subcategory selection
     this.resetPagination(); // Reset pagination when filters change
     
-    if (categoryId) {
-      this.loadSubcategories(categoryId);
-      this.loadFilteredBlogs();
-    } else {
-      this.subcategories = [];
-      // For "All" category, load all blogs with pagination
-      this.loadFilteredBlogs();
-    }
+    // Trigger filter change
+    this.filterTrigger$.next({
+      categoryId,
+      subcategoryId: null
+    });
   }
 
-  onSubcategorySelect(subcategoryId: number | null) {
-    console.log('Subcategory selected:', subcategoryId);
-    console.log('Current page before reset:', this.currentPageIndex);
-    this.selectedSubcategoryId = subcategoryId;
+  onSubcategorySelect(subcategoryId: number | null): void {
+    this.selectedSubcategoryId.set(subcategoryId);
     this.resetPagination(); // Reset pagination when filters change
-    console.log('Current page after reset:', this.currentPageIndex);
-    // Add a small delay to ensure the pagination reset is processed
-    setTimeout(() => {
-      this.loadFilteredBlogs();
-    }, 10);
-  }
-
-  private resetPagination() {
-    this.currentPageIndex = 0;
-    // Use setTimeout to ensure the change is detected properly
-    setTimeout(() => {
-      this.cdr.detectChanges();
+    
+    // Trigger filter change
+    this.filterTrigger$.next({
+      categoryId: this.selectedCategoryId(),
+      subcategoryId
     });
   }
 
-  private loadSubcategories(categoryId: number) {
-    this.apiService.getCategorySubcategories(categoryId).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.subcategories = response.data;
-          // Initialize scroll buttons after subcategories are loaded
-          setTimeout(() => this.updateScrollButtons(), 200);
-        }
-      },
-      error: (error) => {
-        console.error('Error loading subcategories:', error);
-        this.subcategories = [];
-      }
+  private resetPagination(): void {
+    this.currentPageIndex.set(0);
+    this.paginationTrigger$.next({
+      pageIndex: 0,
+      pageSize: this.pageSize()
     });
   }
 
-  private loadFilteredBlogs() {
-    this.isLoadingBlogs = true;
-    
-    const filters: BlogFilters = {
-      per_page: this.pageSize,
-      page: this.currentPageIndex + 1
-    };
-    
-    if (this.selectedCategoryId) {
-      filters.category_id = this.selectedCategoryId;
-    }
-    
-    if (this.selectedSubcategoryId) {
-      filters.subcategory_id = this.selectedSubcategoryId;
-    }
-    
-    console.log('Loading blogs with filters:', filters);
-    console.log('Selected category ID:', this.selectedCategoryId);
-    console.log('Selected subcategory ID:', this.selectedSubcategoryId);
-    
-    this.apiService.getBlogs(filters).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.filteredBlogs = response.data.data;
-          // Handle total count - if API doesn't provide total for filtered results, estimate it
-          if (response.data.total !== undefined) {
-            this.totalBlogs = response.data.total;
-          } else {
-            // If no total provided and we got a full page of results, assume there might be more
-            this.totalBlogs = response.data.data.length === this.pageSize ? 
-              response.data.data.length + 1 : response.data.data.length;
-          }
-          
-          console.log('API Response data:', response.data);
-          console.log('Total blogs from API:', response.data.total);
-          console.log('Blogs count:', response.data.data.length);
-          console.log('Final totalBlogs:', this.totalBlogs);
-          console.log('Page size:', this.pageSize);
-          console.log('Should show pagination:', this.totalBlogs > this.pageSize);
-          console.log('Pagination visibility conditions:');
-          console.log('- filteredBlogs.length > 0:', this.filteredBlogs.length > 0);
-          console.log('- !isLoadingBlogs:', !this.isLoadingBlogs);
-          console.log('- selectedCategoryId:', this.selectedCategoryId);
-          console.log('- selectedSubcategoryId:', this.selectedSubcategoryId);
-          console.log('- totalBlogs > pageSize:', this.totalBlogs > this.pageSize);
-          
-          // Update pagination service
-          this.paginationService.updatePaginationState({
-            pageIndex: this.currentPageIndex,
-            pageSize: this.pageSize,
-            length: this.totalBlogs
-          });
-
-          // Trigger change detection and reset paginator if needed
-          setTimeout(() => {
-            if (this.paginator && this.paginator.pageIndex !== this.currentPageIndex) {
-              this.paginator.pageIndex = this.currentPageIndex;
-            }
-            this.cdr.detectChanges();
-          });
-        }
-        this.isLoadingBlogs = false;
-      },
-      error: (error) => {
-        console.error('Error loading filtered blogs:', error);
-        this.filteredBlogs = [];
-        this.totalBlogs = 0;
-        this.isLoadingBlogs = false;
-      }
-    });
-  }
 
   // Category tabs scroll methods
-  scrollCategories(direction: 'left' | 'right') {
+  scrollCategories(direction: 'left' | 'right'): void {
     const container = document.querySelector('.categories-tabs');
     if (container) {
       const scrollAmount = 200;
@@ -294,39 +379,39 @@ export class HomeComponent implements AfterViewInit {
     }
   }
 
-  private updateCategoryScrollButtons() {
+  private updateCategoryScrollButtons(): void {
     setTimeout(() => {
       const container = document.querySelector('.categories-tabs');
       if (container) {
-        this.canScrollCategoriesLeft = container.scrollLeft > 0;
-        this.canScrollCategoriesRight = container.scrollLeft < (container.scrollWidth - container.clientWidth);
+        this.canScrollCategoriesLeft.set(container.scrollLeft > 0);
+        this.canScrollCategoriesRight.set(container.scrollLeft < (container.scrollWidth - container.clientWidth));
       }
     }, 100);
   }
 
-  onCategoriesScroll() {
+  onCategoriesScroll(): void {
     this.updateCategoryScrollButtons();
   }
 
   // Category touch handlers for mobile swipe navigation
-  onCategoryTouchStart(event: TouchEvent) {
+  onCategoryTouchStart(event: TouchEvent): void {
     this.categoryTouchStartX = event.changedTouches[0].screenX;
   }
 
-  onCategoryTouchEnd(event: TouchEvent) {
+  onCategoryTouchEnd(event: TouchEvent): void {
     this.categoryTouchEndX = event.changedTouches[0].screenX;
     this.handleCategorySwipeGesture();
   }
 
-  private handleCategorySwipeGesture() {
+  private handleCategorySwipeGesture(): void {
     const swipeThreshold = 50;
     const swipeDistance = this.categoryTouchStartX - this.categoryTouchEndX;
     
     if (Math.abs(swipeDistance) > swipeThreshold) {
-      if (swipeDistance > 0 && this.canScrollCategoriesRight) {
+      if (swipeDistance > 0 && this.canScrollCategoriesRight()) {
         // Swipe left - scroll right
         this.scrollCategories('right');
-      } else if (swipeDistance < 0 && this.canScrollCategoriesLeft) {
+      } else if (swipeDistance < 0 && this.canScrollCategoriesLeft()) {
         // Swipe right - scroll left
         this.scrollCategories('left');
       }
@@ -334,7 +419,7 @@ export class HomeComponent implements AfterViewInit {
   }
 
   // Category keyboard navigation support
-  onCategoryKeyDown(event: KeyboardEvent, direction: 'left' | 'right') {
+  onCategoryKeyDown(event: KeyboardEvent, direction: 'left' | 'right'): void {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       this.scrollCategories(direction);
@@ -342,7 +427,7 @@ export class HomeComponent implements AfterViewInit {
   }
 
   // Subcategory chips scroll methods
-  scrollSubcategories(direction: 'left' | 'right') {
+  scrollSubcategories(direction: 'left' | 'right'): void {
     const container = document.querySelector('.subcategories-scroll-container');
     if (container) {
       const scrollAmount = 200;
@@ -353,39 +438,39 @@ export class HomeComponent implements AfterViewInit {
     }
   }
 
-  private updateScrollButtons() {
+  private updateScrollButtons(): void {
     setTimeout(() => {
       const container = document.querySelector('.subcategories-scroll-container');
       if (container) {
-        this.canScrollLeft = container.scrollLeft > 0;
-        this.canScrollRight = container.scrollLeft < (container.scrollWidth - container.clientWidth);
+        this.canScrollLeft.set(container.scrollLeft > 0);
+        this.canScrollRight.set(container.scrollLeft < (container.scrollWidth - container.clientWidth));
       }
     }, 100);
   }
 
-  onSubcategoriesScroll() {
+  onSubcategoriesScroll(): void {
     this.updateScrollButtons();
   }
 
   // Touch handlers for mobile swipe navigation
-  onTouchStart(event: TouchEvent) {
+  onTouchStart(event: TouchEvent): void {
     this.touchStartX = event.changedTouches[0].screenX;
   }
 
-  onTouchEnd(event: TouchEvent) {
+  onTouchEnd(event: TouchEvent): void {
     this.touchEndX = event.changedTouches[0].screenX;
     this.handleSwipeGesture();
   }
 
-  private handleSwipeGesture() {
+  private handleSwipeGesture(): void {
     const swipeThreshold = 50;
     const swipeDistance = this.touchStartX - this.touchEndX;
     
     if (Math.abs(swipeDistance) > swipeThreshold) {
-      if (swipeDistance > 0 && this.canScrollRight) {
+      if (swipeDistance > 0 && this.canScrollRight()) {
         // Swipe left - scroll right
         this.scrollSubcategories('right');
-      } else if (swipeDistance < 0 && this.canScrollLeft) {
+      } else if (swipeDistance < 0 && this.canScrollLeft()) {
         // Swipe right - scroll left
         this.scrollSubcategories('left');
       }
@@ -393,7 +478,7 @@ export class HomeComponent implements AfterViewInit {
   }
 
   // Keyboard navigation support
-  onKeyDown(event: KeyboardEvent, direction: 'left' | 'right') {
+  onKeyDown(event: KeyboardEvent, direction: 'left' | 'right'): void {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       this.scrollSubcategories(direction);

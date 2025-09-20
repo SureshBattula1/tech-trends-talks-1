@@ -163,8 +163,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 32px;
-    padding-bottom: 16px;
+    margin-bottom: 12px;
+    padding-bottom: 0px;
     border-bottom: 2px solid var(--primary-color);
   
     h2 {
@@ -172,7 +172,7 @@
       align-items: center;
       gap: 12px;
       margin: 0;
-      font-size: 2rem;
+      font-size: 18px;
       font-weight: 600;
       color: var(--text-primary);
   

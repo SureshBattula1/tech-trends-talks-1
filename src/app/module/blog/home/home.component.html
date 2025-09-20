@@ -2,15 +2,15 @@
   <div class="home-content">
     
     <!-- Categories Tabs Section -->
-    <section class="categories-tabs-section" *ngIf="categories.length > 0">
+    <section class="categories-tabs-section" *ngIf="categories().length > 0">
       <div class="categories-tabs-container">
         <!-- Left Arrow for Categories -->
         <button 
           class="scroll-arrow category-scroll-arrow left-arrow"
-          [class.disabled]="!canScrollCategoriesLeft"
+          [class.disabled]="!canScrollCategoriesLeft()"
           (click)="scrollCategories('left')"
           (keydown)="onCategoryKeyDown($event, 'left')"
-          [disabled]="!canScrollCategoriesLeft"
+          [disabled]="!canScrollCategoriesLeft()"
           [attr.aria-label]="'Scroll categories left'">
           <mat-icon>chevron_left</mat-icon>
         </button>
@@ -23,16 +23,16 @@
           <!-- All Categories Tab -->
           <button 
             class="category-tab"
-            [class.active]="selectedCategoryId === null"
+            [class.active]="selectedCategoryId() === null"
             (click)="onCategorySelect(null)">
             All
           </button>
           
           <!-- Individual Category Tabs -->
           <button 
-            *ngFor="let category of categories"
+            *ngFor="let category of categories()"
             class="category-tab"
-            [class.active]="selectedCategoryId === category.id"
+            [class.active]="selectedCategoryId() === category.id"
             (click)="onCategorySelect(category.id)">
             {{ category.name }}
           </button>
@@ -41,10 +41,10 @@
         <!-- Right Arrow for Categories -->
         <button 
           class="scroll-arrow category-scroll-arrow right-arrow"
-          [class.disabled]="!canScrollCategoriesRight"
+          [class.disabled]="!canScrollCategoriesRight()"
           (click)="scrollCategories('right')"
           (keydown)="onCategoryKeyDown($event, 'right')"
-          [disabled]="!canScrollCategoriesRight"
+          [disabled]="!canScrollCategoriesRight()"
           [attr.aria-label]="'Scroll categories right'">
           <mat-icon>chevron_right</mat-icon>
         </button>
@@ -52,15 +52,15 @@
     </section>
 
     <!-- Subcategories Chips Section -->
-    <section class="subcategories-section" *ngIf="subcategories.length > 0">
+    <section class="subcategories-section" *ngIf="subcategories().length > 0">
       <div class="subcategories-container">
         <!-- Left Arrow -->
         <button 
           class="scroll-arrow left-arrow"
-          [class.disabled]="!canScrollLeft"
+          [class.disabled]="!canScrollLeft()"
           (click)="scrollSubcategories('left')"
           (keydown)="onKeyDown($event, 'left')"
-          [disabled]="!canScrollLeft"
+          [disabled]="!canScrollLeft()"
           [attr.aria-label]="'Scroll subcategories left'">
           <mat-icon>chevron_left</mat-icon>
         </button>
@@ -75,16 +75,16 @@
             <!-- All Subcategories Chip -->
             <button 
               class="subcategory-chip"
-              [class.active]="selectedSubcategoryId === null"
+              [class.active]="selectedSubcategoryId() === null"
               (click)="onSubcategorySelect(null)">
               All
             </button>
             
             <!-- Individual Subcategory Chips -->
             <button 
-              *ngFor="let subcategory of subcategories"
+              *ngFor="let subcategory of subcategories()"
               class="subcategory-chip"
-              [class.active]="selectedSubcategoryId === subcategory.id"
+              [class.active]="selectedSubcategoryId() === subcategory.id"
               (click)="onSubcategorySelect(subcategory.id)">
               {{ subcategory.name }}
             </button>
@@ -94,10 +94,10 @@
         <!-- Right Arrow -->
         <button 
           class="scroll-arrow right-arrow"
-          [class.disabled]="!canScrollRight"
+          [class.disabled]="!canScrollRight()"
           (click)="scrollSubcategories('right')"
           (keydown)="onKeyDown($event, 'right')"
-          [disabled]="!canScrollRight"
+          [disabled]="!canScrollRight()"
           [attr.aria-label]="'Scroll subcategories right'">
           <mat-icon>chevron_right</mat-icon>
         </button>
@@ -105,22 +105,22 @@
     </section>
 
     <!-- Loading State for Filtered Blogs -->
-    <div class="loading-container" *ngIf="isLoadingBlogs">
+    <div class="loading-container" *ngIf="isLoadingBlogs()">
       <mat-spinner diameter="40"></mat-spinner>
       <p>Loading blogs...</p>
     </div>
 
     <!-- Filtered Blogs Section -->
-    <section class="filtered-blogs-section" *ngIf="!isLoadingBlogs && filteredBlogs.length > 0">
+    <section class="filtered-blogs-section" *ngIf="!isLoadingBlogs() && filteredBlogs().length > 0">
       <div class="section-header">
         <h2>
           <mat-icon>article</mat-icon>
-          {{ selectedCategoryId ? 'Filtered' : 'Latest' }} Blogs
+          {{ sectionTitle() }}
         </h2>
       </div>
       <div class="latest-grid">
         <app-blog-card 
-          *ngFor="let blog of filteredBlogs" 
+          *ngFor="let blog of filteredBlogs()" 
           [blogInput]="blog">
         </app-blog-card>
       </div>
@@ -129,10 +129,10 @@
       <div class="pagination-container" *ngIf="shouldShowPagination()">
         <mat-paginator 
           #paginator
-          [length]="totalBlogs"
-          [pageSize]="pageSize"
-          [pageSizeOptions]="pageSizeOptions"
-          [pageIndex]="currentPageIndex"
+          [length]="totalBlogs()"
+          [pageSize]="pageSize()"
+          [pageSizeOptions]="pageSizeOptions()"
+          [pageIndex]="currentPageIndex()"
           (page)="onPageChange($event)"
           showFirstLastButtons
           class="blog-pagination">
@@ -141,7 +141,7 @@
     </section>
 
     <!-- No Blogs Found -->
-    <section class="no-blogs-section" *ngIf="!isLoadingBlogs && filteredBlogs.length === 0 && selectedCategoryId">
+    <section class="no-blogs-section" *ngIf="!isLoadingBlogs() && filteredBlogs().length === 0 && selectedCategoryId()">
       <div class="no-blogs-content">
         <mat-icon class="no-blogs-icon">article</mat-icon>
         <h3>No blogs found</h3>
