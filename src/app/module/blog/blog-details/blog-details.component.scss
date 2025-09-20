@@ -207,14 +207,45 @@
     }
   }
   
+  .loading-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    padding: 40px 20px;
+    
+    .loader-overlay {
+      text-align: center;
+      
+      img {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 16px;
+      }
+      
+      p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 16px;
+        font-weight: 500;
+      }
+    }
+  }
+
   .not-found {
     text-align: center;
     padding: 60px 20px;
     color: var(--text-secondary);
     
-    h2 {
-      margin: 0;
+    h4 {
+      margin: 0 0 12px;
       color: var(--text-primary);
+      font-size: 1.5rem;
+    }
+    
+    p {
+      margin: 0;
+      font-size: 1rem;
     }
   }
   
