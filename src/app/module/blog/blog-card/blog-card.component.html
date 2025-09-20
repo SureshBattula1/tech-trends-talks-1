@@ -2,6 +2,7 @@
   class="blog-card" 
   [class.featured]="featured()"
   [routerLink]="['/blogs', blog()?.id]"
+  [queryParams]="{ slug: blog()?.slug, category: blog()?.category?.name, author: blog()?.author }"
   role="article">
 
   <!-- Featured Badge -->
