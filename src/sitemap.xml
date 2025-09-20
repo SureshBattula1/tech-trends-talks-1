@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset
       xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
             http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
@@ -17,22 +18,50 @@
   <url>
     <loc>https://techtrendstalks.com/calculator/emi-calculator</loc>
     <lastmod>2025-01-27T10:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://techtrendstalks.com/assets/images/calculator.png</image:loc>
+      <image:title>EMI Calculator - Free Online Loan EMI Calculator</image:title>
+      <image:caption>Calculate monthly EMI for home loans, car loans, personal loans</image:caption>
+    </image:image>
   </url>
 
   <url>
     <loc>https://techtrendstalks.com/calculator/sip-calculator</loc>
     <lastmod>2025-01-27T10:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://techtrendstalks.com/assets/images/sip-calculator.png</image:loc>
+      <image:title>SIP Calculator - Free Online SIP Calculator for Mutual Fund Investment</image:title>
+      <image:caption>Calculate SIP returns and mutual fund investment growth</image:caption>
+    </image:image>
   </url>
 
   <url>
     <loc>https://techtrendstalks.com/loan-eligibility-calculator/checker</loc>
     <lastmod>2025-01-27T10:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://techtrendstalks.com/assets/images/loan-eligibility.png</image:loc>
+      <image:title>Loan Eligibility Calculator - Check Your Loan Approval Chances</image:title>
+      <image:caption>Check loan eligibility for home loans, personal loans, car loans</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Grade Calculator -->
+  <url>
+    <loc>https://techtrendstalks.com/calculator/grade-calculator</loc>
+    <lastmod>2025-01-27T10:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://techtrendstalks.com/assets/images/grade-calculator.png</image:loc>
+      <image:title>Grade Calculator - Free SGPA & CGPA Calculator for Students</image:title>
+      <image:caption>Calculate SGPA, CGPA and convert marks to grades</image:caption>
+    </image:image>
   </url>
 
   <!-- Blog Pages -->

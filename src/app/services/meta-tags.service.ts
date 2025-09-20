@@ -165,17 +165,17 @@ export class MetaTagsService {
    */
   generateCalculatorMetaTags(calculatorType: CalculatorType, currentUrl: string): MetaTags {
     const calculatorTitles: Record<CalculatorType, string> = {
-      'emi-calculator': 'EMI Calculator - Calculate Loan EMI & Repayment Schedule',
-      'sip-calculator': 'SIP Calculator - Calculate Mutual Fund Returns & Investment Growth | Free Online Tool',
-      'loan-eligibility': 'Loan Eligibility Calculator - Check Your Loan Approval Chances',
-      'grade-calculator': 'Student Grade Calculator - Calculate SGPA & CGPA Online'
+      'emi-calculator': 'EMI Calculator Online - Free Loan EMI Calculator for Home, Car & Personal Loans',
+      'sip-calculator': 'SIP Calculator Online - Free SIP Calculator for Mutual Fund Investment Planning',
+      'loan-eligibility': 'Loan Eligibility Calculator Online - Check Your Loan Approval Chances Instantly',
+      'grade-calculator': 'Grade Calculator Online - Free SGPA & CGPA Calculator for Students'
     };
 
       const calculatorDescriptions: Record<CalculatorType, string> = {
-    'emi-calculator': 'Free EMI calculator for home, car, personal loans. Calculate monthly EMI, total interest, and view complete repayment schedule with PDF download.',
-    'sip-calculator': 'Free SIP calculator to estimate mutual fund returns and investment growth. Calculate monthly SIP amounts, track wealth creation, and plan your financial future with our comprehensive investment calculator.',
-    'loan-eligibility': 'Check your loan eligibility instantly. Calculate loan amount, EMI, and get personalized loan recommendations based on your income and credit score.',
-    'grade-calculator': 'Free online Grade Calculator for students to calculate SGPA and CGPA. Convert marks to grades using SASTRA grading system, calculate semester GPA, and cumulative GPA with detailed analysis.'
+    'emi-calculator': 'Free online EMI calculator to calculate monthly loan installments. Get accurate EMI calculations for home loans, car loans, personal loans with instant results, detailed amortization schedule, and downloadable reports.',
+    'sip-calculator': 'Free online SIP calculator to calculate mutual fund returns and investment growth. Plan your SIP investments, calculate monthly SIP amounts, track wealth creation with accurate results and detailed analysis.',
+    'loan-eligibility': 'Free loan eligibility calculator to check your loan approval chances instantly. Calculate maximum loan amount, EMI, and get personalized recommendations for home loans, personal loans, car loans based on your income and credit score.',
+    'grade-calculator': 'Free online grade calculator for students to calculate SGPA, CGPA, and GPA. Convert marks to grades, calculate semester grade point average, cumulative GPA with detailed analysis and performance tracking.'
   };
 
     const calculatorKeywords: Record<CalculatorType, string> = {

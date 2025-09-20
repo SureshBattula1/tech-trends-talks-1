@@ -1,3 +1,23 @@
 User-agent: *
-Allow: / 
+Allow: /
+
+# Priority pages for crawling
+Allow: /calculator/emi-calculator
+Allow: /calculator/sip-calculator
+Allow: /loan-eligibility-calculator/checker
+Allow: /blogs/
+
+# Block unnecessary paths
+Disallow: /admin/
+Disallow: /*.json$
+Disallow: /api/
+Disallow: /temp/
+
+# Crawl delay for better server performance
+Crawl-delay: 1
+
+# Sitemap location
 Sitemap: https://techtrendstalks.com/sitemap.xml
+
+# Additional sitemaps (if any)
+# Sitemap: https://techtrendstalks.com/blog-sitemap.xml

@@ -90,9 +90,29 @@ export class CalculatorSipViewComponent implements OnInit{
     const metaTags = this.metaTagsService.generateCalculatorMetaTags(calculatorType, currentUrl);
     this.metaTagsService.updateMetaTags(metaTags);
     
-    // Add structured data
+    // Add main structured data
     const structuredData = this.structuredDataService.generateCalculatorStructuredData(calculatorType, currentUrl);
     this.structuredDataService.addStructuredData(structuredData);
+    
+    // Add SIP-specific FAQ structured data
+    const faqData = this.structuredDataService.generateFAQStructuredData(calculatorType);
+    this.addAdditionalStructuredData('sip-faq-structured-data', faqData);
+  }
+
+  // Helper method to add additional structured data without conflicts
+  private addAdditionalStructuredData(id: string, data: any): void {
+    // Remove existing script with same ID
+    const existingScript = document.getElementById(id);
+    if (existingScript) {
+      existingScript.remove();
+    }
+
+    // Create new script element
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = id;
+    script.textContent = JSON.stringify(data);
+    document.head.appendChild(script);
   }
 
   // Toggle between SIP and Lumpsum modes
