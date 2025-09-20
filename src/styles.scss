@@ -121,6 +121,10 @@ mat-sidenav-content.mat-drawer-content.mat-sidenav-content {
   .app-menu{
     min-width: unset!important;
   }
+
+  .component-viewer-sidenav-container{
+    margin-top: 60px!important;
+   }
 }
 
 
@@ -132,6 +136,10 @@ mat-sidenav-content.mat-drawer-content.mat-sidenav-content {
    .component-sidenav-content {
         width: 100%;
         margin: auto;
+   }
+
+   .component-viewer-sidenav-container{
+    margin-top: 60px!important;
    }
 
    .flex-row{
@@ -151,6 +159,10 @@ mat-sidenav-content.mat-drawer-content.mat-sidenav-content {
         width: 100%;
         margin: auto;
    }
+   .component-viewer-sidenav-container{
+    margin-top: 60px!important;
+   }
+   
    .flex-row{
     flex-flow: row nowrap!important;
   }
