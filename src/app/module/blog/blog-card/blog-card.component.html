@@ -40,7 +40,7 @@
         <mat-icon>schedule</mat-icon>
         {{ formatDate(b.published_at) }}
       </span>
-      <span class="views">
+      <span class="views" style="display: none;">
         <mat-icon>visibility</mat-icon>
         {{ b.views }}
       </span>
@@ -65,14 +65,14 @@
     </div>
 
     <!-- Subcategory -->
-    <div class="subcategory" *ngIf="b.subcategory">
+    <!-- <div class="subcategory" *ngIf="b.subcategory">
       <mat-icon>folder</mat-icon>
       <span>{{ b.subcategory.name }}</span>
-    </div>
+    </div> -->
   </mat-card-content>
 
   <!-- Actions -->
-  <mat-card-actions align="end">
+  <!-- <mat-card-actions align="end">
     <button 
       mat-button 
       color="primary"
@@ -81,5 +81,5 @@
       Read More
       <mat-icon>arrow_forward</mat-icon>
     </button>
-  </mat-card-actions>
+  </mat-card-actions> -->
 </mat-card>
