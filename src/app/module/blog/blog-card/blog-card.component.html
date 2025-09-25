@@ -1,8 +1,8 @@
 <mat-card 
   class="blog-card" 
   [class.featured]="featured()"
-  [routerLink]="['/blogs', blog()?.id]"
-  [queryParams]="{ slug: blog()?.slug, category: blog()?.category?.name, author: blog()?.author }"
+  [routerLink]="['/blogs', blog()?.slug]"
+  [queryParams]="{ category: blog()?.category?.name, author: blog()?.author, slug: blog()?.slug}"
   role="article">
 
   <!-- Featured Badge -->

@@ -377,6 +377,13 @@ export class ApiService {
   getBlog(id: number): Observable<ApiResponse<Blog>> {
     return this.get<Blog>(`blogs/${id}`);
   }
+
+  /**
+   * Get a specific blog by Slug
+   */
+  getBlogBySlug(slug: string): Observable<ApiResponse<Blog>> {
+    return this.get<Blog>(`blogs/slug/${slug}`);
+  }
   
   /**
    * Get featured blogs

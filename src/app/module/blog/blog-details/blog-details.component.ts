@@ -28,7 +28,7 @@ export class BlogDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.loadBlog(id);
     } else {
@@ -36,8 +36,8 @@ export class BlogDetailsComponent implements OnInit {
     }
   }
 
-  private loadBlog(id: number) {
-    this.apiService.getBlog(id).subscribe({
+  private loadBlog(id: string) {
+    this.apiService.getBlogBySlug(id).subscribe({
       next: (response) => {
         if (response.success) {
           this.blog.set(response.data);
