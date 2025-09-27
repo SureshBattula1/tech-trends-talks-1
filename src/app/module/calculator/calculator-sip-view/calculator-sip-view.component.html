@@ -1,6 +1,6 @@
 <div class="calculator-container">
   <!-- Header Section -->
-  <div class="calculator-header">
+  <div class="calculator-header" style="display: none;">
     <div class="header-content">
       <h1>SIP Calculator</h1>
       <p>Calculate returns on your Systematic Investment Plan. Estimate monthly SIP amounts, track potential wealth creation, and plan your mutual fund investments.</p>
@@ -51,8 +51,8 @@
     <div class="form-container">
       <!-- SIP Calculator Form -->
       <div *ngIf="calculatorMode === 'SIP'" class="calculator-form">
-        <h3>📈 Systematic Investment Plan (SIP) Calculator</h3>
-        <p class="form-description">Calculate returns on your monthly investments and plan your financial future</p>
+        <h3 style="display: none;">📈 Systematic Investment Plan (SIP) Calculator</h3>
+        <p style="display: none;" class="form-description">Calculate returns on your monthly investments and plan your financial future</p>
         
         <div class="form-grid">
           <!-- Monthly Investment -->
@@ -141,7 +141,7 @@
 
         <!-- Results Section -->
         <div *ngIf="TOTAL_VALUE > 0" class="results-section">
-          <h3>📊 SIP Investment Results</h3>
+          <h3 style="display: none;">📊 SIP Investment Results</h3>
           <div class="results-grid">
             <div class="result-card">
               <div class="result-icon">💰</div>
@@ -199,8 +199,8 @@
 
       <!-- Lumpsum Calculator Form -->
       <div *ngIf="calculatorMode === 'LUMPSUM'" class="calculator-form">
-        <h3>💎 Lumpsum Investment Calculator</h3>
-        <p class="form-description">Calculate returns on your one-time investment amount</p>
+        <h3 style="display: none;">💎 Lumpsum Investment Calculator</h3>
+        <p  style="display: none;" class="form-description">Calculate returns on your one-time investment amount</p>
         
         <div class="form-grid">
           <!-- Lumpsum Amount -->
@@ -289,7 +289,7 @@
 
         <!-- Results Section -->
         <div *ngIf="TOTAL_VALUE > 0" class="results-section">
-          <h3>📊 Lumpsum Investment Results</h3>
+          <h3 style="display: none;">📊 Lumpsum Investment Results</h3>
           <div class="results-grid">
             <div class="result-card">
               <div class="result-icon">💰</div>

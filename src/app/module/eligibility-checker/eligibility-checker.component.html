@@ -26,18 +26,18 @@
       </div>
     </div>
     
-    <div class="hero-content">  
+    <div class="hero-content" style="display: none;">  
       <h1 class="hero-title">
         <span class="title-line highlight">Loan Eligibility Calculator</span>
         <!-- <span class="title-line highlight"></span> -->
       </h1>
       
-      <p class="hero-description">
+      <p  style="display: none;" class="hero-description">
         Instantly check your loan approval chances with our eligibility calculator. 
         Get personalized insights for home, car, personal and business loans etc..
       </p>
       
-      <div class="hero-stats">
+      <div style="display: none;" class="hero-stats">
         <div class="stat-item">
           <div class="stat-number">99.8%</div>
           <div class="stat-label">Accuracy Rate</div>
@@ -65,7 +65,7 @@
         <form class="eligibility-form" (ngSubmit)="onSubmit(eligibilityForm)" #eligibilityForm="ngForm">
           <!-- Loan Type Selection -->
           <div class="form-step active" [@slideInAnimation]>
-            <div class="step-header">
+            <div class="step-header" style="display: none;">
               <div class="step-number">1</div>
               <div class="step-info">
                 <h3>Choose Loan Type</h3>

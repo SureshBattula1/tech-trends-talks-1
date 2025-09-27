@@ -1,6 +1,6 @@
 <div class="calculator-container">
   <!-- Header Section -->
-  <div class="calculator-header">
+  <div class="calculator-header" style="display: none;">
     <div class="header-content">
       <h1>EMI Calculator - Loan EMI, Interest & Repayment Schedule</h1>
       <p>Use our free EMI calculator to calculate monthly EMI for home loan, car loan, personal loan, and more. Get complete repayment schedule, interest breakdown, and download PDF report.</p>
@@ -124,13 +124,13 @@
     <div class="form-container">
       <!-- Loan Type Selection -->
       <div class="loan-type-section">
-        <div class="step-header">
+        <!-- <div class="step-header">
           <div class="step-number">1</div>
           <div class="step-info">
             <h3>Choose Loan Type</h3>
             <p>Select the type of loan you're interested in from our comprehensive list</p>
           </div>
-        </div>
+        </div> -->
         
         <div class="loan-type-grid" [class.expanded]="isLoanTypesExpanded">
           <div class="loan-type-card" 
@@ -162,9 +162,10 @@
         <div class="selected-loan-card">
           <div class="selected-loan-icon">{{ loanTypes[selectedLoanTypeIndex].icon }}</div>
           <div class="selected-loan-info">
-            <h4>{{ loanTypes[selectedLoanTypeIndex].viewValue }}</h4>
-            <p>Selected for EMI calculation</p>
-            <span class="selected-interest-rate">{{ loanTypes[selectedLoanTypeIndex].interest }}% p.a.</span>
+            <h4>
+              {{ loanTypes[selectedLoanTypeIndex].viewValue }}
+              <span class="selected-interest-rate"> {{ loanTypes[selectedLoanTypeIndex].interest }}% p.a.</span>
+            </h4>
           </div>
         </div>
       </div>
@@ -259,7 +260,7 @@
   <!-- Results Section -->
   <div class="results-section" *ngIf="emi !== null">
     <!-- Results Header -->
-    <div class="results-header">
+    <!-- <div class="results-header">
       <div class="header-icon">
         <mat-icon>calculate</mat-icon>
       </div>
@@ -267,7 +268,7 @@
         <h2>Your EMI Results</h2>
         <p>Here's your complete loan breakdown and repayment schedule</p>
       </div>
-    </div>
+    </div> -->
 
     <!-- Main Results Layout - Side by Side -->
     <div class="results-main-layout">
@@ -350,7 +351,6 @@
     <div class="download-reports-section">
       <div class="reports-header">
         <h3>📥 Download Reports</h3>
-        <p>Get detailed information in your preferred format</p>
       </div>
       
       <div class="reports-buttons">
@@ -376,7 +376,6 @@
       <div class="schedule-header">
         <div class="header-content">
           <h3>📊 Repayment Schedule</h3>
-          <p>Click on any year to view monthly breakdown</p>
         </div>
         <div class="schedule-actions">
           <button mat-button class="action-btn" (click)="expandAllYears()">
@@ -953,7 +952,7 @@
       </section>
 
       <!-- Common Mistakes to Avoid Section -->
-      <section class="seo-section">
+      <section class="seo-section" style="display: none;">
         <h2>Common Mistakes to Avoid When Taking Loans</h2>
         <div class="mistakes-container">
           <div class="mistake-item">
@@ -999,7 +998,7 @@
       </section>
 
       <!-- Related Tools Section -->
-      <section class="seo-section">
+      <section class="seo-section" style="display: none;">
         <h2>Related Financial Tools</h2>
         <div class="related-tools">
           <a href="/calculator/sip-calculator" class="tool-link">

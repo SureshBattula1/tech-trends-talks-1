@@ -94,7 +94,7 @@ export class CalculatorViewComponent implements OnInit{
 
   // Collapsible loan type display
   isLoanTypesExpanded: boolean = false;
-  defaultVisibleLoanTypes: number = 8; // 2 rows on desktop, 4 rows on mobile
+  defaultVisibleLoanTypes: number = 12; // 2 rows on desktop, 4 rows on mobile
 
   // FAQ functionality
   activeFaqIndex: number | null = null;
@@ -113,7 +113,7 @@ export class CalculatorViewComponent implements OnInit{
       this.defaultVisibleLoanTypes = 9;
     } else {
       // Desktop: 2 rows × 4 columns = 8 loan types
-      this.defaultVisibleLoanTypes = 8;
+      this.defaultVisibleLoanTypes = 12;
     }
     
     // If currently expanded, reset to collapsed state when screen size changes
