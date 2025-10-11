@@ -100,6 +100,18 @@ export interface LumpsumCalculationResult {
 }
 
 /**
+ * SWP Calculator specific interfaces
+ */
+export interface SWPCalculationResult {
+  initialInvestment: number;
+  totalWithdrawn: number;
+  remainingValue: number;
+  totalReturns: number;
+  monthlyBreakdown: any[];
+  status: 'sufficient' | 'exhausted' | 'warning';
+}
+
+/**
  * Calculator mode types
  */
 export type CalculatorMode = 'SIP' | 'LUMPSUM';
@@ -130,6 +142,7 @@ export interface CalculatorChartData {
 export type EMIFormField = 'amount' | 'interestRate' | 'years';
 export type SIPFormField = 'monthlyInvestment' | 'annualInterestRate' | 'investmentPeriod' |
                             'lumpsumAmount' | 'lumpsumAnnualInterestRate' | 'lumpsumInvestmentPeriod';
+export type SWPFormField = 'initialInvestment' | 'monthlyWithdrawal' | 'annualInterestRate' | 'withdrawalPeriod';
 
 /**
  * Generic calculator state

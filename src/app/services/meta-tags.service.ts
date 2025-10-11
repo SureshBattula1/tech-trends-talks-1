@@ -18,7 +18,7 @@ export interface MetaTags {
   canonicalUrl?: string;
 }
 
-export type CalculatorType = 'emi-calculator' | 'sip-calculator' | 'loan-eligibility' | 'grade-calculator';
+export type CalculatorType = 'emi-calculator' | 'sip-calculator' | 'swp-calculator' | 'loan-eligibility' | 'grade-calculator';
 
 @Injectable({
   providedIn: 'root'
@@ -167,6 +167,7 @@ export class MetaTagsService {
     const calculatorTitles: Record<CalculatorType, string> = {
       'emi-calculator': 'EMI Calculator Online - Free Loan EMI Calculator for Home, Car & Personal Loans',
       'sip-calculator': 'SIP Calculator Online - Free SIP Calculator for Mutual Fund Investment Planning',
+      'swp-calculator': 'SWP Calculator Online - Free Systematic Withdrawal Plan Calculator for Retirement Planning',
       'loan-eligibility': 'Loan Eligibility Calculator Online - Check Your Loan Approval Chances Instantly',
       'grade-calculator': 'Grade Calculator Online - Free SGPA & CGPA Calculator for Students'
     };
@@ -174,6 +175,7 @@ export class MetaTagsService {
       const calculatorDescriptions: Record<CalculatorType, string> = {
     'emi-calculator': 'Free online EMI calculator to calculate monthly loan installments. Get accurate EMI calculations for home loans, car loans, personal loans with instant results, detailed amortization schedule, and downloadable reports.',
     'sip-calculator': 'Free online SIP calculator to calculate mutual fund returns and investment growth. Plan your SIP investments, calculate monthly SIP amounts, track wealth creation with accurate results and detailed analysis.',
+    'swp-calculator': 'Free online SWP calculator to plan systematic withdrawals from your investments. Calculate monthly withdrawals, remaining corpus, and plan your retirement income with accurate projections and detailed analysis.',
     'loan-eligibility': 'Free loan eligibility calculator to check your loan approval chances instantly. Calculate maximum loan amount, EMI, and get personalized recommendations for home loans, personal loans, car loans based on your income and credit score.',
     'grade-calculator': 'Free online grade calculator for students to calculate SGPA, CGPA, and GPA. Convert marks to grades, calculate semester grade point average, cumulative GPA with detailed analysis and performance tracking.'
   };
@@ -181,6 +183,7 @@ export class MetaTagsService {
     const calculatorKeywords: Record<CalculatorType, string> = {
       'emi-calculator': 'emi calculator, loan calculator, home loan emi, car loan calculator, personal loan emi, business loan emi, education loan emi, mortgage calculator, mortgage payment calculator, loan repayment calculator, interest calculator, loan amortization, equated monthly installment, loan tenure calculator, principal interest calculator, prepayment calculator, loan comparison calculator, refinance calculator, debt consolidation calculator, loan affordability calculator',
       'sip-calculator': 'sip calculator, mutual fund calculator, investment calculator, sip returns calculator, monthly investment calculator, wealth calculator, compound interest calculator, mutual fund sip, systematic investment plan, investment growth calculator, retirement planning calculator, goal based investing, lumpsum calculator, step up sip calculator, portfolio calculator, mutual fund returns, equity calculator, debt fund calculator, hybrid fund calculator, tax saving calculator, elss calculator',
+      'swp-calculator': 'swp calculator, systematic withdrawal plan calculator, retirement income calculator, pension calculator, withdrawal calculator, retirement planning calculator, monthly income calculator, corpus withdrawal calculator, retirement corpus calculator, post retirement planning, investment withdrawal calculator, mutual fund withdrawal, retirement fund calculator, passive income calculator, senior citizen calculator, monthly pension calculator, retirement income planner, wealth withdrawal calculator, financial independence calculator, early retirement calculator',
       'loan-eligibility': 'loan eligibility calculator, loan approval chances, loan amount calculator, credit score calculator, personal loan eligibility, home loan eligibility, car loan eligibility, business loan eligibility, education loan eligibility, mortgage eligibility, loan qualification calculator, debt to income ratio calculator, affordability calculator, loan pre approval calculator, credit worthiness calculator, income based loan calculator, salary based loan eligibility, employment verification loan, collateral based loan eligibility',
       'grade-calculator': 'grade calculator, SGPA calculator, CGPA calculator, GPA calculator, marks to grade converter, semester grade point average, cumulative grade point average, SASTRA grading system, student grade calculator, academic performance calculator, transcript calculator, credit point calculator, percentage to grade converter, grading scale calculator, weighted grade calculator, final grade calculator, course grade calculator, university grade calculator, college grade calculator, grade point system'
     };

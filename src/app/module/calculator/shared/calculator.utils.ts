@@ -290,6 +290,103 @@ export class CalculationUtils {
       return { investedAmount: 0, totalValue: 0, estimatedReturns: 0, yearlyBreakdown: [] };
     }
   }
+
+  /**
+   * Calculate SWP (Systematic Withdrawal Plan) returns
+   * This calculates how long your investment will last with regular withdrawals
+   */
+  static calculateSWP(
+    initialInvestment: number,
+    monthlyWithdrawal: number,
+    annualRate: number,
+    years: number
+  ): { 
+    initialInvestment: number; 
+    totalWithdrawn: number; 
+    remainingValue: number;
+    totalReturns: number;
+    monthlyBreakdown: any[];
+    status: 'sufficient' | 'exhausted' | 'warning';
+  } {
+    try {
+      const monthlyRate = annualRate / 12 / 100;
+      const totalMonths = years * 12;
+      
+      let remainingBalance = initialInvestment;
+      let totalWithdrawn = 0;
+      const monthlyBreakdown: any[] = [];
+      let exhaustedMonth = 0;
+
+      for (let month = 1; month <= totalMonths; month++) {
+        // Withdraw monthly amount FIRST (at the beginning of the month)
+        const withdrawal = Math.min(monthlyWithdrawal, remainingBalance);
+        remainingBalance -= withdrawal;
+        totalWithdrawn += withdrawal;
+        
+        // Check if balance is exhausted after withdrawal
+        if (remainingBalance <= 0 && exhaustedMonth === 0) {
+          exhaustedMonth = month;
+          // Store final month data
+          const year = Math.ceil(month / 12);
+          monthlyBreakdown.push({
+            month,
+            year,
+            withdrawal,
+            interest: 0,
+            remainingBalance: 0,
+          });
+          break;
+        }
+        
+        // Calculate interest on REMAINING balance (after withdrawal)
+        const monthlyInterest = remainingBalance * monthlyRate;
+        
+        // Add interest to remaining balance
+        remainingBalance += monthlyInterest;
+
+        // Store monthly data (store yearly or at end for performance)
+        if (month % 12 === 0 || month === totalMonths) {
+          const year = Math.ceil(month / 12);
+          monthlyBreakdown.push({
+            month,
+            year,
+            withdrawal,
+            interest: monthlyInterest,
+            remainingBalance,
+          });
+        }
+      }
+
+      const totalReturns = totalWithdrawn + remainingBalance - initialInvestment;
+      
+      // Determine status
+      let status: 'sufficient' | 'exhausted' | 'warning' = 'sufficient';
+      if (exhaustedMonth > 0) {
+        status = 'exhausted';
+      } else if (remainingBalance < (monthlyWithdrawal * 12)) {
+        status = 'warning';
+      }
+
+      return {
+        initialInvestment: parseFloat(initialInvestment.toFixed(2)),
+        totalWithdrawn: parseFloat(totalWithdrawn.toFixed(2)),
+        remainingValue: parseFloat(Math.max(0, remainingBalance).toFixed(2)),
+        totalReturns: parseFloat(totalReturns.toFixed(2)),
+        monthlyBreakdown,
+        status,
+      };
+    } catch (error) {
+      console.error('SWP calculation error:', error);
+      return { 
+        initialInvestment: 0, 
+        totalWithdrawn: 0, 
+        remainingValue: 0,
+        totalReturns: 0,
+        monthlyBreakdown: [],
+        status: 'exhausted'
+      };
+    }
+  }
 }
 
 /**

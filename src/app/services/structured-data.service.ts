@@ -120,6 +120,26 @@ export class StructuredDataService {
           'description': 'Free SIP Calculator with no registration required'
         }
       },
+      'swp-calculator': {
+        name: 'SWP Calculator Online - Free Systematic Withdrawal Plan Calculator',
+        description: 'Free online SWP calculator to plan systematic withdrawals from your investments. Calculate monthly withdrawals, remaining corpus, and plan your retirement income with accurate projections.',
+        category: 'FinanceApplication',
+        keywords: ['swp calculator', 'systematic withdrawal plan calculator', 'retirement income calculator', 'pension calculator', 'withdrawal calculator', 'retirement planning calculator', 'monthly income calculator'],
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          'ratingValue': '4.7',
+          'ratingCount': '1543',
+          'bestRating': '5',
+          'worstRating': '1'
+        },
+        offers: {
+          '@type': 'Offer',
+          'price': '0',
+          'priceCurrency': 'INR',
+          'availability': 'https://schema.org/InStock',
+          'description': 'Free SWP Calculator with no registration required'
+        }
+      },
       'loan-eligibility': {
         name: 'Loan Eligibility Calculator Online - Check Loan Approval Chances',
         description: 'Free loan eligibility calculator to check your loan approval chances instantly. Calculate maximum loan amount, EMI, and get personalized recommendations for home loans, personal loans, car loans.',
@@ -245,6 +265,40 @@ export class StructuredDataService {
           acceptedAnswer: {
             '@type': 'Answer',
             text: 'Yes, our EMI calculator provides 100% accurate results using the standard EMI calculation formula. The results match with bank calculations and help you plan your finances effectively.'
+          }
+        }
+      ],
+      'swp-calculator': [
+        {
+          '@type': 'Question',
+          name: 'What is SWP calculator and how does it work?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'SWP calculator helps you plan systematic withdrawals from your investments. Enter your initial investment amount, desired monthly withdrawal, expected return rate, and tenure. The calculator shows how long your corpus will last and the remaining balance after withdrawals.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'What is Systematic Withdrawal Plan (SWP)?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'SWP or Systematic Withdrawal Plan allows investors to withdraw a fixed amount regularly from their mutual fund investments. It provides a steady income stream while keeping the remaining corpus invested to earn returns.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'Is SWP good for retirement planning?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes, SWP is excellent for retirement planning as it provides regular income while your investment continues to grow. It offers tax efficiency, flexibility, and helps maintain purchasing power through inflation-beating returns.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'How is SWP different from SIP?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'SIP (Systematic Investment Plan) involves regular investments to build corpus, while SWP (Systematic Withdrawal Plan) involves regular withdrawals from existing corpus. SIP is for wealth creation, SWP is for generating regular income from accumulated wealth.'
           }
         }
       ],

@@ -12,6 +12,10 @@ export const CALCULATOR_CONSTANTS = {
     SIP_MAX: 1000000000,
     LUMPSUM_MIN: 1000,
     LUMPSUM_MAX: 1000000000,
+    SWP_INITIAL_MIN: 100000,
+    SWP_INITIAL_MAX: 1000000000,
+    SWP_WITHDRAWAL_MIN: 1000,
+    SWP_WITHDRAWAL_MAX: 10000000,
   },
 
   // Interest Rate Limits
@@ -64,6 +68,8 @@ export const CALCULATOR_CONSTANTS = {
       SIP_PDF: 'TechTrendsTalks_SIP_Investment_Report',
       STEP_UP_SIP_EXCEL: 'TechTrendsTalks_StepUp_SIP_Report',
       STEP_UP_SIP_PDF: 'TechTrendsTalks_StepUp_SIP_Investment_Report',
+      SWP_EXCEL: 'TechTrendsTalks_SWP_Report',
+      SWP_PDF: 'TechTrendsTalks_SWP_Withdrawal_Report',
     },
   },
 

@@ -1,0 +1,322 @@
+<div class="calculator-container">
+  <!-- Header Section -->
+  <div class="calculator-header" style="display: none;">
+    <div class="header-content">
+      <h1>SWP Calculator</h1>
+      <p>Calculate systematic withdrawals from your investments. Plan your retirement income, estimate monthly withdrawals, and manage your corpus effectively.</p>
+      
+      <!-- SEO Keywords Section - Hidden for users but accessible to search engines -->
+      <div class="seo-keywords" style="display: none;">
+        <span class="keyword-tag">SWP Calculator</span>
+        <span class="keyword-tag">Systematic Withdrawal Plan Calculator</span>
+        <span class="keyword-tag">Retirement Income Calculator</span>
+        <span class="keyword-tag">Pension Calculator</span>
+        <span class="keyword-tag">Withdrawal Calculator</span>
+        <span class="keyword-tag">Retirement Planning Calculator</span>
+        <span class="keyword-tag">Monthly Income Calculator</span>
+        <span class="keyword-tag">Free SWP Calculator</span>
+        <span class="keyword-tag">Mutual Fund Withdrawal Calculator</span>
+        <span class="keyword-tag">Post Retirement Planning</span>
+        <span class="keyword-tag">Corpus Withdrawal Calculator</span>
+        <span class="keyword-tag">Retirement Corpus Calculator</span>
+        <span class="keyword-tag">Investment Withdrawal Calculator</span>
+        <span class="keyword-tag">Passive Income Calculator</span>
+        <span class="keyword-tag">Senior Citizen Calculator</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Calculator Form -->
+  <div class="calculator-main">
+    <div class="form-container">
+      <div class="calculator-form">
+        <h3 style="display: none;">💰 Systematic Withdrawal Plan (SWP) Calculator</h3>
+        <p style="display: none;" class="form-description">Plan your retirement income with regular withdrawals from your investment corpus</p>
+        
+        <div class="form-grid">
+          <!-- Initial Investment -->
+          <div class="form-card">
+            <div class="input-group">
+              <label>Initial Investment Amount</label>
+              <div class="input-wrapper">
+                <span class="currency-symbol">₹</span>
+                <input 
+                  type="text" 
+                  [formControl]="initialInvestmentForm" 
+                  (blur)="onInputBlur('initialInvestment')" 
+                  (focus)="onInputFocus('initialInvestment')"
+                  placeholder="Enter initial corpus"
+                  class="form-input">
+              </div>
+              <app-price-progress-bar 
+                [mode]="'PRICE'"  
+                [minPrice]="100000" 
+                [maxPrice]="100000000" 
+                [step]="10000" 
+                [currentPrice]="initialInvestment" 
+                (priceChanged)="priceProgressChange($event,'INITIAL_INVESTMENT')">
+              </app-price-progress-bar>
+            </div>
+          </div>
+
+          <!-- Monthly Withdrawal -->
+          <div class="form-card">
+            <div class="input-group">
+              <label>Monthly Withdrawal Amount</label>
+              <div class="input-wrapper">
+                <span class="currency-symbol">₹</span>
+                <input 
+                  type="text" 
+                  [formControl]="monthlyWithdrawalForm" 
+                  (blur)="onInputBlur('monthlyWithdrawal')" 
+                  (focus)="onInputFocus('monthlyWithdrawal')"
+                  placeholder="Enter monthly amount"
+                  class="form-input">
+              </div>
+              <app-price-progress-bar 
+                [mode]="'PRICE'"  
+                [minPrice]="1000" 
+                [maxPrice]="500000" 
+                [step]="1000" 
+                [currentPrice]="monthlyWithdrawal" 
+                (priceChanged)="priceProgressChange($event,'MONTHLY_WITHDRAWAL')">
+              </app-price-progress-bar>
+            </div>
+          </div>
+
+          <!-- Annual Interest Rate -->
+          <div class="form-card">
+            <div class="input-group">
+              <label>Expected Annual Return Rate</label>
+              <div class="input-wrapper">
+                <input 
+                  type="text" 
+                  [formControl]="annualInterestRateForm" 
+                  (blur)="onInputBlur('annualInterestRate')"  
+                  placeholder="Enter rate"
+                  class="form-input">
+                <span class="unit">%</span>
+              </div>
+              <app-price-progress-bar 
+                [mode]="'PERCENTAGE'" 
+                [minPrice]="1" 
+                [maxPrice]="50" 
+                [step]="1" 
+                [discrete]="true"  
+                [currentPrice]="annualInterestRate" 
+                (priceChanged)="priceProgressChange($event,'PERCENTAGE')">
+              </app-price-progress-bar>
+            </div>
+          </div>
+
+          <!-- Withdrawal Period -->
+          <div class="form-card">
+            <div class="input-group">
+              <label>Withdrawal Time Period</label>
+              <div class="input-wrapper">
+                <input 
+                  type="text" 
+                  [formControl]="withdrawalPeriodForm" 
+                  (blur)="onInputBlur('withdrawalPeriod')"  
+                  placeholder="Enter years"
+                  class="form-input">
+                <span class="unit">Years</span>
+              </div>
+              <app-price-progress-bar 
+                [mode]="'TENURE'" 
+                [minPrice]="1" 
+                [maxPrice]="50" 
+                [step]="1" 
+                [discrete]="true"  
+                [currentPrice]="withdrawalPeriod" 
+                (priceChanged)="priceProgressChange($event,'TENURE')">
+              </app-price-progress-bar>
+            </div>
+          </div>
+        </div>
+
+        <!-- Calculate Button -->
+        <div class="calculate-section">
+          <button class="calculate-btn" (click)="calculateTotalSWPReturns()">
+            <mat-icon>calculate</mat-icon>
+            Calculate SWP Withdrawals
+          </button>
+        </div>
+
+        <!-- Results Section -->
+        <div *ngIf="REMAINING_VALUE >= 0" class="results-section">
+          <h3 style="display: none;">📊 SWP Withdrawal Results</h3>
+          
+          <!-- Status Message -->
+          <div class="status-message" [style.background-color]="getStatusColor() + '20'" [style.border-left-color]="getStatusColor()">
+            <mat-icon [style.color]="getStatusColor()">
+              {{ withdrawalStatus === 'sufficient' ? 'check_circle' : withdrawalStatus === 'warning' ? 'warning' : 'error' }}
+            </mat-icon>
+            <span [style.color]="getStatusColor()">{{ getStatusMessage() }}</span>
+          </div>
+
+          <div class="results-grid">
+            <div class="result-card">
+              <div class="result-icon">💼</div>
+              <div class="result-content">
+                <h4>Initial Investment</h4>
+                <p class="result-amount">₹{{ formatCurrency(INITIAL_INVESTMENT) }}</p>
+                <small>Starting corpus</small>
+              </div>
+            </div>
+            
+            <div class="result-card">
+              <div class="result-icon">💸</div>
+              <div class="result-content">
+                <h4>Total Withdrawn</h4>
+                <p class="result-amount">₹{{ formatCurrency(TOTAL_WITHDRAWN) }}</p>
+                <small>{{ withdrawalPeriod * 12 }} monthly withdrawals</small>
+              </div>
+            </div>
+            
+            <div class="result-card">
+              <div class="result-icon">💰</div>
+              <div class="result-content">
+                <h4>Remaining Value</h4>
+                <p class="result-amount">₹{{ formatCurrency(REMAINING_VALUE) }}</p>
+                <small>Corpus balance</small>
+              </div>
+            </div>
+
+            <div class="result-card">
+              <div class="result-icon">📈</div>
+              <div class="result-content">
+                <h4>Total Returns</h4>
+                <p class="result-amount">₹{{ formatCurrency(TOTAL_RETURNS) }}</p>
+                <small>Interest earned</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart Section -->
+          <div class="chart-section">
+            <h4>Withdrawal Breakdown</h4>
+            <div class="chart-container">
+              <canvas baseChart
+                [data]="chartData"
+                [type]="chartType"
+                [options]="chartOptions">
+              </canvas>
+            </div>
+          </div>
+
+          <!-- Download Section -->
+          <div class="download-section" style="display: none;">
+            <button class="download-btn" (click)="downloadPDF()">
+              <mat-icon>download</mat-icon>
+              Download PDF Report
+            </button>
+            <button class="download-btn" (click)="downloadExcel()">
+              <mat-icon>table_chart</mat-icon>
+              Download Excel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Educational Content Section -->
+  <div class="educational-content">
+    <div class="content-container">
+      <h2>What is SWP Calculator?</h2>
+      <p>A SWP (Systematic Withdrawal Plan) calculator is a financial tool that helps investors plan regular withdrawals from their investment corpus. It's essential for retirement planning, calculating sustainable monthly income, and managing your wealth during post-retirement years.</p>
+      
+      <h3>How SWP Calculator Works</h3>
+      <p>The SWP calculator calculates how long your corpus will last with regular withdrawals. It considers your initial investment, monthly withdrawal amount, expected return rate, and withdrawal period to show total withdrawn amount, remaining corpus, and sustainability of your withdrawal plan.</p>
+      
+      <h3>Benefits of SWP</h3>
+      <ul>
+        <li><strong>Regular Income:</strong> Get steady monthly income while keeping your corpus invested</li>
+        <li><strong>Tax Efficiency:</strong> Only capital gains portion is taxed, not the entire withdrawal</li>
+        <li><strong>Flexibility:</strong> Adjust withdrawal amounts based on your needs</li>
+        <li><strong>Capital Appreciation:</strong> Remaining corpus continues to grow with market returns</li>
+        <li><strong>Inflation Protection:</strong> Investment growth helps maintain purchasing power</li>
+      </ul>
+
+      <h3>When to Use SWP Calculator</h3>
+      <ul>
+        <li>Planning retirement income</li>
+        <li>Managing post-retirement corpus</li>
+        <li>Creating passive income stream</li>
+        <li>Planning children's education expenses</li>
+        <li>Managing lump sum inheritance or windfall</li>
+      </ul>
+
+      <h3>SWP vs SIP</h3>
+      <p><strong>SIP (Systematic Investment Plan)</strong> is for wealth accumulation where you invest regularly to build corpus. <strong>SWP (Systematic Withdrawal Plan)</strong> is for wealth distribution where you withdraw regularly from accumulated corpus. SIP is typically used during earning years, while SWP is used during retirement or when you need regular income.</p>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div class="faq-section">
+    <div class="content-container">
+      <h2>Frequently Asked Questions</h2>
+      
+      <div class="faq-item">
+        <h3>What is the minimum corpus required for SWP?</h3>
+        <p>There's no fixed minimum, but ideally you should have at least 30-40 times your annual withdrawal amount to ensure sustainability. For ₹10,000 monthly withdrawal, aim for ₹36-48 lakhs corpus.</p>
+      </div>
+      
+      <div class="faq-item">
+        <h3>How is SWP taxed?</h3>
+        <p>Only the capital gains portion of your withdrawal is taxable. For equity funds, LTCG above ₹1 lakh is taxed at 10%, and STCG at 15%. For debt funds, gains are added to your income and taxed as per your slab.</p>
+      </div>
+      
+      <div class="faq-item">
+        <h3>Can I change my SWP amount?</h3>
+        <p>Yes, most mutual funds allow you to modify SWP amount, pause it, or stop it anytime. Check with your fund house for specific terms and notice periods.</p>
+      </div>
+      
+      <div class="faq-item">
+        <h3>What is a sustainable SWP withdrawal rate?</h3>
+        <p>Financial experts suggest 4-6% annual withdrawal rate from your corpus is sustainable. This rate helps balance regular income needs with corpus longevity and inflation protection.</p>
+      </div>
+      
+      <div class="faq-item">
+        <h3>Which funds are best for SWP?</h3>
+        <p>Balanced or hybrid funds with 60-70% equity are ideal for SWP as they provide growth to beat inflation while offering stability. Pure equity funds work well for longer tenures (15+ years).</p>
+      </div>
+      
+      <div class="faq-item">
+        <h3>How accurate are SWP calculator results?</h3>
+        <p>SWP calculator provides estimates based on assumed return rates. Actual results may vary due to market fluctuations. It's recommended to assume conservative returns (8-10%) for realistic planning.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Related Calculators Section -->
+  <div class="related-calculators">
+    <div class="content-container">
+      <h2>Related Financial Calculators</h2>
+      <div class="calculator-links">
+        <a href="/calculator/sip-calculator" class="calculator-link">
+          <mat-icon>trending_up</mat-icon>
+          <span>SIP Calculator</span>
+          <small>Calculate investment growth</small>
+        </a>
+        <a href="/calculator/emi-calculator" class="calculator-link">
+          <mat-icon>calculate</mat-icon>
+          <span>EMI Calculator</span>
+          <small>Calculate loan EMIs</small>
+        </a>
+        <a href="/loan-eligibility-calculator/checker" class="calculator-link">
+          <mat-icon>verified_user</mat-icon>
+          <span>Loan Eligibility</span>
+          <small>Check loan approval chances</small>
+        </a>
+        <a href="/blogs/home" class="calculator-link">
+          <mat-icon>article</mat-icon>
+          <span>Financial Blog</span>
+          <small>Investment tips & guides</small>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
