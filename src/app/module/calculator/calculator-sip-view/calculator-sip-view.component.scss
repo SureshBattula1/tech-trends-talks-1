@@ -1,3 +1,20 @@
+/* SEO-Only Header - Hidden from view but accessible to search engines */
+.seo-only-header {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  clip-path: inset(50%);
+  white-space: nowrap;
+
+  h1, p, .seo-keywords {
+    position: static;
+  }
+}
+
 /* Modern Investment Calculator Design */
 .calculator-container {
   max-width: 1200px;

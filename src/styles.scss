@@ -32,6 +32,42 @@ body {
   --text-secondary: rgba(255, 255, 255, 0.54);
 }
 
+/* ========================================
+   SEO UTILITY CLASSES
+   ======================================== */
+
+/* Hide content visually but keep it accessible to screen readers and search engines */
+.seo-only-header,
+.seo-only,
+.sr-only,
+.visually-hidden {
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(1px, 1px, 1px, 1px) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: -1px !important;
+}
+
+/* Show on focus for accessibility */
+.seo-only-header:focus,
+.seo-only:focus,
+.sr-only:focus,
+.visually-hidden:focus {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  clip: auto !important;
+  clip-path: none !important;
+  white-space: normal !important;
+}
 
 .app-background {
     background: #faf9fd;
