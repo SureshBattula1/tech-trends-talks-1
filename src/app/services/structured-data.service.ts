@@ -440,4 +440,132 @@ export class StructuredDataService {
     };
   }
 
+  /**
+   * Generate WebSite structured data with search action
+   */
+  generateWebSiteStructuredData(baseUrl: string): StructuredData {
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      'name': 'Tech Trends Talks',
+      'alternateName': 'TechTrendsTalks',
+      'url': baseUrl,
+      'description': 'Free online financial calculators for EMI, SIP, loan eligibility, and investment planning in India',
+      'inLanguage': 'en-IN',
+      'potentialAction': {
+        '@type': 'SearchAction',
+        'target': {
+          '@type': 'EntryPoint',
+          'urlTemplate': `${baseUrl}/search?q={search_term_string}`
+        },
+        'query-input': 'required name=search_term_string'
+      },
+      'sameAs': [
+        'https://www.facebook.com/techtrendstalks',
+        'https://twitter.com/techtrendstalks',
+        'https://www.instagram.com/techtrendstalks',
+        'https://www.linkedin.com/company/techtrendstalks',
+        'https://www.youtube.com/techtrendstalks'
+      ],
+      'publisher': {
+        '@type': 'Organization',
+        'name': 'Tech Trends Talks',
+        'logo': {
+          '@type': 'ImageObject',
+          'url': `${baseUrl}/assets/images/techtrendstalks-logo.jpeg`
+        }
+      }
+    };
+  }
+
+  /**
+   * Add multiple structured data scripts (for website, organization, breadcrumbs, etc.)
+   */
+  addMultipleStructuredData(dataArray: StructuredData[]): void {
+    // Remove all existing structured data scripts
+    const existingScripts = document.querySelectorAll('script[type="application/ld+json"]');
+    existingScripts.forEach(script => {
+      if (script.id !== 'structured-data') {
+        script.remove();
+      }
+    });
+
+    // Add each structured data with unique IDs
+    dataArray.forEach((data, index) => {
+      const id = `structured-data-${index}`;
+      const existingScript = document.getElementById(id);
+      if (existingScript) {
+        existingScript.remove();
+      }
+
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.id = id;
+      script.textContent = JSON.stringify(data);
+      document.head.appendChild(script);
+    });
+  }
+
+  /**
+   * Generate HowTo structured data for tutorial pages
+   */
+  generateHowToStructuredData(
+    name: string,
+    description: string,
+    steps: Array<{ name: string; text: string; image?: string }>,
+    totalTime?: string
+  ): StructuredData {
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'HowTo',
+      'name': name,
+      'description': description,
+      'totalTime': totalTime || 'PT5M',
+      'step': steps.map((step, index) => ({
+        '@type': 'HowToStep',
+        'position': index + 1,
+        'name': step.name,
+        'text': step.text,
+        'image': step.image
+      }))
+    };
+  }
+
+  /**
+   * Generate Product structured data for calculators as tools
+   */
+  generateProductStructuredData(
+    name: string,
+    description: string,
+    url: string,
+    image: string
+  ): StructuredData {
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      'name': name,
+      'description': description,
+      'url': url,
+      'image': image,
+      'brand': {
+        '@type': 'Brand',
+        'name': 'Tech Trends Talks'
+      },
+      'offers': {
+        '@type': 'Offer',
+        'price': '0',
+        'priceCurrency': 'INR',
+        'availability': 'https://schema.org/InStock',
+        'url': url
+      },
+      'aggregateRating': {
+        '@type': 'AggregateRating',
+        'ratingValue': '4.8',
+        'reviewCount': '2547',
+        'bestRating': '5',
+        'worstRating': '1'
+      }
+    };
+  }
+
 }

@@ -1,42 +1,96 @@
 {
-  "name": "Tech Trends Talks - EMI Calculators & Smart Loan Insights",
-  "short_name": "Tech Trends Talks",
-  "description": "EMI calculators for home, car, personal, gold, and more loans. Fast approvals, flexible repayment, and PDF download of EMI breakdowns and sip calculator",
-  "start_url": "/",
+  "name": "Tech Trends Talks - Free EMI, SIP & Financial Calculators",
+  "short_name": "Tech Trends",
+  "description": "Free online financial calculators for EMI, SIP, loan eligibility, and investment planning. Calculate home loan EMI, mutual fund returns, and plan your finances accurately.",
+  "start_url": "/?source=pwa",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#1976d2",
   "orientation": "portrait-primary",
   "scope": "/",
-  "lang": "en",
+  "lang": "en-IN",
   "dir": "ltr",
-  "categories": ["finance", "business", "utilities"],
+  "categories": ["finance", "business", "utilities", "productivity"],
+  "prefer_related_applications": false,
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
   "icons": [
     {
       "src": "/assets/icons/loan_type.png",
       "sizes": "192x192",
       "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/icons/loan_type.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon",
       "purpose": "any"
     }
   ],
   "shortcuts": [
     {
       "name": "EMI Calculator",
-      "short_name": "EMI Calc",
+      "short_name": "EMI",
       "description": "Calculate loan EMI and repayment schedule",
-      "url": "/calculator/emi-calculator"
+      "url": "/calculator/emi-calculator?source=pwa",
+      "icons": [
+        {
+          "src": "/assets/images/calculator.png",
+          "sizes": "96x96"
+        }
+      ]
     },
     {
       "name": "SIP Calculator",
-      "short_name": "SIP Calc",
+      "short_name": "SIP",
       "description": "Calculate mutual fund returns and investment growth",
-      "url": "/calculator/sip-calculator"
+      "url": "/calculator/sip-calculator?source=pwa",
+      "icons": [
+        {
+          "src": "/assets/images/calculator.png",
+          "sizes": "96x96"
+        }
+      ]
     },
     {
       "name": "Loan Eligibility",
       "short_name": "Eligibility",
       "description": "Check your loan eligibility and approval chances",
-      "url": "/loan-eligibility-calculator/checker"
+      "url": "/loan-eligibility-calculator/checker?source=pwa",
+      "icons": [
+        {
+          "src": "/assets/images/calculator.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Blog",
+      "short_name": "Blog",
+      "description": "Read financial planning tips and advice",
+      "url": "/blogs/home?source=pwa",
+      "icons": [
+        {
+          "src": "/assets/blogs/blog-home.gif",
+          "sizes": "96x96"
+        }
+      ]
     }
-  ]
+  ],
+  "screenshots": [
+    {
+      "src": "/assets/images/calculator.png",
+      "type": "image/png",
+      "sizes": "540x720",
+      "form_factor": "narrow"
+    }
+  ],
+  "related_applications": [],
+  "gcm_sender_id": "103953800507"
 }

@@ -64,6 +64,32 @@
     </image:image>
   </url>
 
+  <!-- SWP Calculator -->
+  <url>
+    <loc>https://techtrendstalks.com/calculator/swp-calculator</loc>
+    <lastmod>2025-01-27T10:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://techtrendstalks.com/assets/images/swp-calculator.png</image:loc>
+      <image:title>SWP Calculator - Systematic Withdrawal Plan Calculator</image:title>
+      <image:caption>Calculate retirement income and systematic withdrawals</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Step-up SIP Calculator -->
+  <url>
+    <loc>https://techtrendstalks.com/calculator/stepup-sip-calculator</loc>
+    <lastmod>2025-01-27T10:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://techtrendstalks.com/assets/images/calculator.png</image:loc>
+      <image:title>Step-up SIP Calculator - Increasing SIP Calculator</image:title>
+      <image:caption>Calculate returns with annual SIP increment</image:caption>
+    </image:image>
+  </url>
+
   <!-- Blog Pages -->
   <url>
     <loc>https://techtrendstalks.com/blogs/home</loc>
