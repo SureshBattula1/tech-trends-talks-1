@@ -12,6 +12,23 @@ import { StructuredDataService } from '../../../services/structured-data.service
 import { Router } from '@angular/router';
 import { LoaderService } from '../../../services/loading-bar/loader.service';
 
+// Import shared utilities
+import { CALCULATOR_CONSTANTS, CHART_COLORS, VALIDATION_MESSAGES } from '../shared/calculator.constants';
+import { 
+  CalculatorMode, 
+  ProgressBarMode, 
+  SIPCalculationResult,
+  StructuredData,
+  ValidationErrors,
+  LoadingStates
+} from '../shared/calculator.interfaces';
+import { 
+  NumberFormatter, 
+  ValidationUtils, 
+  CalculationUtils, 
+  ExportUtils 
+} from '../shared/calculator.utils';
+
 @Component({
   selector: 'app-calculator-sip-view',
   standalone: true,
@@ -24,29 +41,47 @@ export class CalculatorSipViewComponent implements OnInit{
 
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
+  // Injected services
   public loader = inject(LoaderService);
-  private cd = inject(ChangeDetectorRef);
+  private changeDetectorRef = inject(ChangeDetectorRef);
   private metaTagsService = inject(MetaTagsService);
   private structuredDataService = inject(StructuredDataService);
   private router = inject(Router);
   
   // Calculator mode toggle
-  calculatorMode: 'SIP' | 'LUMPSUM' = 'SIP';
+  calculatorMode: CalculatorMode = 'SIP';
   
   // SIP Calculator properties
-  monthlyInvestment: number = 10000;
-  annualInterestRate: number = 12;
-  investmentPeriod: number = 10;
+  monthlyInvestment: number = CALCULATOR_CONSTANTS.AMOUNTS.SIP_MIN;
+  annualInterestRate: number = CALCULATOR_CONSTANTS.INTEREST_RATES.DEFAULT;
+  investmentPeriod: number = CALCULATOR_CONSTANTS.TENURE.DEFAULT_SIP;
 
   // Lumpsum Calculator properties
-  lumpsumAmount: number = 100000;
-  lumpsumAnnualInterestRate: number = 12;
-  lumpsumInvestmentPeriod: number = 10;
+  lumpsumAmount: number = CALCULATOR_CONSTANTS.AMOUNTS.LUMPSUM_MIN;
+  lumpsumAnnualInterestRate: number = CALCULATOR_CONSTANTS.INTEREST_RATES.DEFAULT;
+  lumpsumInvestmentPeriod: number = CALCULATOR_CONSTANTS.TENURE.DEFAULT_SIP;
 
   // Results
   INVESTED_AMOUNT: number = 0;
   EST_RETURNS: number = 0;
   TOTAL_VALUE: number = 0;
+
+  // Loading states
+  loadingStates: LoadingStates = {
+    isCalculating: false,
+    isExporting: false,
+    isLoading: false
+  };
+
+  // Validation errors
+  validationErrors: ValidationErrors = {
+    monthlyInvestment: '',
+    annualInterestRate: '',
+    investmentPeriod: '',
+    lumpsumAmount: '',
+    lumpsumAnnualInterestRate: '',
+    lumpsumInvestmentPeriod: ''
+  };
 
   // Form controls - using string type to support comma formatting
   monthlyInvestmentForm = new FormControl<string>(this.formatInputValue(this.monthlyInvestment));
@@ -63,7 +98,7 @@ export class CalculatorSipViewComponent implements OnInit{
      labels: ['Invested', 'Est. Returns'],
      datasets: [{
        data: [0, 0],
-       backgroundColor: ['#42A5F5','#5367ff'],
+       backgroundColor: [CHART_COLORS.INVESTED, CHART_COLORS.RETURNS],
      }]
    };
  
@@ -100,7 +135,7 @@ export class CalculatorSipViewComponent implements OnInit{
   }
 
   // Helper method to add additional structured data without conflicts
-  private addAdditionalStructuredData(id: string, data: any): void {
+  private addAdditionalStructuredData(id: string, data: StructuredData): void {
     // Remove existing script with same ID
     const existingScript = document.getElementById(id);
     if (existingScript) {
@@ -116,31 +151,20 @@ export class CalculatorSipViewComponent implements OnInit{
   }
 
   // Toggle between SIP and Lumpsum modes
-  toggleCalculatorMode(mode: 'SIP' | 'LUMPSUM'): void {
+  toggleCalculatorMode(mode: CalculatorMode): void {
     this.calculatorMode = mode;
     this.calculate();
-    this.cd.markForCheck();
+    this.changeDetectorRef.markForCheck();
   }
 
-  // Helper methods for comma formatting - Indian numbering system
-  formatNumberWithCommas(value: number): string {
-    const numStr = value.toString();
-    const lastThree = numStr.substring(numStr.length - 3);
-    const otherNumbers = numStr.substring(0, numStr.length - 3);
-    
-    if (otherNumbers !== '') {
-      return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + ',' + lastThree;
-    }
-    return lastThree;
-  }
-
-  parseNumberFromCommas(value: string): number {
-    return parseFloat(value.replace(/,/g, '')) || 0;
-  }
-
-  // Format input value for display
+  // Format input value for display using shared utility
   formatInputValue(value: number): string {
-    return this.formatNumberWithCommas(value);
+    return NumberFormatter.formatInputValue(value);
+  }
+
+  // Parse number from comma-formatted string using shared utility
+  parseNumberFromCommas(value: string): number {
+    return NumberFormatter.parseInputValue(value);
   }
 
   // Handle input blur events to format numbers
@@ -179,7 +203,7 @@ export class CalculatorSipViewComponent implements OnInit{
         this.validateLumpsumInvestmentPeriod();
         break;
     }
-    this.cd.markForCheck();
+    this.changeDetectorRef.markForCheck();
   }
 
   // Handle input focus events to remove commas for editing
@@ -216,108 +240,182 @@ export class CalculatorSipViewComponent implements OnInit{
     // SIP form subscriptions
     this.monthlyInvestmentForm.valueChanges.subscribe((value: string | null) => {
        this.monthlyInvestment = this.parseNumberFromCommas(value || '');
-       this.cd.markForCheck();
+       this.changeDetectorRef.markForCheck();
     });
 
     this.annualInterestRateForm.valueChanges.subscribe((value: number | null) => {
       this.annualInterestRate = value || 0;
-      this.cd.markForCheck();
+      this.changeDetectorRef.markForCheck();
     });
 
     this.investmentPeriodForm.valueChanges.subscribe((value: number | null) => {
       this.investmentPeriod = value || 0;
-      this.cd.markForCheck();
+      this.changeDetectorRef.markForCheck();
     });
 
     // Lumpsum form subscriptions
     this.lumpsumAmountForm.valueChanges.subscribe((value: string | null) => {
       this.lumpsumAmount = this.parseNumberFromCommas(value || '');
-      this.cd.markForCheck();
+      this.changeDetectorRef.markForCheck();
     });
 
     this.lumpsumAnnualInterestRateForm.valueChanges.subscribe((value: number | null) => {
       this.lumpsumAnnualInterestRate = value || 0;
-      this.cd.markForCheck();
+      this.changeDetectorRef.markForCheck();
     });
 
     this.lumpsumInvestmentPeriodForm.valueChanges.subscribe((value: number | null) => {
       this.lumpsumInvestmentPeriod = value || 0;
-      this.cd.markForCheck();
+      this.changeDetectorRef.markForCheck();
     });
   }
 
   // SIP Validation methods
-  validateMonthlyInvestment() {
-    const min = 100;
-    const max = 1000000000;
-    if (!this.monthlyInvestment || this.monthlyInvestment < min || this.monthlyInvestment > max) {
-      this.monthlyInvestment = min;
-      this.monthlyInvestmentForm.setValue(this.formatInputValue(min));
+  validateMonthlyInvestment(): void {
+    try {
+      const min = CALCULATOR_CONSTANTS.AMOUNTS.SIP_MIN;
+      const max = CALCULATOR_CONSTANTS.AMOUNTS.SIP_MAX;
+      
+      this.validationErrors['monthlyInvestment'] = '';
+
+      const sanitized = ValidationUtils.sanitizeValue(this.monthlyInvestment, min, max, min);
+      if (sanitized !== this.monthlyInvestment) {
+        this.monthlyInvestment = sanitized;
+        this.validationErrors['monthlyInvestment'] = 
+          this.monthlyInvestment === min ? VALIDATION_MESSAGES.AMOUNT.MIN(min) : VALIDATION_MESSAGES.AMOUNT.MAX(max);
+      }
+
+      this.monthlyInvestmentForm.setValue(this.formatInputValue(this.monthlyInvestment));
       this.monthlyInvestmentForm.updateValueAndValidity();
-      this.cd.markForCheck();
+      this.changeDetectorRef.markForCheck();
+      this.calculate();
+    } catch (error) {
+      console.error('Error validating monthly investment:', error);
+      this.monthlyInvestment = CALCULATOR_CONSTANTS.AMOUNTS.SIP_MIN;
     }
-    this.calculate();
   }
 
-  validateInvestmentPeriod() {
-    const min = 1;
-    const max = 50;
-    if (!this.investmentPeriod || this.investmentPeriod < min || this.investmentPeriod > max) {
-      this.investmentPeriod = min;
-      this.investmentPeriodForm.setValue(min);
+  validateInvestmentPeriod(): void {
+    try {
+      const min = CALCULATOR_CONSTANTS.TENURE.MIN;
+      const max = CALCULATOR_CONSTANTS.TENURE.MAX;
+      
+      this.validationErrors['investmentPeriod'] = '';
+      
+      const sanitized = ValidationUtils.sanitizeValue(this.investmentPeriod, min, max, min);
+      if (sanitized !== this.investmentPeriod) {
+        this.investmentPeriod = sanitized;
+        this.validationErrors['investmentPeriod'] = 
+          this.investmentPeriod === min ? VALIDATION_MESSAGES.TENURE.MIN(min) : VALIDATION_MESSAGES.TENURE.MAX(max);
+      }
+
+      this.investmentPeriodForm.setValue(this.investmentPeriod);
       this.investmentPeriodForm.updateValueAndValidity();
-      this.cd.markForCheck();
+      this.changeDetectorRef.markForCheck();
+      this.calculate();
+    } catch (error) {
+      console.error('Error validating investment period:', error);
+      this.investmentPeriod = CALCULATOR_CONSTANTS.TENURE.MIN;
     }
-    this.calculate();
   }
 
-  validateAnnualInterestRate() {
-    const min = 1;
-    const max = 30;
-    if (!this.annualInterestRate || this.annualInterestRate < min || this.annualInterestRate > max) {
-      this.annualInterestRate = 12;
-      this.annualInterestRateForm.setValue(12);
+  validateAnnualInterestRate(): void {
+    try {
+      const min = CALCULATOR_CONSTANTS.INTEREST_RATES.MIN;
+      const max = CALCULATOR_CONSTANTS.INTEREST_RATES.MAX_SIP;
+      const defaultValue = CALCULATOR_CONSTANTS.INTEREST_RATES.DEFAULT;
+      
+      this.validationErrors['annualInterestRate'] = '';
+      
+      const sanitized = ValidationUtils.sanitizeValue(this.annualInterestRate, min, max, defaultValue);
+      if (sanitized !== this.annualInterestRate) {
+        this.annualInterestRate = sanitized;
+        this.validationErrors['annualInterestRate'] = 
+          this.annualInterestRate === min ? VALIDATION_MESSAGES.INTEREST_RATE.MIN(min) : VALIDATION_MESSAGES.INTEREST_RATE.MAX(max);
+      }
+
+      this.annualInterestRateForm.setValue(this.annualInterestRate);
       this.annualInterestRateForm.updateValueAndValidity();
-      this.cd.markForCheck();
+      this.changeDetectorRef.markForCheck();
+      this.calculate();
+    } catch (error) {
+      console.error('Error validating interest rate:', error);
+      this.annualInterestRate = CALCULATOR_CONSTANTS.INTEREST_RATES.DEFAULT;
     }
-    this.calculate();
   }
 
   // Lumpsum Validation methods
-  validateLumpsumAmount() {
-    const min = 1000;
-    const max = 1000000000;
-    if (!this.lumpsumAmount || this.lumpsumAmount < min || this.lumpsumAmount > max) {
-      this.lumpsumAmount = min;
-      this.lumpsumAmountForm.setValue(this.formatInputValue(min));
+  validateLumpsumAmount(): void {
+    try {
+      const min = CALCULATOR_CONSTANTS.AMOUNTS.LUMPSUM_MIN;
+      const max = CALCULATOR_CONSTANTS.AMOUNTS.LUMPSUM_MAX;
+      
+      this.validationErrors['lumpsumAmount'] = '';
+      
+      const sanitized = ValidationUtils.sanitizeValue(this.lumpsumAmount, min, max, min);
+      if (sanitized !== this.lumpsumAmount) {
+        this.lumpsumAmount = sanitized;
+        this.validationErrors['lumpsumAmount'] = 
+          this.lumpsumAmount === min ? VALIDATION_MESSAGES.AMOUNT.MIN(min) : VALIDATION_MESSAGES.AMOUNT.MAX(max);
+      }
+
+      this.lumpsumAmountForm.setValue(this.formatInputValue(this.lumpsumAmount));
       this.lumpsumAmountForm.updateValueAndValidity();
-      this.cd.markForCheck();
+      this.changeDetectorRef.markForCheck();
+      this.calculate();
+    } catch (error) {
+      console.error('Error validating lumpsum amount:', error);
+      this.lumpsumAmount = CALCULATOR_CONSTANTS.AMOUNTS.LUMPSUM_MIN;
     }
-    this.calculate();
   }
 
-  validateLumpsumInvestmentPeriod() {
-    const min = 1;
-    const max = 50;
-    if (!this.lumpsumInvestmentPeriod || this.lumpsumInvestmentPeriod < min || this.lumpsumInvestmentPeriod > max) {
-      this.lumpsumInvestmentPeriod = min;
-      this.lumpsumInvestmentPeriodForm.setValue(min);
+  validateLumpsumInvestmentPeriod(): void {
+    try {
+      const min = CALCULATOR_CONSTANTS.TENURE.MIN;
+      const max = CALCULATOR_CONSTANTS.TENURE.MAX;
+      
+      this.validationErrors['lumpsumInvestmentPeriod'] = '';
+      
+      const sanitized = ValidationUtils.sanitizeValue(this.lumpsumInvestmentPeriod, min, max, min);
+      if (sanitized !== this.lumpsumInvestmentPeriod) {
+        this.lumpsumInvestmentPeriod = sanitized;
+        this.validationErrors['lumpsumInvestmentPeriod'] = 
+          this.lumpsumInvestmentPeriod === min ? VALIDATION_MESSAGES.TENURE.MIN(min) : VALIDATION_MESSAGES.TENURE.MAX(max);
+      }
+
+      this.lumpsumInvestmentPeriodForm.setValue(this.lumpsumInvestmentPeriod);
       this.lumpsumInvestmentPeriodForm.updateValueAndValidity();
-      this.cd.markForCheck();
+      this.changeDetectorRef.markForCheck();
+      this.calculate();
+    } catch (error) {
+      console.error('Error validating lumpsum investment period:', error);
+      this.lumpsumInvestmentPeriod = CALCULATOR_CONSTANTS.TENURE.MIN;
     }
-    this.calculate();
   }
 
-  validateLumpsumAnnualInterestRate() {
-    const min = 1;
-    const max = 30;
-    if (!this.lumpsumAnnualInterestRate || this.lumpsumAnnualInterestRate < min || this.lumpsumAnnualInterestRate > max) {
-      this.lumpsumAnnualInterestRate = 12;
-      this.lumpsumAnnualInterestRateForm.setValue(12);
+  validateLumpsumAnnualInterestRate(): void {
+    try {
+      const min = CALCULATOR_CONSTANTS.INTEREST_RATES.MIN;
+      const max = CALCULATOR_CONSTANTS.INTEREST_RATES.MAX_SIP;
+      const defaultValue = CALCULATOR_CONSTANTS.INTEREST_RATES.DEFAULT;
+      
+      this.validationErrors['lumpsumAnnualInterestRate'] = '';
+      
+      const sanitized = ValidationUtils.sanitizeValue(this.lumpsumAnnualInterestRate, min, max, defaultValue);
+      if (sanitized !== this.lumpsumAnnualInterestRate) {
+        this.lumpsumAnnualInterestRate = sanitized;
+        this.validationErrors['lumpsumAnnualInterestRate'] = 
+          this.lumpsumAnnualInterestRate === min ? VALIDATION_MESSAGES.INTEREST_RATE.MIN(min) : VALIDATION_MESSAGES.INTEREST_RATE.MAX(max);
+      }
+
+      this.lumpsumAnnualInterestRateForm.setValue(this.lumpsumAnnualInterestRate);
       this.lumpsumAnnualInterestRateForm.updateValueAndValidity();
-      this.cd.markForCheck();
+      this.changeDetectorRef.markForCheck();
+      this.calculate();
+    } catch (error) {
+      console.error('Error validating lumpsum interest rate:', error);
+      this.lumpsumAnnualInterestRate = CALCULATOR_CONSTANTS.INTEREST_RATES.DEFAULT;
     }
-    this.calculate();
   }
 
   // Handle price progress bar changes
@@ -351,69 +449,90 @@ export class CalculatorSipViewComponent implements OnInit{
     this.calculate();
   }
 
-  // Format currency for display
+  // Format currency for display using shared utility
   formatCurrency(value: number): string {
-    if (value >= 10000000) {
-      return (value / 10000000).toFixed(2) + ' Cr';
-    } else if (value >= 100000) {
-      return (value / 100000).toFixed(2) + ' L';
-    } else if (value >= 1000) {
-      return (value / 1000).toFixed(2) + ' K';
-    }
-    return value.toFixed(2);
+    return NumberFormatter.formatCurrencyAbbreviated(value);
   }
 
-  // Download PDF report
+  // Download PDF report with error handling
   downloadPDF(): void {
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.getWidth();
-    
-    // Add title
-    doc.setFontSize(20);
-    doc.text('SIP Investment Report', pageWidth / 2, 20, { align: 'center' });
-    
-    // Add calculation details
-    doc.setFontSize(12);
-    doc.text(`Investment Mode: ${this.calculatorMode}`, 20, 40);
-    doc.text(`Monthly Investment: ₹${this.formatCurrency(this.monthlyInvestment)}`, 20, 50);
-    doc.text(`Annual Interest Rate: ${this.annualInterestRate}%`, 20, 60);
-    doc.text(`Investment Period: ${this.investmentPeriod} years`, 20, 70);
-    
-    // Add results
-    doc.setFontSize(14);
-    doc.text('Investment Results:', 20, 90);
-    doc.setFontSize(12);
-    doc.text(`Total Invested: ₹${this.formatCurrency(this.INVESTED_AMOUNT)}`, 20, 100);
-    doc.text(`Estimated Returns: ₹${this.formatCurrency(this.EST_RETURNS)}`, 20, 110);
-    doc.text(`Total Value: ₹${this.formatCurrency(this.TOTAL_VALUE)}`, 20, 120);
-    
-    // Add footer
-    doc.setFontSize(10);
-    doc.text('Generated by Tech Trends Talks SIP Calculator', pageWidth / 2, 280, { align: 'center' });
-    
-    // Save the PDF
-    doc.save('sip-investment-report.pdf');
+    try {
+      this.loadingStates.isExporting = true;
+      
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      
+      // Add title
+      doc.setFontSize(20);
+      doc.text('SIP Investment Report', pageWidth / 2, 20, { align: 'center' });
+      
+      // Add calculation details
+      doc.setFontSize(12);
+      doc.text(`Investment Mode: ${this.calculatorMode}`, 20, 40);
+      doc.text(`Monthly Investment: ₹${this.formatCurrency(this.monthlyInvestment)}`, 20, 50);
+      doc.text(`Annual Interest Rate: ${this.annualInterestRate}%`, 20, 60);
+      doc.text(`Investment Period: ${this.investmentPeriod} years`, 20, 70);
+      
+      // Add results
+      doc.setFontSize(14);
+      doc.text('Investment Results:', 20, 90);
+      doc.setFontSize(12);
+      doc.text(`Total Invested: ₹${this.formatCurrency(this.INVESTED_AMOUNT)}`, 20, 100);
+      doc.text(`Estimated Returns: ₹${this.formatCurrency(this.EST_RETURNS)}`, 20, 110);
+      doc.text(`Total Value: ₹${this.formatCurrency(this.TOTAL_VALUE)}`, 20, 120);
+      
+      // Add footer
+      doc.setFontSize(10);
+      doc.text('Generated by Tech Trends Talks SIP Calculator', pageWidth / 2, 280, { align: 'center' });
+      
+      // Save the PDF
+      const filename = ExportUtils.generateTimestampedFilename(
+        CALCULATOR_CONSTANTS.EXPORT.FILE_NAMES.SIP_PDF, 
+        'pdf'
+      );
+      doc.save(filename);
+    } catch (error) {
+      console.error('Error exporting to PDF:', error);
+      ExportUtils.showError('Failed to export to PDF. Please try again.');
+    } finally {
+      this.loadingStates.isExporting = false;
+      this.changeDetectorRef.markForCheck();
+    }
   }
 
-  // Download Excel report
+  // Download Excel report with error handling
   downloadExcel(): void {
-    const worksheet = XLSX.utils.json_to_sheet([
-      {
-        'Investment Mode': this.calculatorMode,
-        'Monthly Investment': this.monthlyInvestment,
-        'Annual Interest Rate': this.annualInterestRate + '%',
-        'Investment Period': this.investmentPeriod + ' years',
-        'Total Invested': this.INVESTED_AMOUNT,
-        'Estimated Returns': this.EST_RETURNS,
-        'Total Value': this.TOTAL_VALUE
-      }
-    ]);
-    
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'SIP Report');
-    
-    // Save the Excel file
-    XLSX.writeFile(workbook, 'sip-investment-report.xlsx');
+    try {
+      this.loadingStates.isExporting = true;
+      
+      const worksheet = XLSX.utils.json_to_sheet([
+        {
+          'Investment Mode': this.calculatorMode,
+          'Monthly Investment': this.monthlyInvestment,
+          'Annual Interest Rate': this.annualInterestRate + '%',
+          'Investment Period': this.investmentPeriod + ' years',
+          'Total Invested': this.INVESTED_AMOUNT,
+          'Estimated Returns': this.EST_RETURNS,
+          'Total Value': this.TOTAL_VALUE
+        }
+      ]);
+      
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'SIP Report');
+      
+      // Save the Excel file
+      const filename = ExportUtils.generateTimestampedFilename(
+        CALCULATOR_CONSTANTS.EXPORT.FILE_NAMES.SIP_EXCEL, 
+        'xlsx'
+      );
+      XLSX.writeFile(workbook, filename);
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+      ExportUtils.showError('Failed to export to Excel. Please try again.');
+    } finally {
+      this.loadingStates.isExporting = false;
+      this.changeDetectorRef.markForCheck();
+    }
   }
 
   // Main calculation method that routes to appropriate calculator
@@ -434,48 +553,61 @@ export class CalculatorSipViewComponent implements OnInit{
   }
 
   calculateSIP(): void {
-    const P = this.monthlyInvestment;
-    const r = this.annualInterestRate / 12 / 100;
-    const n = this.investmentPeriod * 12;
-  
-    // Calculate Total Value (Future Value)
-    const totalValue = P * (((Math.pow(1 + r, n) - 1) * (1 + r)) / r);
-  
-    // Calculate Invested Amount and Estimated Returns
-    const investedAmount = P * n;
-    const estReturns = totalValue - investedAmount;
-  
-    // Assign to class properties, rounded to 2 decimals
-    this.INVESTED_AMOUNT = parseFloat(investedAmount.toFixed(2));
-    this.TOTAL_VALUE = parseFloat(totalValue.toFixed(2));
-    this.EST_RETURNS = parseFloat(estReturns.toFixed(2));
+    try {
+      this.loadingStates.isCalculating = true;
+      
+      const result = CalculationUtils.calculateSIP(
+        this.monthlyInvestment,
+        this.annualInterestRate,
+        this.investmentPeriod
+      );
 
-    // Update chart
-    this.chartData.datasets[0].data = [this.INVESTED_AMOUNT, this.EST_RETURNS];
-    this.chart?.update();
-    
+      this.INVESTED_AMOUNT = result.investedAmount;
+      this.TOTAL_VALUE = result.totalValue;
+      this.EST_RETURNS = result.estimatedReturns;
+
+      // Update chart
+      this.chartData.datasets[0].data = [this.INVESTED_AMOUNT, this.EST_RETURNS];
+      this.chart?.update();
+      
+      this.changeDetectorRef.markForCheck();
+    } catch (error) {
+      console.error('Error calculating SIP:', error);
+      this.INVESTED_AMOUNT = 0;
+      this.TOTAL_VALUE = 0;
+      this.EST_RETURNS = 0;
+    } finally {
+      this.loadingStates.isCalculating = false;
+    }
   }
 
   calculateLumpsum(): void {
-    const P = this.lumpsumAmount;
-    const r = this.lumpsumAnnualInterestRate / 100;
-    const n = this.lumpsumInvestmentPeriod;
-  
-    // Calculate Total Value (Future Value) - Simple compound interest
-    const totalValue = P * Math.pow(1 + r, n);
-  
-    // Calculate Invested Amount and Estimated Returns
-    const investedAmount = P;
-    const estReturns = totalValue - investedAmount;
-  
-    // Assign to class properties, rounded to 2 decimals
-    this.INVESTED_AMOUNT = parseFloat(investedAmount.toFixed(2));
-    this.TOTAL_VALUE = parseFloat(totalValue.toFixed(2));
-    this.EST_RETURNS = parseFloat(estReturns.toFixed(2));
+    try {
+      this.loadingStates.isCalculating = true;
+      
+      const result = CalculationUtils.calculateLumpsum(
+        this.lumpsumAmount,
+        this.lumpsumAnnualInterestRate,
+        this.lumpsumInvestmentPeriod
+      );
 
-    // Update chart
-    this.chartData.datasets[0].data = [this.INVESTED_AMOUNT, this.EST_RETURNS];
-    this.chart?.update();
+      this.INVESTED_AMOUNT = result.investedAmount;
+      this.TOTAL_VALUE = result.totalValue;
+      this.EST_RETURNS = result.estimatedReturns;
+
+      // Update chart
+      this.chartData.datasets[0].data = [this.INVESTED_AMOUNT, this.EST_RETURNS];
+      this.chart?.update();
+      
+      this.changeDetectorRef.markForCheck();
+    } catch (error) {
+      console.error('Error calculating Lumpsum:', error);
+      this.INVESTED_AMOUNT = 0;
+      this.TOTAL_VALUE = 0;
+      this.EST_RETURNS = 0;
+    } finally {
+      this.loadingStates.isCalculating = false;
+    }
   }
   
 }

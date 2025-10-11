@@ -9,7 +9,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.7); /* optional dimming */
+  background-color: rgba(0, 0, 0, 0.4); /* optional dimming */
   z-index: 9999;
   display: flex;
   justify-content: center;
@@ -18,8 +18,8 @@
 
 /* Loader image */
 .loader-overlay img {
-  width: 200px; /* customize size */
-  height: 200px;
+  width: 80px; /* customize size */
+  height: 80px;
   animation: pulse 1.5s infinite;
 }
 
