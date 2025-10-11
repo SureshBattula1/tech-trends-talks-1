@@ -20,6 +20,7 @@ import { DomSanitizer, SafeHtml, Meta } from '@angular/platform-browser';
 export class BlogDetailsComponent implements OnInit {
   blog = signal<Blog | null>(null);
   isLoading = signal(true);
+  isCopied = signal(false);
 
   private metaTagsService = inject(MetaTagsService);
   private structuredDataService = inject(StructuredDataService);
@@ -206,7 +207,12 @@ export class BlogDetailsComponent implements OnInit {
   async copyLink(): Promise<void> {
     const success = await this.socialSharingService.copyToClipboard(window.location.href);
     if (success) {
-      alert('Link copied to clipboard!');
+      this.isCopied.set(true);
+      
+      // Reset after 2 seconds
+      setTimeout(() => {
+        this.isCopied.set(false);
+      }, 2000);
     }
   }
 

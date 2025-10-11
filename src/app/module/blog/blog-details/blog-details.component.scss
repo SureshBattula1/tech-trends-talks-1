@@ -300,3 +300,225 @@
   color: #f8f8f2;
 }
 
+/* ========================================
+   SOCIAL SHARING SECTION
+   ======================================== */
+
+.blog-sharing {
+  margin: 48px 0;
+  padding: 32px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 16px;
+  border: 1px solid #dee2e6;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+
+  @media (max-width: 768px) {
+    padding: 24px 16px;
+    margin: 32px 0;
+  }
+
+  h3 {
+    margin: 0 0 24px 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #212529;
+    text-align: center;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, #1877F2, #25D366);
+      border-radius: 2px;
+    }
+
+    @media (max-width: 768px) {
+      font-size: 1.25rem;
+      margin-bottom: 20px;
+    }
+  }
+
+  .share-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 24px;
+
+    @media (max-width: 768px) {
+      gap: 8px;
+    }
+  }
+
+  .share-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+
+    @media (max-width: 768px) {
+      padding: 10px 16px;
+      font-size: 14px;
+      gap: 6px;
+    }
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      transition: transform 0.3s ease;
+
+      @media (max-width: 768px) {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: translate(-50%, -50%);
+      transition: width 0.4s, height 0.4s;
+    }
+
+    &:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+
+      mat-icon {
+        transform: scale(1.1);
+      }
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    // Facebook
+    &.facebook {
+      background: linear-gradient(135deg, #1877F2 0%, #0d65d9 100%);
+      color: #ffffff;
+
+      &:hover {
+        background: linear-gradient(135deg, #0d65d9 0%, #0952b8 100%);
+      }
+    }
+
+    // Twitter/X
+    &.twitter {
+      background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+      color: #ffffff;
+
+      &:hover {
+        background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+      }
+    }
+
+    // LinkedIn
+    &.linkedin {
+      background: linear-gradient(135deg, #0A66C2 0%, #084d8f 100%);
+      color: #ffffff;
+
+      &:hover {
+        background: linear-gradient(135deg, #084d8f 0%, #06395e 100%);
+      }
+    }
+
+    // WhatsApp
+    &.whatsapp {
+      background: linear-gradient(135deg, #25D366 0%, #1ebe57 100%);
+      color: #ffffff;
+
+      &:hover {
+        background: linear-gradient(135deg, #1ebe57 0%, #17a647 100%);
+      }
+    }
+
+    // Copy Link
+    &.copy {
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      color: #ffffff;
+
+      &:hover {
+        background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+      }
+
+      &.copied {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+
+        &::after {
+          content: '✓ Copied!';
+          position: absolute;
+          top: -32px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #059669;
+          color: white;
+          padding: 4px 12px;
+          border-radius: 6px;
+          font-size: 12px;
+          white-space: nowrap;
+          animation: fadeInOut 2s ease;
+        }
+      }
+    }
+  }
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0; transform: translate(-50%, 0); }
+  10%, 90% { opacity: 1; transform: translate(-50%, -4px); }
+}
+
+// Alternative compact design for mobile
+@media (max-width: 480px) {
+  .blog-sharing {
+    .share-buttons {
+      .share-btn {
+        flex: 1;
+        min-width: calc(50% - 4px);
+        justify-content: center;
+        padding: 12px 8px;
+
+        span:not(mat-icon) {
+          display: none; // Hide text on very small screens
+        }
+      }
+    }
+  }
+}
+
+// Publisher info - keep hidden
+.publisher-info {
+  display: none !important;
+}
+

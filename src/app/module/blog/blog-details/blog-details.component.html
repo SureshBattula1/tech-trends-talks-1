@@ -93,8 +93,8 @@
           <button (click)="shareOnSocial('whatsapp')" class="share-btn whatsapp" aria-label="Share on WhatsApp">
             <mat-icon>chat</mat-icon> WhatsApp
           </button>
-          <button (click)="copyLink()" class="share-btn copy" aria-label="Copy link">
-            <mat-icon>link</mat-icon> Copy Link
+          <button (click)="copyLink()" class="share-btn copy" [class.copied]="isCopied()" aria-label="Copy link">
+            <mat-icon>{{ isCopied() ? 'check' : 'link' }}</mat-icon> {{ isCopied() ? 'Copied!' : 'Copy Link' }}
           </button>
         </div>
       </div>
