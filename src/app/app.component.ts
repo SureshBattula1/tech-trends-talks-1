@@ -24,28 +24,11 @@ export class AppComponent implements OnInit{
 
   ngOnInit(): void {
     // SEO is now handled by individual components using MetaTagsService and StructuredDataService
-    // Global fallback SEO is defined in index.html
+    // Global fallback SEO and structured data (@graph format) is defined in index.html
+    // This prevents duplicate Organization and WebSite schemas
     
-    // Add global structured data for the entire website
-    if (isPlatformBrowser(this.platformId)) {
-      this.initializeGlobalStructuredData();
-    }
-  }
-
-  /**
-   * Initialize global structured data (WebSite, Organization) that applies to all pages
-   */
-  private initializeGlobalStructuredData(): void {
-    const baseUrl = 'https://techtrendstalks.com';
-    
-    // Add WebSite structured data with search functionality
-    const websiteData = this.structuredDataService.generateWebSiteStructuredData(baseUrl);
-    
-    // Add Organization structured data
-    const organizationData = this.structuredDataService.generateOrganizationStructuredData();
-    
-    // Add both structured data
-    this.structuredDataService.addMultipleStructuredData([websiteData, organizationData]);
+    // Note: Individual pages (calculators, blogs) still add page-specific structured data
+    // like WebApplication, Article, FAQPage, etc.
   }
 
 }
