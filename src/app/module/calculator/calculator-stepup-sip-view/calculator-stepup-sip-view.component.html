@@ -1,0 +1,360 @@
+<div class="calculator-container">
+  <!-- Header Section -->
+  <div class="calculator-header" style="display: none;">
+    <div class="header-content">
+      <h1>Step Up SIP Calculator</h1>
+      <p>Calculate returns on your Systematic Investment Plan with annual increments. Plan your growing investments and maximize wealth creation with Step Up SIP.</p>
+      
+      <!-- SEO Keywords Section -->
+      <div class="seo-keywords" style="display: none;">
+        <span class="keyword-tag">Step Up SIP Calculator</span>
+        <span class="keyword-tag">SIP with Annual Increment</span>
+        <span class="keyword-tag">Growing SIP Calculator</span>
+        <span class="keyword-tag">Mutual Fund Step Up</span>
+        <span class="keyword-tag">SIP Increase Calculator</span>
+        <span class="keyword-tag">Systematic Investment Plan</span>
+        <span class="keyword-tag">Wealth Creation Calculator</span>
+        <span class="keyword-tag">Investment Growth Calculator</span>
+        <span class="keyword-tag">SIP Returns Calculator</span>
+        <span class="keyword-tag">Free Step Up SIP</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Calculator Form -->
+  <div class="calculator-main">
+    <div class="form-container">
+      <div class="calculator-form">
+        <h3 style="display: none;">📈 Step Up SIP Calculator</h3>
+        <p style="display: none;" class="form-description">Calculate returns on systematic investments with annual step-up feature</p>
+        
+        <div class="form-grid">
+          <!-- Initial Monthly Investment -->
+          <div class="form-card">
+            <div class="input-group">
+              <label>Initial Monthly Investment</label>
+              <div class="input-wrapper">
+                <span class="currency-symbol">₹</span>
+                <input 
+                  type="text" 
+                  [formControl]="initialMonthlyInvestmentForm" 
+                  (blur)="onInputBlur('initialMonthlyInvestment')" 
+                  (focus)="onInputFocus('initialMonthlyInvestment')"
+                  placeholder="Enter initial amount"
+                  class="form-input">
+              </div>
+              <app-price-progress-bar 
+                [mode]="'PRICE'"  
+                [minPrice]="100" 
+                [maxPrice]="100000000" 
+                [step]="1" 
+                [currentPrice]="initialMonthlyInvestment" 
+                (priceChanged)="priceProgressChange($event,'PRICE')">
+              </app-price-progress-bar>
+            </div>
+          </div>
+
+          <!-- Expected Annual Return Rate -->
+          <div class="form-card">
+            <div class="input-group">
+              <label>Expected Annual Return Rate</label>
+              <div class="input-wrapper">
+                <input 
+                  type="text" 
+                  [formControl]="annualInterestRateForm" 
+                  (blur)="onInputBlur('annualInterestRate')"  
+                  placeholder="Enter rate"
+                  class="form-input">
+                <span class="unit">%</span>
+              </div>
+              <app-price-progress-bar 
+                [mode]="'PERCENTAGE'" 
+                [minPrice]="1" 
+                [maxPrice]="50" 
+                [step]="1" 
+                [discrete]="true"  
+                [currentPrice]="annualInterestRate" 
+                (priceChanged)="priceProgressChange($event,'PERCENTAGE')">
+              </app-price-progress-bar>
+            </div>
+          </div>
+
+          <!-- Investment Period -->
+          <div class="form-card">
+            <div class="input-group">
+              <label>Investment Time Period</label>
+              <div class="input-wrapper">
+                <input 
+                  type="text" 
+                  [formControl]="investmentPeriodForm" 
+                  (blur)="onInputBlur('investmentPeriod')"  
+                  placeholder="Enter years"
+                  class="form-input">
+                <span class="unit">Years</span>
+              </div>
+              <app-price-progress-bar 
+                [mode]="'TENURE'" 
+                [minPrice]="1" 
+                [maxPrice]="50" 
+                [step]="1" 
+                [discrete]="true"  
+                [currentPrice]="investmentPeriod" 
+                (priceChanged)="priceProgressChange($event,'TENURE')">
+              </app-price-progress-bar>
+            </div>
+          </div>
+
+          <!-- Step Up Percentage -->
+          <div class="form-card">
+            <div class="input-group">
+              <label>Annual Step Up Percentage</label>
+              <div class="input-wrapper">
+                <input 
+                  type="text" 
+                  [formControl]="stepUpPercentageForm" 
+                  (blur)="onInputBlur('stepUpPercentage')"  
+                  placeholder="Enter step-up %"
+                  class="form-input">
+                <span class="unit">%</span>
+              </div>
+              <app-price-progress-bar 
+                [mode]="'STEP_UP'" 
+                [minPrice]="0" 
+                [maxPrice]="50" 
+                [step]="1" 
+                [discrete]="true"  
+                [currentPrice]="stepUpPercentage" 
+                (priceChanged)="priceProgressChange($event,'STEP_UP')">
+              </app-price-progress-bar>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step Up Frequency Toggle -->
+        <div class="frequency-toggle-section">
+          <label class="frequency-label">Step Up Frequency:</label>
+          <div class="frequency-buttons">
+            <button 
+              class="frequency-btn"
+              [class.active]="stepUpFrequency === 'YEARLY'"
+              (click)="toggleFrequency('YEARLY')">
+              <mat-icon>event</mat-icon>
+              Yearly
+            </button>
+            <button 
+              class="frequency-btn"
+              [class.active]="stepUpFrequency === 'HALF_YEARLY'"
+              (click)="toggleFrequency('HALF_YEARLY')">
+              <mat-icon>calendar_month</mat-icon>
+              Half-Yearly
+            </button>
+          </div>
+        </div>
+
+        <!-- Calculate Button -->
+        <div class="calculate-section">
+          <button class="calculate-btn" (click)="calculateTotalStepUpSIPReturns()">
+            <mat-icon>calculate</mat-icon>
+            Calculate Step Up SIP Returns
+          </button>
+        </div>
+
+        <!-- Results Section -->
+        <div *ngIf="TOTAL_VALUE > 0" class="results-section">
+          <h3 style="display: none;">📊 Step Up SIP Investment Results</h3>
+          <div class="results-grid">
+            <div class="result-card">
+              <div class="result-icon">💰</div>
+              <div class="result-content">
+                <h4>Total Invested</h4>
+                <p class="result-amount">₹{{ formatCurrency(INVESTED_AMOUNT) }}</p>
+                <small>Growing SIP contributions over {{ investmentPeriod }} years</small>
+              </div>
+            </div>
+            
+            <div class="result-card">
+              <div class="result-icon">📈</div>
+              <div class="result-content">
+                <h4>Estimated Returns</h4>
+                <p class="result-amount">₹{{ formatCurrency(EST_RETURNS) }}</p>
+                <small>Compound interest earned</small>
+              </div>
+            </div>
+            
+            <div class="result-card">
+              <div class="result-icon">🎯</div>
+              <div class="result-content">
+                <h4>Total Value</h4>
+                <p class="result-amount">₹{{ formatCurrency(TOTAL_VALUE) }}</p>
+                <small>Final corpus with step-up</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart Section -->
+          <div class="chart-section">
+            <h4>Investment Breakdown</h4>
+            <div class="chart-container">
+              <canvas baseChart
+                [data]="chartData"
+                [type]="chartType"
+                [options]="chartOptions">
+              </canvas>
+            </div>
+          </div>
+
+          <!-- Yearly Breakdown Table -->
+          <div *ngIf="yearlyBreakdown.length > 0" class="yearly-breakdown-section">
+            <h4>📅 Yearly Investment Breakdown</h4>
+            <div class="table-responsive">
+              <table class="breakdown-table">
+                <thead>
+                  <tr>
+                    <th>Year</th>
+                    <th>Monthly SIP</th>
+                    <th>Yearly Investment</th>
+                    <th>Total Invested</th>
+                    <th>Total Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of yearlyBreakdown">
+                    <td>Year {{ item.year }}</td>
+                    <td>₹{{ formatCurrency(item.monthlyInvestment) }}</td>
+                    <td>₹{{ formatCurrency(item.yearlyInvestment) }}</td>
+                    <td>₹{{ formatCurrency(item.cumulativeInvestment) }}</td>
+                    <td class="highlight">₹{{ formatCurrency(item.cumulativeValue) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Download Section -->
+          <div class="download-section" style="display: none;">
+            <button class="download-btn" (click)="downloadPDF()">
+              <mat-icon>download</mat-icon>
+              Download PDF Report
+            </button>
+            <button class="download-btn" (click)="downloadExcel()">
+              <mat-icon>table_chart</mat-icon>
+              Download Excel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Educational Content Section -->
+  <div class="educational-content">
+    <div class="content-container">
+      <h2>What is Step Up SIP Calculator?</h2>
+      <p>A Step Up SIP calculator helps you estimate the returns on your systematic investment plan where you increase your monthly investment amount at regular intervals. This powerful tool shows how incrementally increasing your SIP can significantly boost your wealth creation.</p>
+      
+      <h3>How Step Up SIP Works</h3>
+      <p>In a Step Up SIP, you start with an initial monthly investment and increase it by a fixed percentage annually or half-yearly. For example, if you begin with ₹5,000 per month and set a 10% annual step-up:</p>
+      <ul>
+        <li>Year 1: ₹5,000/month</li>
+        <li>Year 2: ₹5,500/month (10% increase)</li>
+        <li>Year 3: ₹6,050/month (10% increase)</li>
+        <li>And so on...</li>
+      </ul>
+      
+      <h3>Benefits of Step Up SIP</h3>
+      <ul>
+        <li><strong>Higher Corpus:</strong> Accumulate significantly more wealth compared to regular SIP</li>
+        <li><strong>Inflation Beating:</strong> Your investments grow in line with inflation</li>
+        <li><strong>Salary Alignment:</strong> Increase investments as your income grows</li>
+        <li><strong>Discipline:</strong> Systematic approach to wealth creation</li>
+        <li><strong>Flexibility:</strong> Choose your own step-up percentage</li>
+        <li><strong>Tax Benefits:</strong> ELSS funds offer deductions under Section 80C</li>
+      </ul>
+
+      <h3>When to Use Step Up SIP</h3>
+      <ul>
+        <li>Long-term wealth creation (10+ years)</li>
+        <li>Retirement planning with growing contributions</li>
+        <li>Children's education with inflation protection</li>
+        <li>Property purchase planning</li>
+        <li>When expecting regular salary increments</li>
+      </ul>
+
+      <h3>Step Up SIP vs Regular SIP</h3>
+      <p>Step Up SIP provides higher returns than regular SIP because:</p>
+      <ul>
+        <li>More money is invested over time</li>
+        <li>Benefit of compounding on larger amounts</li>
+        <li>Better alignment with income growth</li>
+        <li>Larger final corpus</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div class="faq-section">
+    <div class="content-container">
+      <h2>Frequently Asked Questions</h2>
+      
+      <div class="faq-item">
+        <h3>What is the ideal step-up percentage?</h3>
+        <p>A step-up of 5-15% annually is ideal, which typically aligns with average salary increments. However, you can choose any percentage based on your financial capacity.</p>
+      </div>
+      
+      <div class="faq-item">
+        <h3>Can I modify my step-up percentage later?</h3>
+        <p>Yes, most mutual funds allow you to modify your step-up percentage, frequency, or even pause it temporarily with prior notice to the fund house.</p>
+      </div>
+      
+      <div class="faq-item">
+        <h3>Is step-up mandatory in SIP?</h3>
+        <p>No, step-up is optional. You can continue with a regular SIP if you prefer. Step-up is beneficial when you expect your income to grow.</p>
+      </div>
+      
+      <div class="faq-item">
+        <h3>What happens if I miss a step-up installment?</h3>
+        <p>Missing an installment doesn't affect the step-up schedule. The next month's installment will continue as per the stepped-up amount.</p>
+      </div>
+      
+      <div class="faq-item">
+        <h3>Can I do step-up SIP in ELSS funds?</h3>
+        <p>Yes, step-up SIP is available in ELSS funds, allowing you to benefit from both tax deductions under Section 80C and growing wealth.</p>
+      </div>
+      
+      <div class="faq-item">
+        <h3>What is better - yearly or half-yearly step-up?</h3>
+        <p>Half-yearly step-up allows faster growth in investments and higher corpus, but choose based on your cash flow and comfort level.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Related Calculators Section -->
+  <div class="related-calculators">
+    <div class="content-container">
+      <h2>Related Financial Calculators</h2>
+      <div class="calculator-links">
+        <a href="/calculator/sip-calculator" class="calculator-link">
+          <mat-icon>trending_up</mat-icon>
+          <span>Regular SIP Calculator</span>
+          <small>Calculate standard SIP returns</small>
+        </a>
+        <a href="/calculator/emi-calculator" class="calculator-link">
+          <mat-icon>calculate</mat-icon>
+          <span>EMI Calculator</span>
+          <small>Calculate loan EMIs</small>
+        </a>
+        <a href="/loan-eligibility-calculator/checker" class="calculator-link">
+          <mat-icon>verified_user</mat-icon>
+          <span>Loan Eligibility</span>
+          <small>Check loan approval chances</small>
+        </a>
+        <a href="/blogs/home" class="calculator-link">
+          <mat-icon>article</mat-icon>
+          <span>Financial Blog</span>
+          <small>Investment tips & guides</small>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,585 @@
+// Step Up SIP Calculator Styles
+// Inherits and extends SIP calculator styling
+
+.calculator-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.calculator-header {
+  text-align: center;
+  margin-bottom: 30px;
+  
+  h1 {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+  
+  p {
+    font-size: 1.1rem;
+    color: #7f8c8d;
+  }
+}
+
+.calculator-main {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  margin-bottom: 30px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  margin-bottom: 25px;
+}
+
+.form-card {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.input-group {
+  label {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #34495e;
+    margin-bottom: 10px;
+  }
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  transition: border-color 0.3s ease;
+  
+  &:focus-within {
+    border-color: #5367ff;
+    box-shadow: 0 0 0 3px rgba(83, 103, 255, 0.1);
+  }
+  
+  .currency-symbol {
+    padding: 0 12px;
+    color: #7f8c8d;
+    font-weight: 600;
+    border-right: 1px solid #e0e0e0;
+  }
+  
+  .unit {
+    padding: 0 12px;
+    color: #7f8c8d;
+    font-weight: 600;
+    border-left: 1px solid #e0e0e0;
+  }
+}
+
+.form-input {
+  flex: 1;
+  padding: 12px 15px;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  color: #2c3e50;
+  background: transparent;
+  
+  &::placeholder {
+    color: #bdc3c7;
+  }
+}
+
+// Frequency Toggle Section
+.frequency-toggle-section {
+  margin: 25px 0;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  
+  .frequency-label {
+    display: block;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #34495e;
+    margin-bottom: 15px;
+  }
+  
+  .frequency-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  
+  .frequency-btn {
+    flex: 1;
+    min-width: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #7f8c8d;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+    
+    &:hover {
+      border-color: #5367ff;
+      color: #5367ff;
+      transform: translateY(-2px);
+    }
+    
+    &.active {
+      background: linear-gradient(135deg, #5367ff 0%, #42a5f5 100%);
+      border-color: #5367ff;
+      color: white;
+      box-shadow: 0 4px 12px rgba(83, 103, 255, 0.3);
+    }
+  }
+}
+
+.calculate-section {
+  text-align: center;
+  margin: 30px 0;
+  
+  .calculate-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 40px;
+    background: linear-gradient(135deg, #5367ff 0%, #42a5f5 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(83, 103, 255, 0.3);
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(83, 103, 255, 0.4);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+.results-section {
+  margin-top: 40px;
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+.result-card {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 25px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .result-icon {
+    font-size: 2.5rem;
+    min-width: 60px;
+    text-align: center;
+  }
+  
+  .result-content {
+    flex: 1;
+    
+    h4 {
+      font-size: 0.9rem;
+      color: #7f8c8d;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+    
+    .result-amount {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #2c3e50;
+      margin: 5px 0;
+    }
+    
+    small {
+      font-size: 0.85rem;
+      color: #95a5a6;
+    }
+  }
+}
+
+.chart-section {
+  background: #f8f9fa;
+  padding: 30px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  
+  h4 {
+    font-size: 1.3rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .chart-container {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}
+
+// Yearly Breakdown Table
+.yearly-breakdown-section {
+  margin-top: 30px;
+  
+  h4 {
+    font-size: 1.3rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+  }
+  
+  .breakdown-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    thead {
+      background: linear-gradient(135deg, #5367ff 0%, #42a5f5 100%);
+      color: white;
+      
+      th {
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+    }
+    
+    tbody {
+      tr {
+        border-bottom: 1px solid #e0e0e0;
+        transition: background-color 0.2s ease;
+        
+        &:hover {
+          background-color: #f8f9fa;
+        }
+        
+        &:last-child {
+          border-bottom: none;
+          font-weight: 600;
+          background-color: #f0f9ff;
+        }
+      }
+      
+      td {
+        padding: 12px 15px;
+        color: #2c3e50;
+        font-size: 0.95rem;
+        
+        &.highlight {
+          color: #5367ff;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
+
+.download-section {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 30px;
+  flex-wrap: wrap;
+  
+  .download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 25px;
+    background: white;
+    color: #5367ff;
+    border: 2px solid #5367ff;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: #5367ff;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(83, 103, 255, 0.3);
+    }
+  }
+}
+
+// Educational Content
+.educational-content,
+.faq-section {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+  .content-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  h2 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
+  }
+  
+  h3 {
+    font-size: 1.4rem;
+    color: #34495e;
+    margin-top: 25px;
+    margin-bottom: 15px;
+  }
+  
+  p {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #7f8c8d;
+    margin-bottom: 15px;
+  }
+  
+  ul {
+    margin-left: 20px;
+    margin-bottom: 20px;
+    
+    li {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: #7f8c8d;
+      margin-bottom: 10px;
+      
+      strong {
+        color: #2c3e50;
+      }
+    }
+  }
+}
+
+.faq-item {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border-left: 4px solid #5367ff;
+  
+  h3 {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    margin: 0 0 10px 0;
+  }
+  
+  p {
+    margin: 0;
+    color: #7f8c8d;
+  }
+}
+
+// Related Calculators
+.related-calculators {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+  h2 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+  
+  .calculator-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .calculator-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 25px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: linear-gradient(135deg, #5367ff 0%, #42a5f5 100%);
+      color: white;
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(83, 103, 255, 0.3);
+      
+      mat-icon {
+        color: white;
+      }
+      
+      span, small {
+        color: white;
+      }
+    }
+    
+    mat-icon {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      color: #5367ff;
+      margin-bottom: 15px;
+    }
+    
+    span {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+    
+    small {
+      font-size: 0.9rem;
+      color: #7f8c8d;
+      text-align: center;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .calculator-container {
+    padding: 15px;
+  }
+  
+  .calculator-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .calculator-main {
+    padding: 20px;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .frequency-buttons {
+    flex-direction: column;
+    
+    .frequency-btn {
+      width: 100%;
+    }
+  }
+  
+  .breakdown-table {
+    font-size: 0.85rem;
+    
+    thead th,
+    tbody td {
+      padding: 10px;
+    }
+  }
+  
+  .educational-content,
+  .faq-section,
+  .related-calculators {
+    padding: 25px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .calculator-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .result-card {
+    flex-direction: column;
+    text-align: center;
+    
+    .result-icon {
+      font-size: 2rem;
+    }
+    
+    .result-content .result-amount {
+      font-size: 1.5rem;
+    }
+  }
+  
+  .calculate-btn {
+    width: 100%;
+    padding: 12px 20px;
+  }
+}
+

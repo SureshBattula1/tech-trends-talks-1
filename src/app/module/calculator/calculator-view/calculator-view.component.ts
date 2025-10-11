@@ -55,10 +55,6 @@ interface YearlyPayment {
   isExpanded?: boolean;
 }
 
-interface InputEvent {
-  target: HTMLInputElement;
-}
-
 interface CalculationResult {
   emi: number;
   totalInterest: number;
@@ -1785,7 +1781,7 @@ validateAmount(): void {
 
   // Common function to handle input formatting with decimal support
   private handleInputFormatting(
-    event: InputEvent, 
+    event: any, 
     propertyName: 'amount' | 'interestRate' | 'years', 
     formControl: FormControl
   ): void {
@@ -1817,7 +1813,7 @@ validateAmount(): void {
   }
 
   // Handle amount input formatting
-  onAmountInput(event: InputEvent): void {
+  onAmountInput(event: any): void {
     this.handleInputFormatting(event, 'amount', this.amountForm);
   }
 
@@ -1829,7 +1825,7 @@ validateAmount(): void {
   }
 
   // Handle years input formatting
-  onYearsInput(event: InputEvent): void {
+  onYearsInput(event: any): void {
     this.handleInputFormatting(event, 'years', this.yearsForm);
   }
 
@@ -1841,7 +1837,7 @@ validateAmount(): void {
   }
 
   // Handle interest rate input formatting
-  onInterestInput(event: InputEvent): void {
+  onInterestInput(event: any): void {
     this.handleInputFormatting(event, 'interestRate', this.interestForm);
   }
 

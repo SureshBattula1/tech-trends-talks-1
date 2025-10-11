@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from '../shared/shared.module';
 import { CalculatorRoutingModule } from './calculator.routing.module';
 import { CalculatorViewComponent } from './calculator-view/calculator-view.component';
+import { CalculatorStepupSipViewComponent } from './calculator-stepup-sip-view/calculator-stepup-sip-view.component';
 import { PriceProgressBarComponent } from './price-progress-bar/price-progress-bar.component';
 import { GradeCalculatorComponent } from './grade-calculator/grade-calculator.component';
 
@@ -14,6 +15,7 @@ import { GradeCalculatorComponent } from './grade-calculator/grade-calculator.co
     SharedModule,
     // Import standalone components
     CalculatorViewComponent,
+    CalculatorStepupSipViewComponent,
     PriceProgressBarComponent,
     GradeCalculatorComponent
   ]

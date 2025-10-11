@@ -229,6 +229,67 @@ export class CalculationUtils {
       return { investedAmount: 0, totalValue: 0, estimatedReturns: 0 };
     }
   }
+
+  /**
+   * Calculate Step Up SIP returns
+   */
+  static calculateStepUpSIP(
+    initialMonthlyInvestment: number,
+    annualRate: number,
+    years: number,
+    stepUpPercentage: number,
+    stepUpFrequency: 'YEARLY' | 'HALF_YEARLY' = 'YEARLY'
+  ): { investedAmount: number; totalValue: number; estimatedReturns: number; yearlyBreakdown: any[] } {
+    try {
+      const monthlyRate = annualRate / 12 / 100;
+      const totalMonths = years * 12;
+      const stepUpFactor = 1 + stepUpPercentage / 100;
+      const stepUpInterval = stepUpFrequency === 'YEARLY' ? 12 : 6;
+
+      let totalValue = 0;
+      let totalInvested = 0;
+      let currentMonthlyInvestment = initialMonthlyInvestment;
+      const yearlyBreakdown: any[] = [];
+
+      for (let month = 1; month <= totalMonths; month++) {
+        // Step up the investment at specified intervals
+        if (month > 1 && (month - 1) % stepUpInterval === 0) {
+          currentMonthlyInvestment *= stepUpFactor;
+        }
+
+        // Calculate future value of this month's investment
+        const remainingMonths = totalMonths - month + 1;
+        const futureValue = currentMonthlyInvestment * Math.pow(1 + monthlyRate, remainingMonths);
+        
+        totalValue += futureValue;
+        totalInvested += currentMonthlyInvestment;
+
+        // Store yearly data
+        if (month % 12 === 0 || month === totalMonths) {
+          const year = Math.ceil(month / 12);
+          yearlyBreakdown.push({
+            year,
+            monthlyInvestment: currentMonthlyInvestment,
+            yearlyInvestment: currentMonthlyInvestment * Math.min(12, totalMonths - (year - 1) * 12),
+            cumulativeInvestment: totalInvested,
+            cumulativeValue: totalValue,
+          });
+        }
+      }
+
+      const estimatedReturns = totalValue - totalInvested;
+
+      return {
+        investedAmount: parseFloat(totalInvested.toFixed(2)),
+        totalValue: parseFloat(totalValue.toFixed(2)),
+        estimatedReturns: parseFloat(estimatedReturns.toFixed(2)),
+        yearlyBreakdown,
+      };
+    } catch (error) {
+      console.error('Step Up SIP calculation error:', error);
+      return { investedAmount: 0, totalValue: 0, estimatedReturns: 0, yearlyBreakdown: [] };
+    }
+  }
 }
 
 /**

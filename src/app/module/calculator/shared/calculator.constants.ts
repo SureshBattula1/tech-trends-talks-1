@@ -45,6 +45,15 @@ export const CALCULATOR_CONSTANTS = {
     },
   },
 
+  // Step Up SIP Configuration
+  STEP_UP_SIP: {
+    MIN_STEP_UP_PERCENTAGE: 0,
+    MAX_STEP_UP_PERCENTAGE: 50,
+    DEFAULT_STEP_UP_PERCENTAGE: 10,
+    STEP_UP_FREQUENCY_YEARLY: 'YEARLY',
+    STEP_UP_FREQUENCY_HALFYEARLY: 'HALF_YEARLY',
+  },
+
   // Export Configuration
   EXPORT: {
     FILE_NAMES: {
@@ -53,6 +62,8 @@ export const CALCULATOR_CONSTANTS = {
       EMI_PDF_MONTHLY: 'TechTrendsTalks_Monthly_EMI_Details',
       SIP_EXCEL: 'TechTrendsTalks_SIP_Report',
       SIP_PDF: 'TechTrendsTalks_SIP_Investment_Report',
+      STEP_UP_SIP_EXCEL: 'TechTrendsTalks_StepUp_SIP_Report',
+      STEP_UP_SIP_PDF: 'TechTrendsTalks_StepUp_SIP_Investment_Report',
     },
   },
 

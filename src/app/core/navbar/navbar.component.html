@@ -52,8 +52,18 @@
                <mat-icon>calculate</mat-icon>
                <span>SIP Calculator</span>
              </button>
+             
+             <button
+               mat-menu-item
+               routerLink="/calculator/step-up-sip-calculator"
+               routerLinkActive="active-menu-item"
+               [routerLinkActiveOptions]="{ exact: true }"
+             >
+               <mat-icon>calculate</mat-icon>
+               <span>Step Up SIP Calculator</span>
+             </button>
 
-             <!-- <button
+                        <!-- <button
                mat-menu-item
                routerLink="/calculator/grade-calculator"
                routerLinkActive="active-menu-item"
