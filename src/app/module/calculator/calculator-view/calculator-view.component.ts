@@ -1,9 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal, ViewChild, HostListener } from '@angular/core';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import { SharedModule } from '../../shared/shared.module';
-import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule } from '@angular/forms';
 import { PriceProgressBarComponent } from '../price-progress-bar/price-progress-bar.component';
 import { ChartConfiguration, ChartType } from 'chart.js';
@@ -86,8 +84,6 @@ export class CalculatorViewComponent implements OnInit{
   // New properties for enhanced table
   expandedYears: Set<number> = new Set();
   yearlySchedule: any[] = [];
-
-  suggestedLoanAmounts = [1000000, 2000000, 2500000, 3000000, 4000000, 5000000, 7500000, 10000000, 20000000, 50000000];
 
   // Keep this property as it's still used
   selectedLoanTypeIndex = 0;
@@ -333,23 +329,6 @@ export class CalculatorViewComponent implements OnInit{
         }, 100);
     }
   }
-  
-  // loanTypes = [ 
-  //   { value: 'home', viewValue: 'Home Loan', interest: 8.5, icon: 'home' },
-  //   { value: 'car', viewValue: 'Car Loan', interest: 9.2, icon: 'directions_car' },
-  //   { value: 'personal', viewValue: 'Personal Loan', interest: 11.75, icon: 'person' },
-  //   { value: 'education', viewValue: 'Education Loan', interest: 7.8, icon: 'school' },
-  //   { value: 'gold', viewValue: 'Gold Loan', interest: 10.5, icon: 'emoji_events' },
-  //   { value: 'mortgage', viewValue: 'Mortgage Loan', interest: 9.8, icon: 'apartment' },
-  //   { value: 'twoWheeler', viewValue: 'Two-Wheeler Loan', interest: 10.2, icon: 'two_wheeler' },
-  //   { value: 'agriculture', viewValue: 'Agriculture Loan', interest: 6.5, icon: 'agriculture' },
-  //   { value: 'creditCard', viewValue: 'Credit Card Loan', interest: 15.5, icon: 'credit_card' },
-  //   { value: 'overdraft', viewValue: 'Overdraft Loan', interest: 13.0, icon: 'swap_horiz' },
-  //   { value: 'consumerDurable', viewValue: 'Consumer Durable Loan', interest: 9.9, icon: 'devices' },
-  //   { value: 'travel', viewValue: 'Travel Loan', interest: 12.75, icon: 'flight_takeoff' },
-  //   { value: 'lap', viewValue: 'Loan Against Property', interest: 9.5, icon: 'location_city' },
-  //   { value: 'business', viewValue: 'Business Loan', interest: 12.0, icon: 'business_center' }
-  // ];
 
   loanTypes = [
     { value: 'personal', viewValue: 'Personal Loan', interest: 11.75, icon: '💼' },
@@ -435,8 +414,6 @@ export class CalculatorViewComponent implements OnInit{
     { title: '💱 Overdraft Loan EMI Calculator', description: 'Calculate EMI for overdraft loans with rates from 13.0% p.a. Flexible credit facility for business and personal needs.' }
   ];
   
-  
-
 
   // Chart properties
   chartType: ChartType = 'doughnut';
@@ -1615,19 +1592,32 @@ validateAmount() {
     if (!value) return 0;
     // Remove all commas and convert to number
     const cleanValue = value.replace(/,/g, '');
-    return parseInt(cleanValue) || 0;
+    return parseFloat(cleanValue) || 0;
+  }
+
+  // Common function to handle input formatting with decimal support
+  private handleInputFormatting(event: any, propertyName: keyof this, formControl: FormControl): void {
+    const input = event.target;
+    const rawValue = input.value;
+    
+    // Allow partial decimal input during typing (e.g., "10.", "10.5")
+    if (rawValue.endsWith('.') || (rawValue.includes('.') && !rawValue.endsWith('.'))) {
+      // Don't format while user is typing decimal values
+      return;
+    }
+    
+    const value = this.parseInputValue(rawValue);
+    
+    if (value > 0) {
+      (this as any)[propertyName] = value;
+      // Update the form control with formatted value
+      formControl.setValue(this.formatInputValue(value), { emitEvent: false });
+    }
   }
 
   // Handle amount input formatting
   onAmountInput(event: any) {
-    const input = event.target;
-    const value = this.parseInputValue(input.value);
-    
-    if (value > 0) {
-      this.amount = value;
-      // Update the form control with formatted value
-      this.amountForm.setValue(this.formatInputValue(value), { emitEvent: false });
-    }
+    this.handleInputFormatting(event, 'amount', this.amountForm);
   }
 
   // Handle amount input blur (when user leaves the field)
@@ -1639,14 +1629,7 @@ validateAmount() {
 
   // Handle years input formatting
   onYearsInput(event: any) {
-    const input = event.target;
-    const value = this.parseInputValue(input.value);
-    
-    if (value > 0) {
-      this.years = value;
-      // Update the form control with formatted value
-      this.yearsForm.setValue(this.formatInputValue(value), { emitEvent: false });
-    }
+    this.handleInputFormatting(event, 'years', this.yearsForm);
   }
 
   // Handle years input blur
@@ -1658,14 +1641,7 @@ validateAmount() {
 
   // Handle interest rate input formatting
   onInterestInput(event: any) {
-    const input = event.target;
-    const value = this.parseInputValue(input.value);
-    
-    if (value > 0) {
-      this.interestRate = value;
-      // Update the form control with formatted value
-      this.interestForm.setValue(this.formatInputValue(value), { emitEvent: false });
-    }
+    this.handleInputFormatting(event, 'interestRate', this.interestForm);
   }
 
   // Handle interest rate input blur
