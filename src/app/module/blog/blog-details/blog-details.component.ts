@@ -6,6 +6,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MetaTagsService } from '../../../services/meta-tags.service';
 import { StructuredDataService } from '../../../services/structured-data.service';
 import { EnvironmentService } from '../../../services/environment.service';
+import { DomSanitizer, SafeHtml  } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-blog-details',
@@ -22,9 +23,13 @@ export class BlogDetailsComponent implements OnInit {
   private structuredDataService = inject(StructuredDataService);
   private router = inject(Router);
 
+  blogContent: SafeHtml = '';
+
   constructor(
     private route: ActivatedRoute,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private sanitizer: DomSanitizer
+
   ) {}
 
   ngOnInit() {
@@ -40,6 +45,7 @@ export class BlogDetailsComponent implements OnInit {
     this.apiService.getBlogBySlug(id).subscribe({
       next: (response) => {
         if (response.success) {
+          this.blogContent = this.sanitizer.bypassSecurityTrustHtml(response.data.content);
           this.blog.set(response.data);
           // Update meta tags for the blog post
           this.updateMetaTags(response.data);

@@ -151,14 +151,13 @@
           </div>
   
           <!-- Content Editor -->
-          <div class="form-row custom-editor-container">
+          <!-- <div class="form-row custom-editor-container">
             <label class="editor-label">Content</label>
             <div class="editor-container">
               <ngx-editor-menu [editor]="editor" [toolbar]="toolbar" [customMenuRef]="customMenu"></ngx-editor-menu>
               <ngx-editor [editor]="editor" formControlName="content"></ngx-editor>
               <input type="file" #imageInput (change)="onFileSelected($event)" style="display: none;"> 
 
-              <!-- Create template reference -->
               <ng-template #customMenu>
                 <div class="custom-toolbar">
                   <button type="button" (click)="onImageButtonClick()">
@@ -168,7 +167,6 @@
               </ng-template>  
             </div>
               
-            <!-- Error Messages -->
             <div class="editor-errors" *ngIf="blogForm.get('content')?.touched && blogForm.get('content')?.errors">
               <mat-error *ngIf="blogForm.get('content')?.hasError('required')">
                 Content is required
@@ -176,6 +174,22 @@
               <mat-error *ngIf="blogForm.get('content')?.hasError('minlength')">
                 Content must be at least 50 characters long
               </mat-error>
+            </div>
+          </div> -->
+
+          <div class="form-row custom-editor-container">
+            <label class="editor-label">Content</label>
+            <div class="editor-container">
+              <quill-editor
+                  formControlName="content"
+                  [modules]="quillModules"
+                  [placeholder]="'Write your blog here...'"
+                  [style]="{height: '600px', width: '100%'}"
+                  (onEditorCreated)="onEditorCreated($event)"
+                  #quillEditorTag
+               ></quill-editor>
+            
+
             </div>
           </div>
   

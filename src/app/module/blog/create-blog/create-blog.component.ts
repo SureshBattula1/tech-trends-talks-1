@@ -1,16 +1,23 @@
 import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService, Category, Subcategory, CreateBlogRequest, Blog } from '../../../services/api.service';
 import { SharedModule } from '../../shared/shared.module';
 import { Editor, Toolbar } from 'ngx-editor';
 import { EnvironmentService } from '../../../services/environment.service';
+import { QuillModule } from 'ngx-quill';
+import { DomSanitizer } from '@angular/platform-browser';
+
+import Quill from 'quill';
+import Delta from 'quill-delta';
+
+
 
 @Component({
   selector: 'app-blog-form',
   standalone: true,
-  imports: [SharedModule],
+  imports: [SharedModule, QuillModule],
   templateUrl: './create-blog.component.html',
   styleUrl: './create-blog.component.scss'
 })
@@ -18,7 +25,8 @@ export class BlogFormComponent implements OnInit {
   editor!: Editor;
   editorConfig: any;
   @ViewChild('imageInput') imageInput!: ElementRef; 
-
+  @ViewChild('quillEditorTag') quillEditorTag: any;
+  
   toolbar: Toolbar = [
     ['bold', 'italic'],
     ['underline', 'strike'],
@@ -49,7 +57,8 @@ export class BlogFormComponent implements OnInit {
     private apiService: ApiService,
     private router: Router,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private sanitizer: DomSanitizer
   ) {
     this.blogForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(5)]],
@@ -81,12 +90,8 @@ export class BlogFormComponent implements OnInit {
     
     // Watch for category changes to filter subcategories
     this.blogForm.get('category_id')?.valueChanges.subscribe(categoryId => {
-      console.log('Category changed to:', categoryId);
       this.filterSubcategories(categoryId);
-      console.log('Filtered subcategories:', this.filteredSubcategories);
-      
       if (this.isEditMode) {
-        // In edit mode, try to preserve the existing subcategory if it belongs to the new category
         const currentSubcategory = this.blogForm.get('subcategory_id')?.value;
         if (currentSubcategory) {
           const subcategoryExists = this.filteredSubcategories.some(
@@ -164,13 +169,10 @@ export class BlogFormComponent implements OnInit {
    */
   populateFormWithExistingData(blog: Blog) {
     console.log('Populating form with blog data:', blog);
-    console.log('Available subcategories:', this.subcategories);
-    
     // First, filter subcategories for the selected category
     this.filterSubcategories(blog.category_id);
-    console.log('Filtered subcategories for category', blog.category_id, ':', this.filteredSubcategories);
     
-    // Then populate the form
+      // Then populate the form
     this.blogForm.patchValue({
       title: blog.title,
       excerpt: blog.excerpt,
@@ -338,10 +340,12 @@ export class BlogFormComponent implements OnInit {
         // Upload image first if selected
         const featuredImage = await this.uploadImage();
 
+        const htmlContent = this.quillEditorTag.quillEditor.root.innerHTML
+
         const blogData: CreateBlogRequest = {
           title: this.blogForm.value.title,
           excerpt: this.blogForm.value.excerpt,
-          content: this.blogForm.value.content,
+          content: htmlContent,
           category_id: this.blogForm.value.category_id,
           subcategory_id: this.blogForm.value.subcategory_id || undefined,
           author: this.blogForm.value.author,
@@ -554,25 +558,43 @@ export class BlogFormComponent implements OnInit {
       this.showError('Please select a valid image file');
     }
   }
-
-  insertImageToEditor(imageUrl: string) {
-    try {
-      const selection = this.editor.view.state.selection;
-      const { schema, tr } = this.editor.view.state;
-
-      const node = schema.nodes['image'].create({
-        src: imageUrl,
-        alt: 'Uploaded Image'
-      });
-
-      const transaction = tr.replaceSelectionWith(node).scrollIntoView();
-      this.editor.view.dispatch(transaction);
-    } catch (error) {
-      console.error('Error inserting image to editor:', error);
-      // Fallback: insert as HTML link if image node creation fails
-      this.insertImageAsLink(imageUrl);
+  
+  insertImageToEditor(imageUrl: string): void {
+    if (!this.quillEditorTag || !this.quillEditorTag.quillEditor) {
+      console.error('Quill editor not initialized');
+      return;
+    }
+  
+    const editor = this.quillEditorTag.quillEditor;
+    const range = editor.getSelection(true);
+  
+    if (range) {
+      editor.insertEmbed(range.index, 'image', imageUrl, 'user');
+      editor.setSelection(range.index + 1);
+    } else {
+      // If no selection, insert at the end
+      editor.insertEmbed(editor.getLength(), 'image', imageUrl, 'user');
     }
   }
+
+  // insertImageToEditor_dev(imageUrl: string) {
+  //   try {
+  //     const selection = this.editor.view.state.selection;
+  //     const { schema, tr } = this.editor.view.state;
+
+  //     const node = schema.nodes['image'].create({
+  //       src: imageUrl,
+  //       alt: 'Uploaded Image'
+  //     });
+
+  //     const transaction = tr.replaceSelectionWith(node).scrollIntoView();
+  //     this.editor.view.dispatch(transaction);
+  //   } catch (error) {
+  //     console.error('Error inserting image to editor:', error);
+  //     // Fallback: insert as HTML link if image node creation fails
+  //     this.insertImageAsLink(imageUrl);
+  //   }
+  // }
 
   insertImageAsLink(imageUrl: string) {
     try {
@@ -612,18 +634,121 @@ export class BlogFormComponent implements OnInit {
   }
 
 
-  /**
-   * Test the upload endpoint to debug issues
-   */
-  testUploadEndpoint() {
-    this.apiService.testImageUploadEndpoint().subscribe({
-      next: (response) => {
-        this.showSuccess('Upload endpoint test successful!');
-      },
-      error: (error) => {
-        console.error('Test endpoint error:', error);
-        this.showError('Upload endpoint test failed!');
+
+
+  quillEditor: any;
+
+  
+  quillModules = {
+    toolbar: {
+      container: [
+        // Text styles
+        ['bold', 'italic', 'underline', 'strike'],
+  
+        // Blocks and code
+        ['blockquote', 'code-block'],
+  
+        // Headers
+        [{ header: 1 }, { header: 2 }],
+        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+  
+        // Lists
+        [{ list: 'ordered' }, { list: 'bullet' }],
+  
+        // Scripts
+        [{ script: 'sub' }, { script: 'super' }],
+  
+        // Indentation
+        [{ indent: '-1' }, { indent: '+1' }],
+  
+        // Text direction
+        [{ direction: 'rtl' }],
+  
+        // Font size and type
+        [{ size: ['small', false, 'large', 'huge'] }],
+        [{ font: [] }],
+  
+        // Colors and background
+        [{ color: [] }, { background: [] }],
+  
+        // Alignment
+        [{ align: [] }],
+  
+        // Remove formatting
+        ['clean'],
+  
+        // Media
+        ['link', 'image', 'video']
+      ],
+  
+      handlers: {
+        image: () => this.triggerImageUpload()
       }
+  
+      // handlers: {
+      //   video: () => {
+      //     const url = prompt('Enter YouTube URL');
+      //     if (!url || !this.quillEditor) return;
+  
+      //     const embedUrl = convertYouTubeUrl(url);
+      //     const range = this.quillEditor.getSelection(true);
+      //     this.quillEditor.insertEmbed(range.index, 'video', embedUrl, 'user');
+      //   }
+      // }
+    }
+  };
+  
+  triggerImageUpload(): void {
+    const fileInput = document.createElement('input');
+    fileInput.setAttribute('type', 'file');
+    fileInput.setAttribute('accept', 'image/*');
+    fileInput.style.display = 'none';
+  
+    fileInput.addEventListener('change', (event: Event) => this.onFileSelected(event));
+    document.body.appendChild(fileInput);
+    fileInput.click();
+    document.body.removeChild(fileInput);
+  }
+  
+ 
+
+
+  convertYouTubeUrl(url: string): string {
+    try {
+      const parsedUrl = new URL(url);
+      let videoId = '';
+
+      if (parsedUrl.hostname === 'youtu.be') {
+        videoId = parsedUrl.pathname.slice(1);
+      } else if (parsedUrl.hostname.includes('youtube.com')) {
+        videoId = parsedUrl.searchParams.get('v') || '';
+      }
+
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : '';
+    } catch {
+      return '';
+    }
+  }
+
+
+  onEditorCreated(editor: any) {
+    editor.clipboard.addMatcher(Node.TEXT_NODE, (node: any, delta: any) => {
+      const youtubeRegex = /(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=)?([\w\-]+)/;
+      const matches = node.data.match(youtubeRegex);
+
+      if (matches && matches[5]) {
+        const videoId = matches[5];
+        return new Delta().insert({ video: `https://www.youtube.com/embed/${videoId}` });
+      }
+
+      return delta;
     });
   }
+
+  convertHtmlToDelta(html: string): Delta {
+    const tempQuill = new Quill(document.createElement('div'));
+    tempQuill.clipboard.dangerouslyPasteHTML(html);
+    return tempQuill.getContents();
+  }
+
 }
