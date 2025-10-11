@@ -16,6 +16,77 @@ import { StructuredDataService } from '../../../services/structured-data.service
 import { Router } from '@angular/router';
 import { Meta } from '@angular/platform-browser';
 
+// Type definitions for better type safety
+interface LoanType {
+  value: string;
+  viewValue: string;
+  interest: number;
+  icon: string;
+}
+
+interface SEOLoanType {
+  title: string;
+  description: string;
+}
+
+interface MonthlyPayment {
+  month: number;
+  monthLabel: string;
+  emi: string;
+  principal: string;
+  interest: string;
+  balance: string;
+  id?: string; // Optional for backward compatibility
+}
+
+interface YearlyPayment {
+  year: number;
+  emi: string;
+  principal: string;
+  interest: string;
+  balance: string;
+  yearlyData?: {
+    emi: string;
+    principal: string;
+    interest: string;
+    balance: string;
+  };
+  monthlyDetails?: MonthlyPayment[];
+  isExpanded?: boolean;
+}
+
+interface InputEvent {
+  target: HTMLInputElement;
+}
+
+interface CalculationResult {
+  emi: number;
+  totalInterest: number;
+  totalPayment: number;
+  principalAmount: number;
+}
+
+// Constants for better maintainability
+const CALCULATOR_CONSTANTS = {
+  MIN_AMOUNT: 10000,
+  MAX_AMOUNT: 1000000000,
+  MIN_TENURE: 1,
+  MAX_TENURE: 50,
+  MIN_INTEREST_RATE: 1,
+  MAX_INTEREST_RATE: 30,
+  DEFAULT_INTEREST_RATE: 8,
+  CURRENCY_FORMAT: {
+    locale: 'en-IN',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  },
+  INPUT_FORMAT: {
+    locale: 'en-IN',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  }
+} as const;
+
 
 @Component({
   selector: 'app-calculator-view',
@@ -59,27 +130,44 @@ export class CalculatorViewComponent implements OnInit{
 
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
   
-  
+  // Injected services
   public loader = inject(LoaderService);
   private metaTagsService = inject(MetaTagsService);
   private structuredDataService = inject(StructuredDataService);
   private router = inject(Router);
   private meta = inject(Meta);
+  private changeDetectorRef = inject(ChangeDetectorRef);
+  
+  // Component state
   readonly panelOpenState = signal(false);
 
+  // Calculator inputs
+  amount: number = CALCULATOR_CONSTANTS.MIN_AMOUNT;
+  interestRate: number = CALCULATOR_CONSTANTS.DEFAULT_INTEREST_RATE;
+  years: number = 2;
+  emi: number = 0;
 
-  amount = 10000;
-  interestRate = 8;
-  years = 2;
-  emi = 0;
-
-  totalInterest = 0;
-  totalPayment = 0;
-  pricipalAmount = 0;
+  // Calculation results
+  totalInterest: number = 0;
+  totalPayment: number = 0;
+  pricipalAmount: number = 0;
   
-  schedule: any[] = [];
-  scheduleYears:any[] = [];
-  selectedOption: any;
+  // Payment schedules
+  schedule: MonthlyPayment[] = [];
+  scheduleYears: YearlyPayment[] = [];
+  selectedOption: LoanType | null = null;
+
+  // Validation states
+  validationErrors = {
+    amount: '',
+    years: '',
+    interestRate: ''
+  };
+
+  // Loading states
+  isLoading = false;
+  isCalculating = false;
+  isExporting = false;
 
   // New properties for enhanced table
   expandedYears: Set<number> = new Set();
@@ -166,7 +254,7 @@ export class CalculatorViewComponent implements OnInit{
     // Force reflow to ensure proper layout
     setTimeout(() => {
       // Trigger change detection
-      this.cd.markForCheck();
+      this.changeDetectorRef.markForCheck();
     }, 100);
   }
 
@@ -192,7 +280,7 @@ export class CalculatorViewComponent implements OnInit{
     } else {
       this.expandedYears.add(year);
     }
-    this.cd.markForCheck();
+    this.changeDetectorRef.markForCheck();
   }
 
   isYearExpanded(year: number): boolean {
@@ -212,12 +300,12 @@ export class CalculatorViewComponent implements OnInit{
     this.yearlySchedule.forEach(yearData => {
       this.expandedYears.add(yearData.year);
     });
-    this.cd.markForCheck();
+    this.changeDetectorRef.markForCheck();
   }
 
   collapseAllYears() {
     this.expandedYears.clear();
-    this.cd.markForCheck();
+    this.changeDetectorRef.markForCheck();
   }
 
   // FAQ toggle functionality
@@ -227,7 +315,7 @@ export class CalculatorViewComponent implements OnInit{
     } else {
       this.activeFaqIndex = index; // Open the clicked FAQ
     }
-    this.cd.markForCheck();
+    this.changeDetectorRef.markForCheck();
   }
 
   // Custom function to truncate to 2 decimal places without rounding
@@ -300,7 +388,7 @@ export class CalculatorViewComponent implements OnInit{
 
   toggleSEOLoanTypesExpansion() {
     this.isSEOLoanTypesExpanded = !this.isSEOLoanTypesExpanded;
-    this.cd.markForCheck();
+    this.changeDetectorRef.markForCheck();
   }
 
   getSEOMoreButtonText() {
@@ -323,14 +411,14 @@ export class CalculatorViewComponent implements OnInit{
       this.interestRate = selected.interest;
       this.interestForm.setValue(this.formatInputValue(this.interestRate), { emitEvent: false });  // updates the input field
       this.calculateEMI();
-      this.cd.markForCheck();
+      this.changeDetectorRef.markForCheck();
       setTimeout(() => {
         this.loader.hide();
         }, 100);
     }
   }
 
-  loanTypes = [
+  loanTypes: LoanType[] = [
     { value: 'personal', viewValue: 'Personal Loan', interest: 11.75, icon: '💼' },
     { value: 'home', viewValue: 'Home Loan', interest: 8.5, icon: '🏠' },
     { value: 'gold', viewValue: 'Gold Loan', interest: 10.5, icon: '🥇' },
@@ -373,7 +461,7 @@ export class CalculatorViewComponent implements OnInit{
   ];
 
   // SEO Loan Types data for the Types of Loans Section
-  seoLoanTypes = [
+  seoLoanTypes: SEOLoanType[] = [
     { title: '🏠 Home Loan EMI Calculator', description: 'Calculate monthly EMI for home loans with competitive interest rates starting from 8.5% p.a. Our calculator considers processing fees and helps you plan your home purchase budget.' },
     { title: '🚗 Car Loan EMI Calculator', description: 'Plan your car purchase with our car loan EMI calculator. Get instant EMI calculations for new and used car loans with interest rates from 9.2% p.a.' },
     { title: '👤 Personal Loan EMI Calculator', description: 'Calculate EMI for personal loans used for medical emergencies, education, travel, or any personal needs. Interest rates typically range from 11.75% p.a.' },
@@ -445,8 +533,6 @@ export class CalculatorViewComponent implements OnInit{
   // Flags to prevent subscription interference
   private isUpdatingFromProgressBar = false;
 
-  public cd = inject(ChangeDetectorRef);
-
   ngOnInit() {
     this.onLoanTypeChange(0);
     this.calculateDefaultVisibleLoanTypes();
@@ -465,7 +551,7 @@ export class CalculatorViewComponent implements OnInit{
           const numericValue = this.parseInputValue(value);
           if (numericValue > 0) {
             this.amount = numericValue;
-            this.cd.markForCheck();
+            this.changeDetectorRef.markForCheck();
           }
         }
       }
@@ -477,7 +563,7 @@ export class CalculatorViewComponent implements OnInit{
           const numericValue = this.parseInputValue(value);
           if (numericValue > 0) {
             this.interestRate = numericValue;
-            this.cd.markForCheck();
+            this.changeDetectorRef.markForCheck();
           }
         }
       }
@@ -489,7 +575,7 @@ export class CalculatorViewComponent implements OnInit{
           const numericValue = this.parseInputValue(value);
           if (numericValue > 0) {
             this.years = numericValue;
-            this.cd.markForCheck();
+            this.changeDetectorRef.markForCheck();
           }
         }
       }
@@ -658,53 +744,109 @@ export class CalculatorViewComponent implements OnInit{
     setTimeout(() => {
       // Force load all loan types for SEO indexing
       this.isSEOLoanTypesExpanded = true;
-      this.cd.markForCheck();
+      this.changeDetectorRef.markForCheck();
       
       // Collapse back for user experience after a brief moment
       setTimeout(() => {
         this.isSEOLoanTypesExpanded = false;
-        this.cd.markForCheck();
+        this.changeDetectorRef.markForCheck();
       }, 500);
     }, 1000);
   }
 
   
-validateAmount() {
-  const min = 10000;
-  const max = 1000000000;
+validateAmount(): void {
+  try {
+    const min = CALCULATOR_CONSTANTS.MIN_AMOUNT;
+    const max = CALCULATOR_CONSTANTS.MAX_AMOUNT;
 
-  if (!this.amount || this.amount < min || this.amount > max) {
-    this.amount = min;
-  } 
-  
-  this.amountForm.setValue(this.formatInputValue(this.amount), { emitEvent: false });
-  this.amountForm.updateValueAndValidity();
-  this.cd.markForCheck();
-  this.calculateEMI();
+    // Clear previous error
+    this.validationErrors.amount = '';
+
+    if (!this.amount || isNaN(this.amount)) {
+      this.validationErrors.amount = 'Please enter a valid loan amount';
+      this.amount = min;
+    } else if (this.amount < min) {
+      this.validationErrors.amount = `Minimum loan amount is ₹${this.currencyFormat(min)}`;
+      this.amount = min;
+    } else if (this.amount > max) {
+      this.validationErrors.amount = `Maximum loan amount is ₹${this.currencyFormat(max)}`;
+      this.amount = max;
+    }
+    
+    this.amountForm.setValue(this.formatInputValue(this.amount), { emitEvent: false });
+    this.amountForm.updateValueAndValidity();
+    this.changeDetectorRef.markForCheck();
+    this.calculateEMI();
+  } catch (error) {
+    console.error('Error in validateAmount:', error);
+    this.validationErrors.amount = 'Invalid input. Please try again.';
+    this.amount = CALCULATOR_CONSTANTS.MIN_AMOUNT;
+    this.amountForm.setValue(this.formatInputValue(this.amount), { emitEvent: false });
+  }
 }
 
-  validateTenure() {
-    const min = 1;
-    const max = 50;
-    if (!this.years || this.years < min || this.years > max) {
-      this.yearsForm.setValue(this.formatInputValue(min), { emitEvent: false });
+  validateTenure(): void {
+    try {
+      const min = CALCULATOR_CONSTANTS.MIN_TENURE;
+      const max = CALCULATOR_CONSTANTS.MAX_TENURE;
+      
+      // Clear previous error
+      this.validationErrors.years = '';
+
+      if (!this.years || isNaN(this.years)) {
+        this.validationErrors.years = 'Please enter a valid tenure';
+        this.years = min;
+      } else if (this.years < min) {
+        this.validationErrors.years = `Minimum tenure is ${min} year`;
+        this.years = min;
+      } else if (this.years > max) {
+        this.validationErrors.years = `Maximum tenure is ${max} years`;
+        this.years = max;
+      }
+
+      this.yearsForm.setValue(this.formatInputValue(this.years), { emitEvent: false });
       this.yearsForm.updateValueAndValidity();
-      this.years = min;
-      this.cd.markForCheck();
+      this.changeDetectorRef.markForCheck();
+      this.calculateEMI();
+    } catch (error) {
+      console.error('Error in validateTenure:', error);
+      this.validationErrors.years = 'Invalid input. Please try again.';
+      this.years = CALCULATOR_CONSTANTS.MIN_TENURE;
+      this.yearsForm.setValue(this.formatInputValue(this.years), { emitEvent: false });
     }
-    this.calculateEMI();
   }
 
-  validateInterestRate() {
-    const min = 1;
-    const max = 30;
-    if (!this.interestRate || this.interestRate < min || this.interestRate > max) {
-      this.interestForm.setValue(this.formatInputValue(8), { emitEvent: false });
+  validateInterestRate(): void {
+    try {
+      const min = CALCULATOR_CONSTANTS.MIN_INTEREST_RATE;
+      const max = CALCULATOR_CONSTANTS.MAX_INTEREST_RATE;
+      const defaultValue = CALCULATOR_CONSTANTS.DEFAULT_INTEREST_RATE;
+      
+      // Clear previous error
+      this.validationErrors.interestRate = '';
+
+      if (!this.interestRate || isNaN(this.interestRate)) {
+        this.validationErrors.interestRate = 'Please enter a valid interest rate';
+        this.interestRate = defaultValue;
+      } else if (this.interestRate < min) {
+        this.validationErrors.interestRate = `Minimum interest rate is ${min}%`;
+        this.interestRate = min;
+      } else if (this.interestRate > max) {
+        this.validationErrors.interestRate = `Maximum interest rate is ${max}%`;
+        this.interestRate = max;
+      }
+
+      this.interestForm.setValue(this.formatInputValue(this.interestRate), { emitEvent: false });
       this.interestForm.updateValueAndValidity();
-      this.interestRate = 8;
-      this.cd.markForCheck();
+      this.changeDetectorRef.markForCheck();
+      this.calculateEMI();
+    } catch (error) {
+      console.error('Error in validateInterestRate:', error);
+      this.validationErrors.interestRate = 'Invalid input. Please try again.';
+      this.interestRate = CALCULATOR_CONSTANTS.DEFAULT_INTEREST_RATE;
+      this.interestForm.setValue(this.formatInputValue(this.interestRate), { emitEvent: false });
     }
-    this.calculateEMI();
   }
 
   priceProgressChange(value: number, mode: string) {
@@ -733,7 +875,7 @@ validateAmount() {
     }, 100);
     
     // Trigger change detection to update the UI
-    this.cd.markForCheck();
+    this.changeDetectorRef.markForCheck();
     
     // Calculate EMI with new values
     this.calculateEMI();
@@ -747,9 +889,11 @@ validateAmount() {
       }, 100);  
   }
 
-  calculateEMI() {
-   
-    if (this.amount > 0 && this.interestRate > 0 && this.years > 0) {
+  calculateEMI(): void {
+    try {
+      this.isCalculating = true;
+      
+      if (this.amount > 0 && this.interestRate > 0 && this.years > 0) {
       const principal = this.amount;
       const monthlyInterest = this.interestRate / 1200;
       const totalMonths = this.years * 12;
@@ -768,9 +912,17 @@ validateAmount() {
       this.calculateYearlyEMI(principal, totalMonths, monthlyInterest);
       this.calculateMonthlyEMI(principal, totalMonths, monthlyInterest);
       
-      this.cd.markForCheck();
+      this.changeDetectorRef.markForCheck();
+      }
+    } catch (error) {
+      console.error('Error in calculateEMI:', error);
+      // Reset to safe defaults
+      this.emi = 0;
+      this.totalPayment = 0;
+      this.totalInterest = 0;
+    } finally {
+      this.isCalculating = false;
     }
-   
   }
 
   calculateYearlyEMI(principal: number, totalMonths: number, monthlyInterest: number) {
@@ -870,7 +1022,7 @@ validateAmount() {
       const monthLabel = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
   
       this.schedule.push({
-        id: i + 1,
+        id: (i + 1).toString(),
         month: i + 1,
         monthLabel: monthLabel,               // e.g. "Jul 2025"
         emi: this.truncateToTwoDecimals(this.emi),             // Monthly EMI
@@ -885,9 +1037,12 @@ validateAmount() {
 
 
   // Export to Excel with enhanced design
-  exportToExcel() {
-    // Create workbook with multiple sheets
-    const wb = XLSX.utils.book_new();
+  exportToExcel(): void {
+    try {
+      this.isExporting = true;
+      
+      // Create workbook with multiple sheets
+      const wb = XLSX.utils.book_new();
 
     // Yearly Summary Sheet
     const yearlyData = this.yearlySchedule.map(yearData => ({
@@ -995,6 +1150,12 @@ validateAmount() {
 
     // Save the file
     XLSX.writeFile(wb, filename);
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+      alert('Failed to export to Excel. Please try again.');
+    } finally {
+      this.isExporting = false;
+    }
   }
 
   // Style Excel sheet with better design
@@ -1315,8 +1476,11 @@ validateAmount() {
   }
 
   // Enhanced PDF export with yearly and monthly data
-  exportToEMIPdf() {
-    const doc = new jsPDF();
+  exportToEMIPdf(): void {
+    try {
+      this.isExporting = true;
+      
+      const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
@@ -1448,11 +1612,20 @@ validateAmount() {
     // Save the PDF
     const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
     doc.save(`TechTrendsTalks_Complete_EMI_Report_${timestamp}.pdf`);
+    } catch (error) {
+      console.error('Error exporting to PDF:', error);
+      alert('Failed to export to PDF. Please try again.');
+    } finally {
+      this.isExporting = false;
+    }
   }
 
   // Enhanced Monthly Details PDF with payment summary
-  exportMonthlyDetailsPdf() {
-    const doc = new jsPDF();
+  exportMonthlyDetailsPdf(): void {
+    try {
+      this.isExporting = true;
+      
+      const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
@@ -1566,22 +1739,28 @@ validateAmount() {
     // Save the PDF
     const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
     doc.save(`TechTrendsTalks_Monthly_EMI_Details_${timestamp}.pdf`);
+    } catch (error) {
+      console.error('Error exporting monthly details to PDF:', error);
+      alert('Failed to export monthly details to PDF. Please try again.');
+    } finally {
+      this.isExporting = false;
+    }
   }
 
   currencyFormat(amount: number): string {
     // Return only the formatted number without currency symbol
-    return new Intl.NumberFormat('en-IN', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2 
+    return new Intl.NumberFormat(CALCULATOR_CONSTANTS.CURRENCY_FORMAT.locale, {
+      minimumFractionDigits: CALCULATOR_CONSTANTS.CURRENCY_FORMAT.minimumFractionDigits,
+      maximumFractionDigits: CALCULATOR_CONSTANTS.CURRENCY_FORMAT.maximumFractionDigits
     }).format(amount);
   }
 
   // Format input value with comma separation
   formatInputValue(value: number): string {
     if (!value || value === 0) return '';
-    return new Intl.NumberFormat('en-IN', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2
+    return new Intl.NumberFormat(CALCULATOR_CONSTANTS.INPUT_FORMAT.locale, {
+      minimumFractionDigits: CALCULATOR_CONSTANTS.INPUT_FORMAT.minimumFractionDigits,
+      maximumFractionDigits: CALCULATOR_CONSTANTS.INPUT_FORMAT.maximumFractionDigits
     }).format(value);
   }
 
@@ -1595,57 +1774,79 @@ validateAmount() {
     return parseFloat(cleanValue) || 0;
   }
 
+  // Clear all validation errors
+  clearValidationErrors(): void {
+    this.validationErrors = {
+      amount: '',
+      years: '',
+      interestRate: ''
+    };
+  }
+
   // Common function to handle input formatting with decimal support
-  private handleInputFormatting(event: any, propertyName: keyof this, formControl: FormControl): void {
-    const input = event.target;
-    const rawValue = input.value;
-    
-    // Allow partial decimal input during typing (e.g., "10.", "10.5")
-    if (rawValue.endsWith('.') || (rawValue.includes('.') && !rawValue.endsWith('.'))) {
-      // Don't format while user is typing decimal values
-      return;
-    }
-    
-    const value = this.parseInputValue(rawValue);
-    
-    if (value > 0) {
-      (this as any)[propertyName] = value;
-      // Update the form control with formatted value
-      formControl.setValue(this.formatInputValue(value), { emitEvent: false });
+  private handleInputFormatting(
+    event: InputEvent, 
+    propertyName: 'amount' | 'interestRate' | 'years', 
+    formControl: FormControl
+  ): void {
+    try {
+      const input = event.target;
+      const rawValue = input.value;
+      
+      // Clear validation error for this field when user starts typing
+      this.validationErrors[propertyName] = '';
+      
+      // Allow partial decimal input during typing (e.g., "10.", "10.5")
+      if (rawValue.endsWith('.') || (rawValue.includes('.') && !rawValue.endsWith('.'))) {
+        // Don't format while user is typing decimal values
+        return;
+      }
+      
+      const value = this.parseInputValue(rawValue);
+      
+      if (value > 0) {
+        this[propertyName] = value;
+        // Update the form control with formatted value
+        formControl.setValue(this.formatInputValue(value), { emitEvent: false });
+      }
+    } catch (error) {
+      console.error('Error in handleInputFormatting:', error);
+      // Reset to safe default value
+      formControl.setValue(this.formatInputValue(this[propertyName]), { emitEvent: false });
     }
   }
 
   // Handle amount input formatting
-  onAmountInput(event: any) {
+  onAmountInput(event: InputEvent): void {
     this.handleInputFormatting(event, 'amount', this.amountForm);
   }
 
   // Handle amount input blur (when user leaves the field)
-  onAmountBlur() {
+  onAmountBlur(): void {
     this.validateAmount();
     // Format the display value
     this.amountForm.setValue(this.formatInputValue(this.amount), { emitEvent: false });
   }
 
   // Handle years input formatting
-  onYearsInput(event: any) {
+  onYearsInput(event: InputEvent): void {
     this.handleInputFormatting(event, 'years', this.yearsForm);
   }
 
   // Handle years input blur
-  onYearsBlur() {
+  onYearsBlur(): void {
     this.validateTenure();
     // Format the display value
     this.yearsForm.setValue(this.formatInputValue(this.years), { emitEvent: false });
   }
 
   // Handle interest rate input formatting
-  onInterestInput(event: any) {
+  onInterestInput(event: InputEvent): void {
     this.handleInputFormatting(event, 'interestRate', this.interestForm);
   }
 
   // Handle interest rate input blur
-  onInterestBlur() {
+  onInterestBlur(): void {
     this.validateInterestRate();
     // Format the display value
     this.interestForm.setValue(this.formatInputValue(this.interestRate), { emitEvent: false });
